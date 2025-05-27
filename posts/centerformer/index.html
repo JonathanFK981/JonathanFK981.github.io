@@ -1,0 +1,2285 @@
+<!DOCTYPE html>
+<html lang="zh-Hans"
+  x-data
+  :class="$store.darkMode.class()"
+  :data-theme="$store.darkMode.theme()">
+  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CenterFormer | dO.ob&#39;s Blog</title>
+
+    
+
+<link rel="canonical" href="http://localhost:1313/posts/centerformer/" />
+
+
+
+<meta name="author" content="dO.ob" />
+<meta name="description" content="" />
+
+
+<meta name="keywords" content="Tag1,Tag2">
+
+
+
+<meta name="generator" content="Hugo 0.146.2">
+
+
+<meta property="og:url" content="http://localhost:1313/posts/centerformer/">
+  <meta property="og:site_name" content="dO.ob&#39;s Blog">
+  <meta property="og:title" content="CenterFormer">
+  <meta property="og:locale" content="zh_Hans">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2025-05-27T09:51:23+08:00">
+    <meta property="article:modified_time" content="2025-05-27T09:51:23+08:00">
+    <meta property="article:tag" content="Tag1">
+    <meta property="article:tag" content="Tag2">
+
+
+
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="CenterFormer">
+
+
+
+
+<link rel="stylesheet" href="/css/output.css" />
+
+
+
+
+<script>
+  MathJax = {
+    tex: {
+      inlineMath: [['\\(', '\\)']],
+      displayMath: [['$$','$$']],
+      processEscapes: true,
+      processEnvironments: true
+    },
+    options: {
+      skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+    }
+  };
+</script>
+
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+ 
+
+
+    
+<script>
+  MathJax = {
+    tex: {
+      inlineMath: [['\\(', '\\)'], ['$', '$']],
+      displayMath: [['$$', '$$'], ['\\[', '\\]']],
+      processEscapes: true,
+      processEnvironments: true
+    },
+    options: {
+      skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+    }
+  };
+</script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+ 
+
+
+    
+
+
+<style>
+  pre {
+    padding: 1em;
+    overflow: auto;
+  }
+</style>
+
+
+
+
+
+
+
+
+
+    
+
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3/dist/cdn.min.js" integrity="sha256-PtHu0lJIiSHfZeNj1nFd6wTX+Squ255SGZ/fc8seCtM=" crossorigin="anonymous"></script>
+  </head>
+
+  <body x-data="{
+    flip: false,
+  }">
+    
+    <div id="dream-global-bg"></div>
+
+    
+<nav class="mt-4 lg:mt-8 py-4">
+
+  
+  <div class="container flex justify-between max-w-[65ch] mx-auto px-4 md:px-0">
+  
+    <section class="flex items-center gap-4">
+      <div class="avatar cursor-pointer hover:avatar-online" @click="flip = !flip" title="翻转一下！">
+        <div class="h-10 rounded-full">
+          <img src="/img/logo.jpg" alt="Jonathan&#39;s Blog" />
+        </div>
+      </div>
+
+      
+      <div>
+        
+        <a href="http://localhost:1313/" class="text-lg font-semibold cursor-pointer">
+          Jonathan&#39;s Blog
+        </a>
+        
+        
+      </div>
+      
+    </section>
+
+    
+    
+
+    <div class="dropdown dropdown-end sm:hidden">
+      <div tabindex="0" role="button" class="btn btn-ghost btn-square" aria-label="Select an option">
+        <ion-icon name="menu" class="text-2xl"></ion-icon>
+      </div>
+      <ul tabindex="0" class="dropdown-content menu w-36 bg-base-100 rounded-box z-1 shadow-md">
+        
+
+
+
+
+
+
+
+<li>
+  <div role="link" tabindex="0" class="inline-flex items-center p-2 cursor-pointer" @click="flip = !flip" title="关于">
+    <ion-icon name="information-circle"></ion-icon>关于</div>
+</li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li>
+  <a class="inline-flex items-center p-2 cursor-pointer" href="/posts" title="归档">
+    <ion-icon name="archive"></ion-icon>
+    归档
+  </a>
+</li>
+
+
+
+
+<li>
+  <a class="inline-flex items-center p-2 cursor-pointer" href="/categories" title="所有分类">
+    <ion-icon name="grid"></ion-icon>
+    所有分类
+  </a>
+</li>
+
+
+
+
+<li>
+  <a class="inline-flex items-center p-2 cursor-pointer" href="/tags" title="所有标签">
+    <ion-icon name="pricetags"></ion-icon>
+    所有标签
+  </a>
+</li>
+
+
+
+
+
+
+      </ul>
+    </div>
+    <section class="hidden sm:flex sm:items-center sm:gap-2 md:gap-4">
+      
+
+      
+      
+
+
+
+
+<div role="link" tabindex="0" class="text-sm font-semibold cursor-pointer hover:underline" @click="flip = !flip" title="关于">关于</div>
+
+
+
+
+
+      
+      
+
+
+
+
+
+      
+      
+
+
+
+
+
+      
+      
+<a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/posts" title="归档">
+  <ion-icon class="group-hover:text-primary-content" name="archive"></ion-icon>
+</a>
+
+
+      
+      
+<a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/categories" title="所有分类">
+  <ion-icon class="group-hover:text-primary-content" name="grid"></ion-icon>
+</a>
+
+
+      
+      
+<a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/tags" title="所有标签">
+  <ion-icon class="group-hover:text-primary-content" name="pricetags"></ion-icon>
+</a>
+
+
+      
+
+      
+
+      
+    </section>
+  </div>
+</nav>
+
+
+    <div class="flip-container" :class="{ 'flip-it': flip }">
+      <div class="flipper">
+        <div class="front">
+          <div class="container">
+            
+<div class="lg:grid lg:grid-cols-4 gap-4 mt-4 px-4">
+  <div class="hidden lg:block">
+    
+  </div>
+
+  <div class="lg:col-span-2">
+    <article class="mx-auto prose prose-quoteless dark:prose-invert" id="dream-single-post-main" itemscope itemtype="http://schema.org/Article">
+      
+  <meta itemprop="name" content="CenterFormer">
+  <meta itemprop="datePublished" content="2025-05-27T09:51:23+08:00">
+  <meta itemprop="dateModified" content="2025-05-27T09:51:23+08:00">
+  <meta itemprop="wordCount" content="4780">
+  <meta itemprop="keywords" content="Tag1,Tag2">
+
+      <header>
+        <h1 itemprop="headline">CenterFormer</h1>
+        <p class="text-sm">
+          
+            星期二, 5月 27, 2025
+          
+
+          | <span>23分钟阅读</span>
+
+          
+          | <span>更新于
+            
+              星期二, 5月 27, 2025
+            </span>
+          
+        </p>
+
+        
+        <div class="flex justify-between">
+          
+            <div class="flex items-center">
+  
+  <span>@</span>
+  
+
+  <span itemprop="author" itemscope itemtype="https://schema.org/Person">
+  
+    
+      <span itemprop="name">dO.ob</span>
+    
+  
+  </span>
+</div>
+
+          
+
+          <div class="flex items-center gap-2">
+  
+  
+
+  
+  
+  
+  
+  
+    <a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary"
+      href="https://x.com/intent/post?text=CenterFormer&amp;url=http://localhost:1313/posts/centerformer/" target="_blank" rel="noopener noreferrer"
+      title="Share on X">
+      <ion-icon class="group-hover:text-primary-content" name="logo-x"></ion-icon>
+    </a>
+  
+    <a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary"
+      href="https://facebook.com/sharer/sharer.php?u=http://localhost:1313/posts/centerformer/" target="_blank" rel="noopener noreferrer"
+      title="Share on Facebook">
+      <ion-icon class="group-hover:text-primary-content" name="logo-facebook"></ion-icon>
+    </a>
+  
+    <a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary"
+      href="https://wa.me/?text=CenterFormer%20http://localhost:1313/posts/centerformer/" target="_blank" rel="noopener noreferrer"
+      title="Share on WhatsApp">
+      <ion-icon class="group-hover:text-primary-content" name="logo-whatsapp"></ion-icon>
+    </a>
+  
+
+  
+  
+</div>
+
+        </div>
+      </header>
+
+      <section id="dream-single-post-content" itemprop="articleBody">
+        
+          <img class="w-full z-30" src="/img/a.jpg" alt="CenterFormer" />
+        
+
+        <!-- Cut out summary from your post content here. -->
+<!-- The remaining content of your post. -->
+<h1 id="abstract">Abstract</h1>
+<p>Query-based transformer has shown great potential in constructing long-range attention in many image-domain tasks, but has rarely been considered in LiDAR-based 3D object detection due to the overwhelming size of the point cloud data. In this paper, we propose CenterFormer, a center-based transformer network for 3D object detection. CenterFormer first uses a center heatmap to select center candidates on top of a standard voxel-based point cloud encoder. It then uses the feature of the center candidate as the query embedding in the transformer. To further aggregate features from multiple frames, we design an approach to fuse features through cross-attention. Lastly, regression heads are added to predict the bounding box on the output center feature representation. Our design reduces the convergence difficulty and computational complexity of the transformer structure. The results show significant improvements over the strong baseline of anchor-free object detection networks. CenterFormer achieves state-of-the-art performance for a single model on the Waymo Open Dataset, with 73.7% mAPH on the validation set and 75.6% mAPH on the test set, significantly outperforming all previously published CNN and transformer-based methods. Our code is publicly available at <a href="https://github.com/TuSimple/centerformer" target="_blank">https://github.com/TuSimple/centerformer</a>
+.<br>
+Keywords: LiDAR point cloud, 3D Object detection, Transformer, Multi-frame fusion</p>
+<h1 id="1-introduction">1 Introduction</h1>
+<p>LiDAR is an important sensing and perception tool in autonomous driving due to its ability to provide highly accurate 3D point cloud data of the scanned environment. LiDAR-based 3D object detection aims to detect the bounding boxes of the objects in the LiDAR point cloud. Compared to image-domain object detection, the scanned points in LiDAR data may be sparse and irregularly spaced depending on the distance from the sensor. Most recent methods rely on discretizing the point clouds into voxels [59, 49] or projected bird’s eye view (BEV) feature maps [18] to use 2D or 3D convolution networks. Sometimes, it requires a second stage RCNN [11]-style refinement network to compensate for the information loss in the voxelization. However, current two-stage networks [34, 53] lack contextual and global information learning. They only use the local features of the proposal (RoI) to refine the results. The features in other boxes or neighboring positions that could also be beneficial to the refinement are neglected. Moreover, the environment of the autonomous driving scene is not stationary. The local feature learning has more limitations when using a sequence of scans.</p>
+<p>In the image domain, the transformer encoder-decoder structure has become a competitive method for detection [4, 64] and segmentation [43, 2] tasks. The transformer is able to capture long-range contextual information in the whole feature map and different feature domains. One of the most representative methods is DETR [4], which uses the parametric query to directly learn object information from an encoder-decoder transformer. DETR is trained end-to-end as a set matching problem to avoid any handcrafting processes like non-maximum suppression (NMS). However, there are two major problems in the DETR-style encoder-decoder transformer network: First, the computational complexity grows quadratically as the input size increases. This limits the transformer to take only low-dimensional features as input, which leads to low performance on small objects. Second, the query embedding is learned through the network, so the training is hard to converge.</p>
+<p>Can we design a transformer encoder-decoder network for the LiDAR point cloud in order to better perceive the global connection of point cloud data? Considering the sheer size of LiDAR point cloud data and the relatively small sizes of objects to be detected, voxel or BEV feature map representations need to be large enough to keep the features for such objects to be separable. As a result, it is impractical to use the transformer encoder structure on the feature map due to the large input size. In addition, if we use a large feature map for the transformer decoder, the query embedding is also difficult to focus on meaningful attention during training. To mitigate these converging problems, one solution is to provide the transformer with a good initial query embedding and confine the attention learning region to a smaller range. In the center-based 3D object detection network [53], the feature at the center of an object is used to capture all object information; hence, the center feature is a good substitute for the object feature embedding. Multi-scale image pyramid and deformable convolution [16] are two common methods to increase the receptive field of the feature learning without significantly increasing the complexity. Some recent works [64, 15] apply these two methods in the transformer networks.</p>
+<p>Taking the aforementioned aspects into consideration, we propose a center-based transformer network, named Center Transformer (CenterFormer), for 3D object detection. Specifically, we first use a standard voxel-based backbone network to encode the point cloud into a BEV feature representation. Next, we employ a multi-scale center proposal network to convert the feature into different scales and predict the initial center locations. The feature at the proposed center is fed into a transformer decoder as the query embedding. In each transformer module, we use a deformable cross-attention layer to efficiently aggregate the features from the multi-scale feature map. The output object representation then regresses to other object properties to create the final object prediction. As shown in Figure 1, our method can model object-level connection and long-range feature attention. To further explore the ability of the transformer, we also propose a multi-frame design to fuse features from different frames through cross-attention. We test CenterFormer on the large-scale Waymo Open Dataset [38] and the nuScenes dataset [3]. Our method outperforms the popular center-based 3D object detection networks that are dominant on public benchmarks by a large margin, achieving state-of-the-art performance, with 73.7% and 75.6% mAPH on the Waymo validation and test sets, respectively. The contributions of our method can be summarized as follows:
+– We introduce a center-based transformer network for 3D object detection.<br>
+– We use the center feature as the initial query embedding to facilitate learning of the transformer.<br>
+– We propose a multi-scale cross-attention layer to efficiently aggregate neighboring features without significantly increasing the computational complexity.<br>
+– We propose using the cross-attention transformer to fuse object features from different frames.<br>
+– Our method outperforms all previously published methods by a large margin, setting a new state-of-the-art performance on the Waymo Open Dataset.
+<div class="embed-pdf-container" id="embed-pdf-container-0c1df04b">
+    <div class="pdf-loadingWrapper" id="pdf-loadingWrapper-0c1df04b">
+        <div class="pdf-loading" id="pdf-loading-0c1df04b"></div>
+    </div>
+    <div id="overlayText">
+      <a href="./pic/fig1.pdf" aria-label="Download" download>
+        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18">
+            <path d="M9 13c.3 0 .5-.1.7-.3L15.4 7 14 5.6l-4 4V1H8v8.6l-4-4L2.6 7l5.7 5.7c.2.2.4.3.7.3zm-7 2h14v2H2z" />
+        </svg>
+      </a>
+    </div>
+    <canvas class="pdf-canvas" id="pdf-canvas-0c1df04b"></canvas>
+</div>
+
+<div class="pdf-paginator" id="pdf-paginator-0c1df04b">
+    <button id="pdf-prev-0c1df04b">Previous</button>
+    <button id="pdf-next-0c1df04b">Next</button> &nbsp; &nbsp;
+    <span>
+      <span class="pdf-pagenum" id="pdf-pagenum-0c1df04b"></span> / <span class="pdf-pagecount" id="pdf-pagecount-0c1df04b"></span>
+    </span>
+    <a class="pdf-source" id="pdf-source-0c1df04b" href="./pic/fig1.pdf">[pdf]</a>
+</div>
+
+<noscript>
+View the PDF file <a class="pdf-source" id="pdf-source-noscript-0c1df04b" href="./pic/fig1.pdf">here</a>.
+</noscript>
+
+<script type="text/javascript">
+    (function(){
+    var url = '.\/pic\/fig1.pdf';
+
+    var hidePaginator = "" === "true";
+    var hideLoader = "" === "true";
+    var selectedPageNum = parseInt("") || 1;
+
+
+    var showSource = "" === "true";
+    var pageSource = document.getElementById("pdf-source-0c1df04b");
+
+    
+    function showSourcef() {
+        if(showSource) {
+            pageSource.style.display = 'inline';
+        } else {
+            pageSource.style.display = 'none';
+        }
+    }
+
+    
+    showSourcef();
+
+
+    
+    var pdfjsLib = window['pdfjs-dist/build/pdf'];
+
+    
+    if (pdfjsLib.GlobalWorkerOptions.workerSrc == '')
+      pdfjsLib.GlobalWorkerOptions.workerSrc = "http:\/\/localhost:1313\/" + 'js/pdf-js/build/pdf.worker.js';
+
+    
+    var pdfDoc = null,
+        pageNum = selectedPageNum,
+        pageRendering = false,
+        pageNumPending = null,
+        scale = 3,
+        canvas = document.getElementById('pdf-canvas-0c1df04b'),
+        ctx = canvas.getContext('2d'),
+        paginator = document.getElementById("pdf-paginator-0c1df04b"),
+        loadingWrapper = document.getElementById('pdf-loadingWrapper-0c1df04b');
+
+
+    
+    showPaginator();
+    showLoader();
+
+    
+
+    function renderPage(num) {
+      pageRendering = true;
+      
+      pdfDoc.getPage(num).then(function(page) {
+        var viewport = page.getViewport({scale: scale});
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        
+        var renderContext = {
+          canvasContext: ctx,
+          viewport: viewport
+        };
+        var renderTask = page.render(renderContext);
+
+        
+        renderTask.promise.then(function() {
+          pageRendering = false;
+          showContent();
+
+          if (pageNumPending !== null) {
+            
+            renderPage(pageNumPending);
+            pageNumPending = null;
+          }
+        });
+      });
+
+      
+      document.getElementById('pdf-pagenum-0c1df04b').textContent = num;
+    }
+
+    
+
+    function showContent() {
+      loadingWrapper.style.display = 'none';
+      canvas.style.display = 'block';
+    }
+
+    
+
+    function showLoader() {
+      if(hideLoader) return
+      loadingWrapper.style.display = 'flex';
+      canvas.style.display = 'none';
+    }
+
+    
+
+    function showPaginator() {
+      if(hidePaginator) return
+      paginator.style.display = 'block';
+    }
+
+    
+
+    function queueRenderPage(num) {
+      if (pageRendering) {
+        pageNumPending = num;
+      } else {
+        renderPage(num);
+      }
+    }
+
+    
+
+    function onPrevPage() {
+      if (pageNum <= 1) {
+        return;
+      }
+      pageNum--;
+      queueRenderPage(pageNum);
+    }
+    document.getElementById('pdf-prev-0c1df04b').addEventListener('click', onPrevPage);
+
+    
+
+    function onNextPage() {
+      if (pageNum >= pdfDoc.numPages) {
+        return;
+      }
+      pageNum++;
+      queueRenderPage(pageNum);
+    }
+    document.getElementById('pdf-next-0c1df04b').addEventListener('click', onNextPage);
+
+    
+
+    pdfjsLib.getDocument(url).promise.then(function(pdfDoc_) {
+      pdfDoc = pdfDoc_;
+      var numPages = pdfDoc.numPages;
+      document.getElementById('pdf-pagecount-0c1df04b').textContent = numPages;
+
+      
+      if(pageNum > numPages) {
+        pageNum = numPages
+      }
+
+      
+      renderPage(pageNum);
+    });
+    })();
+</script>
+</p>
+<h1 id="2-related-work">2 Related Work</h1>
+<h2 id="21-lidar-based-3d-object-detection">2.1 LiDAR-based 3D Object Detection</h2>
+<p>Compared to the well-established point cloud processing networks like PointNet [31] and PointNet++ [32], most recent LiDAR detection and segmentation methods [59,18,56,60,63] voxelize the point cloud in a fixed 3D space into a BEV/voxel representation and use conventional 2D/3D convolutional networks to predict the 3D bounding boxes. Other methods [46,1,39,9] detect the objects on a projected range image. There are also some methods that use hybrid features along with the voxel network [34,30,51], and combine multi-view features in the voxel feature representation [34]. VoxelNet [59] uses a PointNet inside each voxel to encode all points into a voxel feature. This feature encoder later became an essential method in voxel-based point cloud networks. PointPillar [18] proposes the pillar feature encoder to directly encode the point cloud into the BEV feature map so that only 2D convolution is needed in the network.</p>
+<p>Similar to image object detection, 3D object detection methods can be divided into anchor-based [36,34,18,49] and anchor-free [53,10] methods. Anchor-based methods detect objects through a classification of all predefined object anchors, while anchor-free methods generally consider objects as keypoints and find those keypoints at the local heatmap maxima. Even though anchor-based methods can achieve good performance, they rely heavily on hyper-parameter tuning. On the other hand, as the anchor-free methods become more prevalent in image-domain tasks, many 3D and LiDAR works have adopted the same design and show a more efficient and competitive performance. Many works [34,20,6,24] also require an RCNN-style second stage refinement. Feature maps for each bounding box proposal are aggregated through RoIAlign or RoIPool. CenterPoint [53] detects objects using a center heatmap and regresses other bounding box information using center feature representation.</p>
+<p>Most methods directly concatenate points from different frames based on the ego-motion estimation to use the multi-frame information. This assumes the model can align object features from different frames. However, independently moving objects cause misalignment of features across frames. Recent multi-frame methods [14,52] use an LSTM or a GNN module to fuse the previous state feature with the current feature map. 3D-MAN [50] uses a multi-frame alignment and aggregation module to learn the temporal attention of predictions from multiple frames. The feature of each box is generated from the RoI pooling.</p>
+<h2 id="22-vision-transformer">2.2 Vision Transformer</h2>
+<p>Originally proposed in the Natural Language Processing (NLP) community, the transformer [40] is becoming a competitive feature learning module in computer vision. Compared to traditional CNNs, the transformer has a bigger receptive field, and feature aggregation is based on the response learned directly from pairwise features. A transformer encoder [7, 54, 15] usually serves as a replacement for the convolutional layer in the backbone network. Meanwhile, the transformer decoder uses high-level query feature embedding as the input and extracts features from feature encoding through cross-attention, which is more common in detection and segmentation tasks [4, 64, 58, 43]. DETR [4] uses a transformer encoder-decoder structure to predict objects from learned query embedding. Deformable DETR [64] improves the DETR training through a deformable attention layer. Some recent methods [22, 26, 55] show that DETR is easier to converge using guidance like anchor boxes.</p>
+<h2 id="23-3d-transformer">2.3 3D Transformer</h2>
+<p>An important design in transformer structure is the position embedding due to permutation invariance of the transformer input. However, 3D point clouds already have position information in them, which leads to deviance in the design of 3D transformers. Point Transformer [57] proposes a point transformer layer in the PointNet structure, where the position embedding in the transformer is the pairwise point distances. 3DETR [27] and [23] use a DETR-style transformer decoder in the point cloud, except that the query embedding in the decoder is sampled from Farthest Point Sampling (FPS) and learned through classification. Voxel Transformer [25] introduces a voxel transformer layer to replace the sparse convolution layer in the voxel-based point cloud backbone network. SST [8] uses a Single-stride Sparse Transformer as the backbone network to prevent information loss in downsampling of the previous 3D object detector. CT3D [33] uses a transformer to learn a refinement of the initial prediction from local points. In contrast to the above methods, our CenterFormer tailors the DETR to work on LiDAR point clouds with lower memory usage and faster convergence. Moreover, CenterFormer can learn both object-level self-attentions and local cross-attentions without requiring a first-stage bounding box prediction.</p>
+<h1 id="3-method">3 Method</h1>
+<h2 id="31-preliminaries">3.1 Preliminaries</h2>
+<p>Center-based 3D Object Detection is motivated by the recent anchor-free image-domain object detection methods [19, 17]. It detects each object as a center keypoint by predicting a heatmap on the BEV feature map. Given the output of a common voxel point cloud feature encoder M ∈ Rh∗w∗c, where h and w are the BEV map size and c is the feature dimension, center-based LiDAR object detection predicts both a center heatmap H ∈ Rh∗w∗l and the box regression B ∈ Rh∗w∗8 through two separate heads. Center heatmap H has l channels, one for each object class. In training, the ground truth is generated from the Gaussian heatmap of the annotated box center. Box regression B contains 8 object properties: the grid offset from the predicted grid center to the real box center, the height of the object, the 3D size, and the yaw rotation angle. During the evaluation, it takes the class and regression predictions at the top N highest heatmap scores and uses NMS to predict the final bounding box. Transformer Decoder aggregates features from the source representation to each query based on the query-key pairwise attention. Each transformer module consists of three layers: a multi-head self-attention layer, a multi-head cross-attention layer, and a feed-forward layer. In each layer, there is also a skip connection that connects the input and the output features and layer normalization. Let $f^q$ and $f^k$ be the query feature and key feature. The multi-head attention can be formulated as:
+</p>
+\[f_i^{out} = \sum\limits_{m = 1}^M {{W_m}\left[ {\sum\limits_{j \in {\Omega _j}} {\sigma \left( {\frac{{{Q_i}{K_j}}}{{\sqrt d }}} \right) \cdot {V_j}} } \right]} \]<p>
+</p>
+\[
+Q_i=f_i^q W_q+E_i^{p o s}, K_j=f_j^k W_k+E_j^{p o s}, V_j=f_j^k W_v
+\]<p>
+where $i$ and $j$ are the indices of the query feature and source feature respectively, m is the head index, $\Omega_j$ is the set of attending key features, $\sigma$ is the softmax function, $d$ is the feature dimension, $E^{pos}$ is the position embedding, and $W$ is the learnable weight. In the self-attention layer, the query feature and the key feature come from the same set of query feature embeddings, while in the cross-attention layer, the set of key features is the source feature representation.
+<div class="embed-pdf-container" id="embed-pdf-container-a0efbc85">
+    <div class="pdf-loadingWrapper" id="pdf-loadingWrapper-a0efbc85">
+        <div class="pdf-loading" id="pdf-loading-a0efbc85"></div>
+    </div>
+    <div id="overlayText">
+      <a href="./pic/fig2.pdf" aria-label="Download" download>
+        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18">
+            <path d="M9 13c.3 0 .5-.1.7-.3L15.4 7 14 5.6l-4 4V1H8v8.6l-4-4L2.6 7l5.7 5.7c.2.2.4.3.7.3zm-7 2h14v2H2z" />
+        </svg>
+      </a>
+    </div>
+    <canvas class="pdf-canvas" id="pdf-canvas-a0efbc85"></canvas>
+</div>
+
+<div class="pdf-paginator" id="pdf-paginator-a0efbc85">
+    <button id="pdf-prev-a0efbc85">Previous</button>
+    <button id="pdf-next-a0efbc85">Next</button> &nbsp; &nbsp;
+    <span>
+      <span class="pdf-pagenum" id="pdf-pagenum-a0efbc85"></span> / <span class="pdf-pagecount" id="pdf-pagecount-a0efbc85"></span>
+    </span>
+    <a class="pdf-source" id="pdf-source-a0efbc85" href="./pic/fig2.pdf">[pdf]</a>
+</div>
+
+<noscript>
+View the PDF file <a class="pdf-source" id="pdf-source-noscript-a0efbc85" href="./pic/fig2.pdf">here</a>.
+</noscript>
+
+<script type="text/javascript">
+    (function(){
+    var url = '.\/pic\/fig2.pdf';
+
+    var hidePaginator = "" === "true";
+    var hideLoader = "" === "true";
+    var selectedPageNum = parseInt("") || 1;
+
+
+    var showSource = "" === "true";
+    var pageSource = document.getElementById("pdf-source-a0efbc85");
+
+    
+    function showSourcef() {
+        if(showSource) {
+            pageSource.style.display = 'inline';
+        } else {
+            pageSource.style.display = 'none';
+        }
+    }
+
+    
+    showSourcef();
+
+
+    
+    var pdfjsLib = window['pdfjs-dist/build/pdf'];
+
+    
+    if (pdfjsLib.GlobalWorkerOptions.workerSrc == '')
+      pdfjsLib.GlobalWorkerOptions.workerSrc = "http:\/\/localhost:1313\/" + 'js/pdf-js/build/pdf.worker.js';
+
+    
+    var pdfDoc = null,
+        pageNum = selectedPageNum,
+        pageRendering = false,
+        pageNumPending = null,
+        scale = 3,
+        canvas = document.getElementById('pdf-canvas-a0efbc85'),
+        ctx = canvas.getContext('2d'),
+        paginator = document.getElementById("pdf-paginator-a0efbc85"),
+        loadingWrapper = document.getElementById('pdf-loadingWrapper-a0efbc85');
+
+
+    
+    showPaginator();
+    showLoader();
+
+    
+
+    function renderPage(num) {
+      pageRendering = true;
+      
+      pdfDoc.getPage(num).then(function(page) {
+        var viewport = page.getViewport({scale: scale});
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        
+        var renderContext = {
+          canvasContext: ctx,
+          viewport: viewport
+        };
+        var renderTask = page.render(renderContext);
+
+        
+        renderTask.promise.then(function() {
+          pageRendering = false;
+          showContent();
+
+          if (pageNumPending !== null) {
+            
+            renderPage(pageNumPending);
+            pageNumPending = null;
+          }
+        });
+      });
+
+      
+      document.getElementById('pdf-pagenum-a0efbc85').textContent = num;
+    }
+
+    
+
+    function showContent() {
+      loadingWrapper.style.display = 'none';
+      canvas.style.display = 'block';
+    }
+
+    
+
+    function showLoader() {
+      if(hideLoader) return
+      loadingWrapper.style.display = 'flex';
+      canvas.style.display = 'none';
+    }
+
+    
+
+    function showPaginator() {
+      if(hidePaginator) return
+      paginator.style.display = 'block';
+    }
+
+    
+
+    function queueRenderPage(num) {
+      if (pageRendering) {
+        pageNumPending = num;
+      } else {
+        renderPage(num);
+      }
+    }
+
+    
+
+    function onPrevPage() {
+      if (pageNum <= 1) {
+        return;
+      }
+      pageNum--;
+      queueRenderPage(pageNum);
+    }
+    document.getElementById('pdf-prev-a0efbc85').addEventListener('click', onPrevPage);
+
+    
+
+    function onNextPage() {
+      if (pageNum >= pdfDoc.numPages) {
+        return;
+      }
+      pageNum++;
+      queueRenderPage(pageNum);
+    }
+    document.getElementById('pdf-next-a0efbc85').addEventListener('click', onNextPage);
+
+    
+
+    pdfjsLib.getDocument(url).promise.then(function(pdfDoc_) {
+      pdfDoc = pdfDoc_;
+      var numPages = pdfDoc.numPages;
+      document.getElementById('pdf-pagecount-a0efbc85').textContent = numPages;
+
+      
+      if(pageNum > numPages) {
+        pageNum = numPages
+      }
+
+      
+      renderPage(pageNum);
+    });
+    })();
+</script>
+</p>
+<h2 id="32-center-transformer">3.2 Center Transformer</h2>
+<p>The architecture of our model is illustrated in Figure 2. We use a standard sparse voxel-based backbone network [53] to process each point cloud into a BEV feature representation. We then encode the BEV feature into a multi-scale feature map and predict the center proposals. The proposed centers are then used as the query feature embedding in a transformer decoder to aggregate features from other centers and from multi-scale feature maps. Finally, we use a regression head to predict the bounding box at each enhanced center feature. In our multi-frame CenterFormer, the last BEV features of frames are fused together in both the center prediction stage and the cross-attention transformer.</p>
+<p><strong>Multi-scale Center Proposal Network</strong> A DETR-style transformer encoder requires the feature map to be compressed into a small size so that the computation cost is acceptable. This makes the network lose fine-grained features that are crucial for the detection of small objects, which typically occupy &lt; 1% of the space in the BEV map. Therefore, we propose a multi-scale center proposal network (CPN) to replace the transformer encoder for the BEV feature. In order to prepare a multi-scale feature map, we use a feature pyramid network to process the BEV feature representation into three different scales. At the end of each scale, we add a convolutional block attention module (CBAM) [45] to enhance the feature via channel-wise and spatial attention.</p>
+<p>We use a center head on the highest scale feature map $\mathcal{C}$ to predict an l-channel heatmap of object centers. Each channel contains the heatmap score of one class. The location of the top $N$ heatmap scores will be taken out as the center proposals. We used $N = 500$ in our experiments empirically.</p>
+<p><strong>Multi-scale Center Transformer Decoder</strong> We extract the features at the proposed center locations as the query embedding for the transformer decoder. We use a linear layer to encode the location of the centers into a position embedding. Traditional DETR decoder initializes the query with a learnable parameter. Consequently, the attention weights acquired in the decoder are almost the same among all features. By using the center feature as the initial query embedding, we can guide the training to focus on the feature that contains meaningful object information. We use the same self-attention layer in the vanilla Transformer decoder to learn contextual attention between objects. The complexity of computing the cross-attention of a center query to all multi-scale BEV features is $O(∑^S_{s=1} h_s w_s N)$. Since the BEV map resolution needs to be relatively large to maintain the fine-grained features for small objects, it is impractical to use all BEV features as the attending keypoints. Alternatively, we confine the attending keypoints to a small $3×3$ window near the center location at each scale, as illustrated in Figure 3. The complexity of this cross-attention is $O(9SN)$, which is more efficient than the normal implementation. Because of multi-scale features, we are able to capture a wide range of features around proposed centers. The multi-scale cross-attention can be formulated as:</p>
+$$
+\operatorname{MSCA}(p)=\sum_{m=1}^M W_m\left[\sum_{s=1}^S \sum_{j \in \Omega_j} \sigma\left(\frac{Q_i K_j^s}{\sqrt{d}}\right) \cdot V_j^s\right]
+$$<p>where $p$ denotes the center proposal, $\Omega_j$ here is the window around the center, and $s$ is the index of the scale. The feed-forward layer is also kept unchanged.</p>
+<p><strong>Multi-scale Deformable Cross-attention layer</strong> Inspired by [64], we also used a deformable cross-attention layer to sample the attending keypoints automatically. Figure 3 shows the structure of the deformable cross-attention layer. Compared to the normal multi-head cross-attention layer, deformable cross-attention uses a linear layer to learn 2D offsets $\delta p$ of the reference center location $p$ at all heads and scales. The feature at $p + \delta p$ will be extracted as the cross-attention attending feature through bilinear sampling. We use a linear layer to directly learn the attention scores from the query embedding. Features from multiple scales are aggregated together to form the cross-attention layer output:</p>
+$$
+\operatorname{MSDCA}(p)=\sum_{m=1}^M W_m\left[\sum_{s=1}^S \sum_{k=1}^K \sigma\left(W_{m s k} \mathcal{C}(p)\right) x^s\left(p+\Delta p_{m s k}\right)\right],
+$$<p>where $x^s$ is the multi-scale BEV feature, $\mathcal{C}(p)$ is the center feature, and $\sigma\left(W_{m s k} \mathcal{C}(p)\right)$
+is the attention weight. We used $K = 15$ in our experiments.
+<div class="embed-pdf-container" id="embed-pdf-container-aa39db95">
+    <div class="pdf-loadingWrapper" id="pdf-loadingWrapper-aa39db95">
+        <div class="pdf-loading" id="pdf-loading-aa39db95"></div>
+    </div>
+    <div id="overlayText">
+      <a href="./pic/fig3.pdf" aria-label="Download" download>
+        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18">
+            <path d="M9 13c.3 0 .5-.1.7-.3L15.4 7 14 5.6l-4 4V1H8v8.6l-4-4L2.6 7l5.7 5.7c.2.2.4.3.7.3zm-7 2h14v2H2z" />
+        </svg>
+      </a>
+    </div>
+    <canvas class="pdf-canvas" id="pdf-canvas-aa39db95"></canvas>
+</div>
+
+<div class="pdf-paginator" id="pdf-paginator-aa39db95">
+    <button id="pdf-prev-aa39db95">Previous</button>
+    <button id="pdf-next-aa39db95">Next</button> &nbsp; &nbsp;
+    <span>
+      <span class="pdf-pagenum" id="pdf-pagenum-aa39db95"></span> / <span class="pdf-pagecount" id="pdf-pagecount-aa39db95"></span>
+    </span>
+    <a class="pdf-source" id="pdf-source-aa39db95" href="./pic/fig3.pdf">[pdf]</a>
+</div>
+
+<noscript>
+View the PDF file <a class="pdf-source" id="pdf-source-noscript-aa39db95" href="./pic/fig3.pdf">here</a>.
+</noscript>
+
+<script type="text/javascript">
+    (function(){
+    var url = '.\/pic\/fig3.pdf';
+
+    var hidePaginator = "" === "true";
+    var hideLoader = "" === "true";
+    var selectedPageNum = parseInt("") || 1;
+
+
+    var showSource = "" === "true";
+    var pageSource = document.getElementById("pdf-source-aa39db95");
+
+    
+    function showSourcef() {
+        if(showSource) {
+            pageSource.style.display = 'inline';
+        } else {
+            pageSource.style.display = 'none';
+        }
+    }
+
+    
+    showSourcef();
+
+
+    
+    var pdfjsLib = window['pdfjs-dist/build/pdf'];
+
+    
+    if (pdfjsLib.GlobalWorkerOptions.workerSrc == '')
+      pdfjsLib.GlobalWorkerOptions.workerSrc = "http:\/\/localhost:1313\/" + 'js/pdf-js/build/pdf.worker.js';
+
+    
+    var pdfDoc = null,
+        pageNum = selectedPageNum,
+        pageRendering = false,
+        pageNumPending = null,
+        scale = 3,
+        canvas = document.getElementById('pdf-canvas-aa39db95'),
+        ctx = canvas.getContext('2d'),
+        paginator = document.getElementById("pdf-paginator-aa39db95"),
+        loadingWrapper = document.getElementById('pdf-loadingWrapper-aa39db95');
+
+
+    
+    showPaginator();
+    showLoader();
+
+    
+
+    function renderPage(num) {
+      pageRendering = true;
+      
+      pdfDoc.getPage(num).then(function(page) {
+        var viewport = page.getViewport({scale: scale});
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        
+        var renderContext = {
+          canvasContext: ctx,
+          viewport: viewport
+        };
+        var renderTask = page.render(renderContext);
+
+        
+        renderTask.promise.then(function() {
+          pageRendering = false;
+          showContent();
+
+          if (pageNumPending !== null) {
+            
+            renderPage(pageNumPending);
+            pageNumPending = null;
+          }
+        });
+      });
+
+      
+      document.getElementById('pdf-pagenum-aa39db95').textContent = num;
+    }
+
+    
+
+    function showContent() {
+      loadingWrapper.style.display = 'none';
+      canvas.style.display = 'block';
+    }
+
+    
+
+    function showLoader() {
+      if(hideLoader) return
+      loadingWrapper.style.display = 'flex';
+      canvas.style.display = 'none';
+    }
+
+    
+
+    function showPaginator() {
+      if(hidePaginator) return
+      paginator.style.display = 'block';
+    }
+
+    
+
+    function queueRenderPage(num) {
+      if (pageRendering) {
+        pageNumPending = num;
+      } else {
+        renderPage(num);
+      }
+    }
+
+    
+
+    function onPrevPage() {
+      if (pageNum <= 1) {
+        return;
+      }
+      pageNum--;
+      queueRenderPage(pageNum);
+    }
+    document.getElementById('pdf-prev-aa39db95').addEventListener('click', onPrevPage);
+
+    
+
+    function onNextPage() {
+      if (pageNum >= pdfDoc.numPages) {
+        return;
+      }
+      pageNum++;
+      queueRenderPage(pageNum);
+    }
+    document.getElementById('pdf-next-aa39db95').addEventListener('click', onNextPage);
+
+    
+
+    pdfjsLib.getDocument(url).promise.then(function(pdfDoc_) {
+      pdfDoc = pdfDoc_;
+      var numPages = pdfDoc.numPages;
+      document.getElementById('pdf-pagecount-aa39db95').textContent = numPages;
+
+      
+      if(pageNum > numPages) {
+        pageNum = numPages
+      }
+
+      
+      renderPage(pageNum);
+    });
+    })();
+</script>
+</p>
+<h2 id="33-multi-frame-centerformer">3.3 Multi-frame CenterFormer</h2>
+<p>Multi-frame is commonly used in 3D detection to improve performance. Current CNN-based detectors cannot effectively fuse features from a fast-moving object, while the transformer structure is more suitable for the fusion due to the attention mechanism. To further explore the potential of CenterFormer, we propose a multi-frame feature fusing method using the cross-attention transformer. As shown in Figure 2, we process each frame individually using the same backbone network. The last BEV feature of the previous frames is transformed to current coordinates and fused with the current BEV feature in both the center head and cross-attention layer. Due to object movements, the center of an object may shift in different frames. Since we only need to predict the center in the current frame, we use a spatial-aware fusion in the center head to alleviate the misalignment error. As shown in Figure 4, the spatial-aware module uses a similar spatial attention layer as CBAM [45] to calculate pixel-wise attention based on the current BEV feature. We concatenate the current BEV feature and weighted previous BEV feature and use an additional convolution layer to fuse them together. We also add the time embedding to the BEV features based on their relative time. Finally, we feed the output fused features to the center head to predict the center candidates. In the cross-attention layer, we use the location of the center proposal to find the corresponding features in the aligned previous frames. The extracted features will be added to the attending keys. Since our normal cross-attention design uses features in a small window close to the center location, it has limited learnability if the object is out of the window area due to fast movement. Meanwhile, our deformable cross-attention is able to model any level of movement and is more suitable for the long time-range case. Because our multi-frame model only needs the final BEV feature of the previous frame, it is easy to be deployed to the online prediction by saving the BEV feature in a memory bank.
+<div class="embed-pdf-container" id="embed-pdf-container-23f3d0d9">
+    <div class="pdf-loadingWrapper" id="pdf-loadingWrapper-23f3d0d9">
+        <div class="pdf-loading" id="pdf-loading-23f3d0d9"></div>
+    </div>
+    <div id="overlayText">
+      <a href="./pic/fig4.pdf" aria-label="Download" download>
+        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18">
+            <path d="M9 13c.3 0 .5-.1.7-.3L15.4 7 14 5.6l-4 4V1H8v8.6l-4-4L2.6 7l5.7 5.7c.2.2.4.3.7.3zm-7 2h14v2H2z" />
+        </svg>
+      </a>
+    </div>
+    <canvas class="pdf-canvas" id="pdf-canvas-23f3d0d9"></canvas>
+</div>
+
+<div class="pdf-paginator" id="pdf-paginator-23f3d0d9">
+    <button id="pdf-prev-23f3d0d9">Previous</button>
+    <button id="pdf-next-23f3d0d9">Next</button> &nbsp; &nbsp;
+    <span>
+      <span class="pdf-pagenum" id="pdf-pagenum-23f3d0d9"></span> / <span class="pdf-pagecount" id="pdf-pagecount-23f3d0d9"></span>
+    </span>
+    <a class="pdf-source" id="pdf-source-23f3d0d9" href="./pic/fig4.pdf">[pdf]</a>
+</div>
+
+<noscript>
+View the PDF file <a class="pdf-source" id="pdf-source-noscript-23f3d0d9" href="./pic/fig4.pdf">here</a>.
+</noscript>
+
+<script type="text/javascript">
+    (function(){
+    var url = '.\/pic\/fig4.pdf';
+
+    var hidePaginator = "" === "true";
+    var hideLoader = "" === "true";
+    var selectedPageNum = parseInt("") || 1;
+
+
+    var showSource = "" === "true";
+    var pageSource = document.getElementById("pdf-source-23f3d0d9");
+
+    
+    function showSourcef() {
+        if(showSource) {
+            pageSource.style.display = 'inline';
+        } else {
+            pageSource.style.display = 'none';
+        }
+    }
+
+    
+    showSourcef();
+
+
+    
+    var pdfjsLib = window['pdfjs-dist/build/pdf'];
+
+    
+    if (pdfjsLib.GlobalWorkerOptions.workerSrc == '')
+      pdfjsLib.GlobalWorkerOptions.workerSrc = "http:\/\/localhost:1313\/" + 'js/pdf-js/build/pdf.worker.js';
+
+    
+    var pdfDoc = null,
+        pageNum = selectedPageNum,
+        pageRendering = false,
+        pageNumPending = null,
+        scale = 3,
+        canvas = document.getElementById('pdf-canvas-23f3d0d9'),
+        ctx = canvas.getContext('2d'),
+        paginator = document.getElementById("pdf-paginator-23f3d0d9"),
+        loadingWrapper = document.getElementById('pdf-loadingWrapper-23f3d0d9');
+
+
+    
+    showPaginator();
+    showLoader();
+
+    
+
+    function renderPage(num) {
+      pageRendering = true;
+      
+      pdfDoc.getPage(num).then(function(page) {
+        var viewport = page.getViewport({scale: scale});
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        
+        var renderContext = {
+          canvasContext: ctx,
+          viewport: viewport
+        };
+        var renderTask = page.render(renderContext);
+
+        
+        renderTask.promise.then(function() {
+          pageRendering = false;
+          showContent();
+
+          if (pageNumPending !== null) {
+            
+            renderPage(pageNumPending);
+            pageNumPending = null;
+          }
+        });
+      });
+
+      
+      document.getElementById('pdf-pagenum-23f3d0d9').textContent = num;
+    }
+
+    
+
+    function showContent() {
+      loadingWrapper.style.display = 'none';
+      canvas.style.display = 'block';
+    }
+
+    
+
+    function showLoader() {
+      if(hideLoader) return
+      loadingWrapper.style.display = 'flex';
+      canvas.style.display = 'none';
+    }
+
+    
+
+    function showPaginator() {
+      if(hidePaginator) return
+      paginator.style.display = 'block';
+    }
+
+    
+
+    function queueRenderPage(num) {
+      if (pageRendering) {
+        pageNumPending = num;
+      } else {
+        renderPage(num);
+      }
+    }
+
+    
+
+    function onPrevPage() {
+      if (pageNum <= 1) {
+        return;
+      }
+      pageNum--;
+      queueRenderPage(pageNum);
+    }
+    document.getElementById('pdf-prev-23f3d0d9').addEventListener('click', onPrevPage);
+
+    
+
+    function onNextPage() {
+      if (pageNum >= pdfDoc.numPages) {
+        return;
+      }
+      pageNum++;
+      queueRenderPage(pageNum);
+    }
+    document.getElementById('pdf-next-23f3d0d9').addEventListener('click', onNextPage);
+
+    
+
+    pdfjsLib.getDocument(url).promise.then(function(pdfDoc_) {
+      pdfDoc = pdfDoc_;
+      var numPages = pdfDoc.numPages;
+      document.getElementById('pdf-pagecount-23f3d0d9').textContent = numPages;
+
+      
+      if(pageNum > numPages) {
+        pageNum = numPages
+      }
+
+      
+      renderPage(pageNum);
+    });
+    })();
+</script>
+</p>
+<h2 id="34-loss-functions">3.4 Loss Functions</h2>
+<p>Besides the general classification and regression loss functions, we add two additional loss functions to better account for the center-based object detection. First, inspired by the design in CIA-SSD [47], we move the IoU-aware confidence rectification module from the second stage of other methods to the regression head. More specifically, we predict an IoU score iou for each bounding box proposal, which is supervised with the highest IoU between the prediction and all ground truth annotations in a smooth L1 loss. During the evaluation, we rectify the confidence score with the predicted IoU score using $\alpha^{\prime} = \alpha ∗ iou^β$, where $\alpha$ is the confidence score and $\beta$ is a hyperparameter controlling the degree of rectification. Second, similar to [42, 13], we also add a corner heatmap head alongside the center heatmap head as auxiliary supervision. For each box, we generate the corner heatmap of four bounding box edge centers and the object center using the same methods to draw the center heatmap, except that the Gaussian radius is half size. During training, we supervise the corner prediction with an MSE loss on the region where the ground truth heatmap score is above 0. The final loss used in our model is the weighted combination of the following four parts: $\mathcal{L} = w_{hm}\mathcal{L}_{hm} + w_{reg}\mathcal{L}_{reg} + w_{iou}\mathcal{L}_{iou} + w_{cor}\mathcal{L}_{cor}$. We use focal loss [21] and $L1$ loss for the heatmap classification and box regression. The weights of heatmap classification loss, box regression loss, $IoU$ rectification loss, and corner classification loss are [1, 2, 1, 1], respectively, in our experiment.</p>
+<h1 id="4-experiments">4 Experiments</h1>
+<p>We present our experimental results on two large-scale LiDAR object detection benchmarks: Waymo Open Dataset [38] and nuScenes dataset [3]. Due to page limitation, the experimental results on the nuScenes dataset, more analysis, as well as the details on the choice of network parameters and additional visualizations, are included in the supplementary material.</p>
+<h2 id="41-dataset">4.1 Dataset</h2>
+<p><strong>Waymo Open Dataset (WOD)</strong> is a large-scale LiDAR point cloud dataset for the autonomous driving environment. It contains 798, 202, and 150 sequences for training, validation, and testing, respectively. Each sequence is 20 seconds long, captured by a 10 FPS LiDAR sensor with 64 lines in 360°. WOD provides bounding box annotations for three classes: vehicles, pedestrians, and cyclists. The evaluation metrics used in WOD are mean average precision (mAP) and mAP weighted by heading accuracy (mAPH). Each object is categorized into two levels of difficulty, where LEVEL_1 (L1) denotes that there are more than 5 points on the object and LEVEL_2 (L2) denotes that there are 1 to 5 points on the object or the object is manually labeled as L2. The evaluation of the primary metric mAPH L2 includes both L1 and L2 objects. We set the range of the 3D voxel space as [−75.2m, 75.2m] for the X and Y axes, and [−2m, 4m] for the Z axis. The size of each voxel is set to (0.1m, 0.1m, 0.15m).</p>
+<h2 id="42-implementation-details">4.2 Implementation Details</h2>
+<p>We follow the same VoxelNet backbone network design as [61, 53, 34]. In our center proposal network, we process the output of the BEV feature into three scales through one upsample layer and one downsample layer. We set the transformer layer/head numbers to 3/4 when using the normal cross-attention, and to 2/6 when using the deformable cross-attention. During evaluation, we use the NMS IoU threshold of [0.8, 0.55, 0.55] and β = [1, 1, 4] for vehicle, pedestrian, and cyclist. For our 8 frames model, we use β = [1, 1, 1] to get a better result for the cyclist. We also increase the center proposal number N to 1000 in evaluation. We trained our model using the AdamW optimizer with the one-cycle policy. We trained the single-frame and multi-frame models on 8 Nvidia A100 GPUs with batch sizes of 32 and 16. Due to the memory limitation, 4 frames and 8 frames are first split into two 2-frame and 4-frame mini-batches. The points from frames in each mini-batch will be first concatenated together. Hence, our multi-frame model only needs to fuse two BEV features together. We apply the object copy &amp; paste augmentation during training with the same fade strategy in [41]. More details are included in the supplementary material.
+<div class="embed-pdf-container" id="embed-pdf-container-9a561d56">
+    <div class="pdf-loadingWrapper" id="pdf-loadingWrapper-9a561d56">
+        <div class="pdf-loading" id="pdf-loading-9a561d56"></div>
+    </div>
+    <div id="overlayText">
+      <a href="./pic/table1.pdf" aria-label="Download" download>
+        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18">
+            <path d="M9 13c.3 0 .5-.1.7-.3L15.4 7 14 5.6l-4 4V1H8v8.6l-4-4L2.6 7l5.7 5.7c.2.2.4.3.7.3zm-7 2h14v2H2z" />
+        </svg>
+      </a>
+    </div>
+    <canvas class="pdf-canvas" id="pdf-canvas-9a561d56"></canvas>
+</div>
+
+<div class="pdf-paginator" id="pdf-paginator-9a561d56">
+    <button id="pdf-prev-9a561d56">Previous</button>
+    <button id="pdf-next-9a561d56">Next</button> &nbsp; &nbsp;
+    <span>
+      <span class="pdf-pagenum" id="pdf-pagenum-9a561d56"></span> / <span class="pdf-pagecount" id="pdf-pagecount-9a561d56"></span>
+    </span>
+    <a class="pdf-source" id="pdf-source-9a561d56" href="./pic/table1.pdf">[pdf]</a>
+</div>
+
+<noscript>
+View the PDF file <a class="pdf-source" id="pdf-source-noscript-9a561d56" href="./pic/table1.pdf">here</a>.
+</noscript>
+
+<script type="text/javascript">
+    (function(){
+    var url = '.\/pic\/table1.pdf';
+
+    var hidePaginator = "" === "true";
+    var hideLoader = "" === "true";
+    var selectedPageNum = parseInt("") || 1;
+
+
+    var showSource = "" === "true";
+    var pageSource = document.getElementById("pdf-source-9a561d56");
+
+    
+    function showSourcef() {
+        if(showSource) {
+            pageSource.style.display = 'inline';
+        } else {
+            pageSource.style.display = 'none';
+        }
+    }
+
+    
+    showSourcef();
+
+
+    
+    var pdfjsLib = window['pdfjs-dist/build/pdf'];
+
+    
+    if (pdfjsLib.GlobalWorkerOptions.workerSrc == '')
+      pdfjsLib.GlobalWorkerOptions.workerSrc = "http:\/\/localhost:1313\/" + 'js/pdf-js/build/pdf.worker.js';
+
+    
+    var pdfDoc = null,
+        pageNum = selectedPageNum,
+        pageRendering = false,
+        pageNumPending = null,
+        scale = 3,
+        canvas = document.getElementById('pdf-canvas-9a561d56'),
+        ctx = canvas.getContext('2d'),
+        paginator = document.getElementById("pdf-paginator-9a561d56"),
+        loadingWrapper = document.getElementById('pdf-loadingWrapper-9a561d56');
+
+
+    
+    showPaginator();
+    showLoader();
+
+    
+
+    function renderPage(num) {
+      pageRendering = true;
+      
+      pdfDoc.getPage(num).then(function(page) {
+        var viewport = page.getViewport({scale: scale});
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        
+        var renderContext = {
+          canvasContext: ctx,
+          viewport: viewport
+        };
+        var renderTask = page.render(renderContext);
+
+        
+        renderTask.promise.then(function() {
+          pageRendering = false;
+          showContent();
+
+          if (pageNumPending !== null) {
+            
+            renderPage(pageNumPending);
+            pageNumPending = null;
+          }
+        });
+      });
+
+      
+      document.getElementById('pdf-pagenum-9a561d56').textContent = num;
+    }
+
+    
+
+    function showContent() {
+      loadingWrapper.style.display = 'none';
+      canvas.style.display = 'block';
+    }
+
+    
+
+    function showLoader() {
+      if(hideLoader) return
+      loadingWrapper.style.display = 'flex';
+      canvas.style.display = 'none';
+    }
+
+    
+
+    function showPaginator() {
+      if(hidePaginator) return
+      paginator.style.display = 'block';
+    }
+
+    
+
+    function queueRenderPage(num) {
+      if (pageRendering) {
+        pageNumPending = num;
+      } else {
+        renderPage(num);
+      }
+    }
+
+    
+
+    function onPrevPage() {
+      if (pageNum <= 1) {
+        return;
+      }
+      pageNum--;
+      queueRenderPage(pageNum);
+    }
+    document.getElementById('pdf-prev-9a561d56').addEventListener('click', onPrevPage);
+
+    
+
+    function onNextPage() {
+      if (pageNum >= pdfDoc.numPages) {
+        return;
+      }
+      pageNum++;
+      queueRenderPage(pageNum);
+    }
+    document.getElementById('pdf-next-9a561d56').addEventListener('click', onNextPage);
+
+    
+
+    pdfjsLib.getDocument(url).promise.then(function(pdfDoc_) {
+      pdfDoc = pdfDoc_;
+      var numPages = pdfDoc.numPages;
+      document.getElementById('pdf-pagecount-9a561d56').textContent = numPages;
+
+      
+      if(pageNum > numPages) {
+        pageNum = numPages
+      }
+
+      
+      renderPage(pageNum);
+    });
+    })();
+</script>
+</p>
+<h2 id="43-object-detection-results">4.3 Object Detection Results</h2>
+<p>In Table 1, we show the results on the validation set. The anchor-free center-based method CenterPoint achieves better performance than the anchor-based methods. PVRCNN++ is the best anchor-based method so far, yet shows weak performance on small objects. This demonstrates the limitation of using manually designed anchors for the detection of objects that have large size variations. Our single-frame model outperforms CenterPoint by 1.7%. Using a multi-frame model can significantly increase the mAPH performance. Our 2/4/8 frames model reaches the mAPH of 72.8%, 73.2%, and 73.7%, respectively, becoming the new state-of-the-art. The pedestrian class benefits most from the multi-frame since the pedestrian point cloud suffers most from occlusion and noise, as well as its small size. The overall better performance verifies the effectiveness of our proposed transformer model. In Table 2, we show the single model results on the test set. The prediction result is submitted to the online server for evaluation. Our method outperforms all the previous methods by a large margin. The results on vehicle and pedestrian classes have significant improvements (+3.8% and +3.1% on L2 mAPH) as a result of the long-range contextual information learning of the transformer.</p>
+<p>To fairly compare with more recent methods [25, 6, 24, 33] that train the model and report the result on only the vehicle class, we train the single-frame CenterFormer only on the vehicle class too. We show the results in Table 3. As shown in the table, even with the simplest design, CenterFormer outperforms both the recent transformer-based methods and CNN-based baselines.
+<div class="embed-pdf-container" id="embed-pdf-container-e0777b59">
+    <div class="pdf-loadingWrapper" id="pdf-loadingWrapper-e0777b59">
+        <div class="pdf-loading" id="pdf-loading-e0777b59"></div>
+    </div>
+    <div id="overlayText">
+      <a href="./pic/table2.pdf" aria-label="Download" download>
+        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18">
+            <path d="M9 13c.3 0 .5-.1.7-.3L15.4 7 14 5.6l-4 4V1H8v8.6l-4-4L2.6 7l5.7 5.7c.2.2.4.3.7.3zm-7 2h14v2H2z" />
+        </svg>
+      </a>
+    </div>
+    <canvas class="pdf-canvas" id="pdf-canvas-e0777b59"></canvas>
+</div>
+
+<div class="pdf-paginator" id="pdf-paginator-e0777b59">
+    <button id="pdf-prev-e0777b59">Previous</button>
+    <button id="pdf-next-e0777b59">Next</button> &nbsp; &nbsp;
+    <span>
+      <span class="pdf-pagenum" id="pdf-pagenum-e0777b59"></span> / <span class="pdf-pagecount" id="pdf-pagecount-e0777b59"></span>
+    </span>
+    <a class="pdf-source" id="pdf-source-e0777b59" href="./pic/table2.pdf">[pdf]</a>
+</div>
+
+<noscript>
+View the PDF file <a class="pdf-source" id="pdf-source-noscript-e0777b59" href="./pic/table2.pdf">here</a>.
+</noscript>
+
+<script type="text/javascript">
+    (function(){
+    var url = '.\/pic\/table2.pdf';
+
+    var hidePaginator = "" === "true";
+    var hideLoader = "" === "true";
+    var selectedPageNum = parseInt("") || 1;
+
+
+    var showSource = "" === "true";
+    var pageSource = document.getElementById("pdf-source-e0777b59");
+
+    
+    function showSourcef() {
+        if(showSource) {
+            pageSource.style.display = 'inline';
+        } else {
+            pageSource.style.display = 'none';
+        }
+    }
+
+    
+    showSourcef();
+
+
+    
+    var pdfjsLib = window['pdfjs-dist/build/pdf'];
+
+    
+    if (pdfjsLib.GlobalWorkerOptions.workerSrc == '')
+      pdfjsLib.GlobalWorkerOptions.workerSrc = "http:\/\/localhost:1313\/" + 'js/pdf-js/build/pdf.worker.js';
+
+    
+    var pdfDoc = null,
+        pageNum = selectedPageNum,
+        pageRendering = false,
+        pageNumPending = null,
+        scale = 3,
+        canvas = document.getElementById('pdf-canvas-e0777b59'),
+        ctx = canvas.getContext('2d'),
+        paginator = document.getElementById("pdf-paginator-e0777b59"),
+        loadingWrapper = document.getElementById('pdf-loadingWrapper-e0777b59');
+
+
+    
+    showPaginator();
+    showLoader();
+
+    
+
+    function renderPage(num) {
+      pageRendering = true;
+      
+      pdfDoc.getPage(num).then(function(page) {
+        var viewport = page.getViewport({scale: scale});
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        
+        var renderContext = {
+          canvasContext: ctx,
+          viewport: viewport
+        };
+        var renderTask = page.render(renderContext);
+
+        
+        renderTask.promise.then(function() {
+          pageRendering = false;
+          showContent();
+
+          if (pageNumPending !== null) {
+            
+            renderPage(pageNumPending);
+            pageNumPending = null;
+          }
+        });
+      });
+
+      
+      document.getElementById('pdf-pagenum-e0777b59').textContent = num;
+    }
+
+    
+
+    function showContent() {
+      loadingWrapper.style.display = 'none';
+      canvas.style.display = 'block';
+    }
+
+    
+
+    function showLoader() {
+      if(hideLoader) return
+      loadingWrapper.style.display = 'flex';
+      canvas.style.display = 'none';
+    }
+
+    
+
+    function showPaginator() {
+      if(hidePaginator) return
+      paginator.style.display = 'block';
+    }
+
+    
+
+    function queueRenderPage(num) {
+      if (pageRendering) {
+        pageNumPending = num;
+      } else {
+        renderPage(num);
+      }
+    }
+
+    
+
+    function onPrevPage() {
+      if (pageNum <= 1) {
+        return;
+      }
+      pageNum--;
+      queueRenderPage(pageNum);
+    }
+    document.getElementById('pdf-prev-e0777b59').addEventListener('click', onPrevPage);
+
+    
+
+    function onNextPage() {
+      if (pageNum >= pdfDoc.numPages) {
+        return;
+      }
+      pageNum++;
+      queueRenderPage(pageNum);
+    }
+    document.getElementById('pdf-next-e0777b59').addEventListener('click', onNextPage);
+
+    
+
+    pdfjsLib.getDocument(url).promise.then(function(pdfDoc_) {
+      pdfDoc = pdfDoc_;
+      var numPages = pdfDoc.numPages;
+      document.getElementById('pdf-pagecount-e0777b59').textContent = numPages;
+
+      
+      if(pageNum > numPages) {
+        pageNum = numPages
+      }
+
+      
+      renderPage(pageNum);
+    });
+    })();
+</script>
+
+<div class="embed-pdf-container" id="embed-pdf-container-483fec1c">
+    <div class="pdf-loadingWrapper" id="pdf-loadingWrapper-483fec1c">
+        <div class="pdf-loading" id="pdf-loading-483fec1c"></div>
+    </div>
+    <div id="overlayText">
+      <a href="./pic/table3.pdf" aria-label="Download" download>
+        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18">
+            <path d="M9 13c.3 0 .5-.1.7-.3L15.4 7 14 5.6l-4 4V1H8v8.6l-4-4L2.6 7l5.7 5.7c.2.2.4.3.7.3zm-7 2h14v2H2z" />
+        </svg>
+      </a>
+    </div>
+    <canvas class="pdf-canvas" id="pdf-canvas-483fec1c"></canvas>
+</div>
+
+<div class="pdf-paginator" id="pdf-paginator-483fec1c">
+    <button id="pdf-prev-483fec1c">Previous</button>
+    <button id="pdf-next-483fec1c">Next</button> &nbsp; &nbsp;
+    <span>
+      <span class="pdf-pagenum" id="pdf-pagenum-483fec1c"></span> / <span class="pdf-pagecount" id="pdf-pagecount-483fec1c"></span>
+    </span>
+    <a class="pdf-source" id="pdf-source-483fec1c" href="./pic/table3.pdf">[pdf]</a>
+</div>
+
+<noscript>
+View the PDF file <a class="pdf-source" id="pdf-source-noscript-483fec1c" href="./pic/table3.pdf">here</a>.
+</noscript>
+
+<script type="text/javascript">
+    (function(){
+    var url = '.\/pic\/table3.pdf';
+
+    var hidePaginator = "" === "true";
+    var hideLoader = "" === "true";
+    var selectedPageNum = parseInt("") || 1;
+
+
+    var showSource = "" === "true";
+    var pageSource = document.getElementById("pdf-source-483fec1c");
+
+    
+    function showSourcef() {
+        if(showSource) {
+            pageSource.style.display = 'inline';
+        } else {
+            pageSource.style.display = 'none';
+        }
+    }
+
+    
+    showSourcef();
+
+
+    
+    var pdfjsLib = window['pdfjs-dist/build/pdf'];
+
+    
+    if (pdfjsLib.GlobalWorkerOptions.workerSrc == '')
+      pdfjsLib.GlobalWorkerOptions.workerSrc = "http:\/\/localhost:1313\/" + 'js/pdf-js/build/pdf.worker.js';
+
+    
+    var pdfDoc = null,
+        pageNum = selectedPageNum,
+        pageRendering = false,
+        pageNumPending = null,
+        scale = 3,
+        canvas = document.getElementById('pdf-canvas-483fec1c'),
+        ctx = canvas.getContext('2d'),
+        paginator = document.getElementById("pdf-paginator-483fec1c"),
+        loadingWrapper = document.getElementById('pdf-loadingWrapper-483fec1c');
+
+
+    
+    showPaginator();
+    showLoader();
+
+    
+
+    function renderPage(num) {
+      pageRendering = true;
+      
+      pdfDoc.getPage(num).then(function(page) {
+        var viewport = page.getViewport({scale: scale});
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        
+        var renderContext = {
+          canvasContext: ctx,
+          viewport: viewport
+        };
+        var renderTask = page.render(renderContext);
+
+        
+        renderTask.promise.then(function() {
+          pageRendering = false;
+          showContent();
+
+          if (pageNumPending !== null) {
+            
+            renderPage(pageNumPending);
+            pageNumPending = null;
+          }
+        });
+      });
+
+      
+      document.getElementById('pdf-pagenum-483fec1c').textContent = num;
+    }
+
+    
+
+    function showContent() {
+      loadingWrapper.style.display = 'none';
+      canvas.style.display = 'block';
+    }
+
+    
+
+    function showLoader() {
+      if(hideLoader) return
+      loadingWrapper.style.display = 'flex';
+      canvas.style.display = 'none';
+    }
+
+    
+
+    function showPaginator() {
+      if(hidePaginator) return
+      paginator.style.display = 'block';
+    }
+
+    
+
+    function queueRenderPage(num) {
+      if (pageRendering) {
+        pageNumPending = num;
+      } else {
+        renderPage(num);
+      }
+    }
+
+    
+
+    function onPrevPage() {
+      if (pageNum <= 1) {
+        return;
+      }
+      pageNum--;
+      queueRenderPage(pageNum);
+    }
+    document.getElementById('pdf-prev-483fec1c').addEventListener('click', onPrevPage);
+
+    
+
+    function onNextPage() {
+      if (pageNum >= pdfDoc.numPages) {
+        return;
+      }
+      pageNum++;
+      queueRenderPage(pageNum);
+    }
+    document.getElementById('pdf-next-483fec1c').addEventListener('click', onNextPage);
+
+    
+
+    pdfjsLib.getDocument(url).promise.then(function(pdfDoc_) {
+      pdfDoc = pdfDoc_;
+      var numPages = pdfDoc.numPages;
+      document.getElementById('pdf-pagecount-483fec1c').textContent = numPages;
+
+      
+      if(pageNum > numPages) {
+        pageNum = numPages
+      }
+
+      
+      renderPage(pageNum);
+    });
+    })();
+</script>
+</p>
+<h1 id="44-ablation-study">4.4 Ablation Study</h1>
+<p>In Table 4, we investigate the effect of each added component in our method on a single frame. We use the previous center-based method as the baseline. After changing the RPN to multi-scale CPN and separating the detection into the center proposal and box regression, our method reaches a similar performance despite flattening the regression head to 1D. The transformer self-attention layer and cross-attention layer can both improve the results, and when used together, the result reaches 67.0%. This indicates that the self-attention layer and the cross-attention layer learn features separately. Corner auxiliary supervision can additionally improve the result by 0.1%. On the other hand, deformable cross-attention achieves a better result of 67.3%. When trained with IoU rectification, the results get a significant boost to 68.7% and 68.3% for the models using cross-attention and deformable cross-attention. The fade augmentation strategy can further improve the result by 0.4% and 0.7%. This is because the model can adjust to the real data distribution at the end of the training.
+<div class="embed-pdf-container" id="embed-pdf-container-af0f35c5">
+    <div class="pdf-loadingWrapper" id="pdf-loadingWrapper-af0f35c5">
+        <div class="pdf-loading" id="pdf-loading-af0f35c5"></div>
+    </div>
+    <div id="overlayText">
+      <a href="./pic/table4.pdf" aria-label="Download" download>
+        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18">
+            <path d="M9 13c.3 0 .5-.1.7-.3L15.4 7 14 5.6l-4 4V1H8v8.6l-4-4L2.6 7l5.7 5.7c.2.2.4.3.7.3zm-7 2h14v2H2z" />
+        </svg>
+      </a>
+    </div>
+    <canvas class="pdf-canvas" id="pdf-canvas-af0f35c5"></canvas>
+</div>
+
+<div class="pdf-paginator" id="pdf-paginator-af0f35c5">
+    <button id="pdf-prev-af0f35c5">Previous</button>
+    <button id="pdf-next-af0f35c5">Next</button> &nbsp; &nbsp;
+    <span>
+      <span class="pdf-pagenum" id="pdf-pagenum-af0f35c5"></span> / <span class="pdf-pagecount" id="pdf-pagecount-af0f35c5"></span>
+    </span>
+    <a class="pdf-source" id="pdf-source-af0f35c5" href="./pic/table4.pdf">[pdf]</a>
+</div>
+
+<noscript>
+View the PDF file <a class="pdf-source" id="pdf-source-noscript-af0f35c5" href="./pic/table4.pdf">here</a>.
+</noscript>
+
+<script type="text/javascript">
+    (function(){
+    var url = '.\/pic\/table4.pdf';
+
+    var hidePaginator = "" === "true";
+    var hideLoader = "" === "true";
+    var selectedPageNum = parseInt("") || 1;
+
+
+    var showSource = "" === "true";
+    var pageSource = document.getElementById("pdf-source-af0f35c5");
+
+    
+    function showSourcef() {
+        if(showSource) {
+            pageSource.style.display = 'inline';
+        } else {
+            pageSource.style.display = 'none';
+        }
+    }
+
+    
+    showSourcef();
+
+
+    
+    var pdfjsLib = window['pdfjs-dist/build/pdf'];
+
+    
+    if (pdfjsLib.GlobalWorkerOptions.workerSrc == '')
+      pdfjsLib.GlobalWorkerOptions.workerSrc = "http:\/\/localhost:1313\/" + 'js/pdf-js/build/pdf.worker.js';
+
+    
+    var pdfDoc = null,
+        pageNum = selectedPageNum,
+        pageRendering = false,
+        pageNumPending = null,
+        scale = 3,
+        canvas = document.getElementById('pdf-canvas-af0f35c5'),
+        ctx = canvas.getContext('2d'),
+        paginator = document.getElementById("pdf-paginator-af0f35c5"),
+        loadingWrapper = document.getElementById('pdf-loadingWrapper-af0f35c5');
+
+
+    
+    showPaginator();
+    showLoader();
+
+    
+
+    function renderPage(num) {
+      pageRendering = true;
+      
+      pdfDoc.getPage(num).then(function(page) {
+        var viewport = page.getViewport({scale: scale});
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        
+        var renderContext = {
+          canvasContext: ctx,
+          viewport: viewport
+        };
+        var renderTask = page.render(renderContext);
+
+        
+        renderTask.promise.then(function() {
+          pageRendering = false;
+          showContent();
+
+          if (pageNumPending !== null) {
+            
+            renderPage(pageNumPending);
+            pageNumPending = null;
+          }
+        });
+      });
+
+      
+      document.getElementById('pdf-pagenum-af0f35c5').textContent = num;
+    }
+
+    
+
+    function showContent() {
+      loadingWrapper.style.display = 'none';
+      canvas.style.display = 'block';
+    }
+
+    
+
+    function showLoader() {
+      if(hideLoader) return
+      loadingWrapper.style.display = 'flex';
+      canvas.style.display = 'none';
+    }
+
+    
+
+    function showPaginator() {
+      if(hidePaginator) return
+      paginator.style.display = 'block';
+    }
+
+    
+
+    function queueRenderPage(num) {
+      if (pageRendering) {
+        pageNumPending = num;
+      } else {
+        renderPage(num);
+      }
+    }
+
+    
+
+    function onPrevPage() {
+      if (pageNum <= 1) {
+        return;
+      }
+      pageNum--;
+      queueRenderPage(pageNum);
+    }
+    document.getElementById('pdf-prev-af0f35c5').addEventListener('click', onPrevPage);
+
+    
+
+    function onNextPage() {
+      if (pageNum >= pdfDoc.numPages) {
+        return;
+      }
+      pageNum++;
+      queueRenderPage(pageNum);
+    }
+    document.getElementById('pdf-next-af0f35c5').addEventListener('click', onNextPage);
+
+    
+
+    pdfjsLib.getDocument(url).promise.then(function(pdfDoc_) {
+      pdfDoc = pdfDoc_;
+      var numPages = pdfDoc.numPages;
+      document.getElementById('pdf-pagecount-af0f35c5').textContent = numPages;
+
+      
+      if(pageNum > numPages) {
+        pageNum = numPages
+      }
+
+      
+      renderPage(pageNum);
+    });
+    })();
+</script>
+</p>
+<h2 id="45-analysis">4.5 Analysis</h2>
+<p>Comparison with Deformable DETR Deformable DETR [64] aims to speed up the learning speed and reduce the computation cost in the DETR structure. Compared to Deformable DETR, our method has three major differences. First, we completely remove the transformer encoder to enable a larger encoded feature map. Second, we use the center feature rather than the learnable parameter as the query embedding for the transformer decoder. Experiments show that using the center feature as the initial query embedding outperforms the parametric embedding by 1.5% mAPH. This is because the center feature already contains object-level information, which makes it easier to learn pairwise attentions. Third, we use a similar training strategy as [53] rather than the end-to-end set matching training strategy. The set matching training is known for being hard to converge. Since we already have an initial center proposal, we can limit the network to learn only when the proposal is close to the ground truth annotation to speed up the training. Experiments show that if we use the same set matching training strategy in DETR, the mAPH result is 46.3%, which is more than 20% lower than our current training method. Visualization of the learned attention The visualizations of the learned self- and cross-attention are illustrated in Figure 5. The self-attention learning mainly focuses on the features of the same class or nearby objects that have the same attributes. For instance, the vehicles on the same line or in the same parking area will have higher attention weight. The offsets learned by the deformable attention layer vary among different scales. The offsets in two lower scales mostly lead to the keypoints inside or around the object, whereas the offsets in the higher scale can sample far-range features.
+<div class="embed-pdf-container" id="embed-pdf-container-e1422475">
+    <div class="pdf-loadingWrapper" id="pdf-loadingWrapper-e1422475">
+        <div class="pdf-loading" id="pdf-loading-e1422475"></div>
+    </div>
+    <div id="overlayText">
+      <a href="./pic/fig5.pdf" aria-label="Download" download>
+        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18">
+            <path d="M9 13c.3 0 .5-.1.7-.3L15.4 7 14 5.6l-4 4V1H8v8.6l-4-4L2.6 7l5.7 5.7c.2.2.4.3.7.3zm-7 2h14v2H2z" />
+        </svg>
+      </a>
+    </div>
+    <canvas class="pdf-canvas" id="pdf-canvas-e1422475"></canvas>
+</div>
+
+<div class="pdf-paginator" id="pdf-paginator-e1422475">
+    <button id="pdf-prev-e1422475">Previous</button>
+    <button id="pdf-next-e1422475">Next</button> &nbsp; &nbsp;
+    <span>
+      <span class="pdf-pagenum" id="pdf-pagenum-e1422475"></span> / <span class="pdf-pagecount" id="pdf-pagecount-e1422475"></span>
+    </span>
+    <a class="pdf-source" id="pdf-source-e1422475" href="./pic/fig5.pdf">[pdf]</a>
+</div>
+
+<noscript>
+View the PDF file <a class="pdf-source" id="pdf-source-noscript-e1422475" href="./pic/fig5.pdf">here</a>.
+</noscript>
+
+<script type="text/javascript">
+    (function(){
+    var url = '.\/pic\/fig5.pdf';
+
+    var hidePaginator = "" === "true";
+    var hideLoader = "" === "true";
+    var selectedPageNum = parseInt("") || 1;
+
+
+    var showSource = "" === "true";
+    var pageSource = document.getElementById("pdf-source-e1422475");
+
+    
+    function showSourcef() {
+        if(showSource) {
+            pageSource.style.display = 'inline';
+        } else {
+            pageSource.style.display = 'none';
+        }
+    }
+
+    
+    showSourcef();
+
+
+    
+    var pdfjsLib = window['pdfjs-dist/build/pdf'];
+
+    
+    if (pdfjsLib.GlobalWorkerOptions.workerSrc == '')
+      pdfjsLib.GlobalWorkerOptions.workerSrc = "http:\/\/localhost:1313\/" + 'js/pdf-js/build/pdf.worker.js';
+
+    
+    var pdfDoc = null,
+        pageNum = selectedPageNum,
+        pageRendering = false,
+        pageNumPending = null,
+        scale = 3,
+        canvas = document.getElementById('pdf-canvas-e1422475'),
+        ctx = canvas.getContext('2d'),
+        paginator = document.getElementById("pdf-paginator-e1422475"),
+        loadingWrapper = document.getElementById('pdf-loadingWrapper-e1422475');
+
+
+    
+    showPaginator();
+    showLoader();
+
+    
+
+    function renderPage(num) {
+      pageRendering = true;
+      
+      pdfDoc.getPage(num).then(function(page) {
+        var viewport = page.getViewport({scale: scale});
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        
+        var renderContext = {
+          canvasContext: ctx,
+          viewport: viewport
+        };
+        var renderTask = page.render(renderContext);
+
+        
+        renderTask.promise.then(function() {
+          pageRendering = false;
+          showContent();
+
+          if (pageNumPending !== null) {
+            
+            renderPage(pageNumPending);
+            pageNumPending = null;
+          }
+        });
+      });
+
+      
+      document.getElementById('pdf-pagenum-e1422475').textContent = num;
+    }
+
+    
+
+    function showContent() {
+      loadingWrapper.style.display = 'none';
+      canvas.style.display = 'block';
+    }
+
+    
+
+    function showLoader() {
+      if(hideLoader) return
+      loadingWrapper.style.display = 'flex';
+      canvas.style.display = 'none';
+    }
+
+    
+
+    function showPaginator() {
+      if(hidePaginator) return
+      paginator.style.display = 'block';
+    }
+
+    
+
+    function queueRenderPage(num) {
+      if (pageRendering) {
+        pageNumPending = num;
+      } else {
+        renderPage(num);
+      }
+    }
+
+    
+
+    function onPrevPage() {
+      if (pageNum <= 1) {
+        return;
+      }
+      pageNum--;
+      queueRenderPage(pageNum);
+    }
+    document.getElementById('pdf-prev-e1422475').addEventListener('click', onPrevPage);
+
+    
+
+    function onNextPage() {
+      if (pageNum >= pdfDoc.numPages) {
+        return;
+      }
+      pageNum++;
+      queueRenderPage(pageNum);
+    }
+    document.getElementById('pdf-next-e1422475').addEventListener('click', onNextPage);
+
+    
+
+    pdfjsLib.getDocument(url).promise.then(function(pdfDoc_) {
+      pdfDoc = pdfDoc_;
+      var numPages = pdfDoc.numPages;
+      document.getElementById('pdf-pagecount-e1422475').textContent = numPages;
+
+      
+      if(pageNum > numPages) {
+        pageNum = numPages
+      }
+
+      
+      renderPage(pageNum);
+    });
+    })();
+</script>
+</p>
+<h1 id="5-conclusion">5 Conclusion</h1>
+<p>In this paper, we propose a novel center-based transformer for 3D object detection. Our method provides a solution to improve the anchor-free 3D object detection network through object-level attention learning. Compared to the DETR-style transformer networks, we use the center feature as the initial query embedding in the transformer decoder to speed up the convergence. We also avoid high computational complexity by focusing the cross-attention learning of each query in a small multi-scale window or a deformable region. Results show that the proposed method outperforms the strong baseline in the Waymo Open Dataset and reaches state-of-the-art performance when extended to multi-frame. We hope our design will inspire more future work in query-based transformers for LiDAR point cloud analysis.</p>
+
+        
+      </section>
+
+      
+
+      
+    </article>
+  </div>
+
+  <div
+    x-data="tocHighlighter()"
+    @scroll.window="debouncedScroll"
+    class="hidden lg:flex lg:flex-col lg:items-end">
+    
+      <nav id="TableOfContents">
+  <ol>
+    <li><a href="#21-lidar-based-3d-object-detection">2.1 LiDAR-based 3D Object Detection</a></li>
+    <li><a href="#22-vision-transformer">2.2 Vision Transformer</a></li>
+    <li><a href="#23-3d-transformer">2.3 3D Transformer</a></li>
+  </ol>
+
+  <ol>
+    <li><a href="#31-preliminaries">3.1 Preliminaries</a></li>
+    <li><a href="#32-center-transformer">3.2 Center Transformer</a></li>
+    <li><a href="#33-multi-frame-centerformer">3.3 Multi-frame CenterFormer</a></li>
+    <li><a href="#34-loss-functions">3.4 Loss Functions</a></li>
+  </ol>
+
+  <ol>
+    <li><a href="#41-dataset">4.1 Dataset</a></li>
+    <li><a href="#42-implementation-details">4.2 Implementation Details</a></li>
+    <li><a href="#43-object-detection-results">4.3 Object Detection Results</a></li>
+  </ol>
+
+  <ol>
+    <li><a href="#45-analysis">4.5 Analysis</a></li>
+  </ol>
+</nav>
+    
+  </div>
+</div>
+
+
+            
+<footer class="flex justify-between items-center gap-2 max-w-[65ch] mx-auto px-4 md:px-0 py-12">
+
+  <div>
+  
+  <p>
+    © 2025 dO.ob&#39;s Blog
+  </p>
+  
+
+  
+  <p class="text-sm">
+    🌱
+    <span class="text-base-content/60">
+      Powered by <a class="hover:underline" href="https://gohugo.io/" target="_blank">Hugo</a> with theme
+      <a class="hover:underline" href="https://github.com/g1eny0ung/hugo-theme-dream" target="_blank">Dream</a>.</span
+    >
+  </p>
+  
+</div>
+
+  <div
+  x-data="{ icons: [
+    { name: 'sunny', status: 'n' },
+    { name: 'moon', status: 'y' },
+    { name: 'desktop', status: 'auto' }
+  ] }"
+  class="flex items-center gap-2 h-[32px] px-2 bg-base-100 border border-base-content/30 rounded-full"
+>
+  <template x-for="icon in icons">
+    <div
+      role="button"
+      tabindex="0"
+      :aria-label="'Select ' + icon.name + ' mode'"
+      class="group inline-flex justify-center items-center p-1 rounded-full cursor-pointer hover:bg-primary"
+      :class="$store.darkMode.icon() === icon.name && 'bg-primary'"
+      @click="$store.darkMode.toggle(icon.status)"
+    >
+      <ion-icon
+        :name="`${icon.name}-outline`"
+        class="group-hover:text-primary-content"
+        :class="$store.darkMode.icon() === icon.name && 'text-primary-content'"
+      >
+      </ion-icon>
+    </div>
+  </template>
+</div>
+
+</footer>
+
+          </div>
+        </div>
+        <div class="back">
+          <div class="container">
+            
+            <div class="max-w-[65ch] mt-8 mx-auto px-4">
+  
+  
+  
+  <div>
+    <div class="mb-4 text-lg font-medium">关于我</div>
+
+    <div class="prose dark:prose-invert">
+      <p>我是一名AI从业者，致力于人工智能和数据驱动行业。</p>
+<p>踏上取经路，比抵达灵山更重要</p>
+
+    </div>
+  </div>
+  <div class="divider divider-vertical"></div>
+  
+  
+
+  
+
+  
+</div>
+
+            
+
+            
+<footer class="flex justify-between items-center gap-2 max-w-[65ch] mx-auto px-4 md:px-0 py-12">
+
+  <div>
+  
+  <p>
+    © 2025 dO.ob&#39;s Blog
+  </p>
+  
+
+  
+  <p class="text-sm">
+    🌱
+    <span class="text-base-content/60">
+      Powered by <a class="hover:underline" href="https://gohugo.io/" target="_blank">Hugo</a> with theme
+      <a class="hover:underline" href="https://github.com/g1eny0ung/hugo-theme-dream" target="_blank">Dream</a>.</span
+    >
+  </p>
+  
+</div>
+
+  <div
+  x-data="{ icons: [
+    { name: 'sunny', status: 'n' },
+    { name: 'moon', status: 'y' },
+    { name: 'desktop', status: 'auto' }
+  ] }"
+  class="flex items-center gap-2 h-[32px] px-2 bg-base-100 border border-base-content/30 rounded-full"
+>
+  <template x-for="icon in icons">
+    <div
+      role="button"
+      tabindex="0"
+      :aria-label="'Select ' + icon.name + ' mode'"
+      class="group inline-flex justify-center items-center p-1 rounded-full cursor-pointer hover:bg-primary"
+      :class="$store.darkMode.icon() === icon.name && 'bg-primary'"
+      @click="$store.darkMode.toggle(icon.status)"
+    >
+      <ion-icon
+        :name="`${icon.name}-outline`"
+        class="group-hover:text-primary-content"
+        :class="$store.darkMode.icon() === icon.name && 'text-primary-content'"
+      >
+      </ion-icon>
+    </div>
+  </template>
+</div>
+
+</footer>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+  window.lightTheme = "emerald"
+  window.darkTheme = "forest"
+</script>
+
+
+
+
+
+<script src="/js/main.js"></script>
+
+    
+
+
+
+
+
+
+
+<script src="/js/toc.js"></script>
+
+
+
+
+
+    
+
+    
+
+    
+
+    
+
+    <script type="module" src="https://cdn.jsdelivr.net/npm/ionicons@7.4.0/dist/ionicons/ionicons.esm.js" integrity="sha256-/IFmi82bIhdYWctu0UddSlJqpnzWm7Vh2C4CM32wF/k=" crossorigin="anonymous"></script>
+    <script nomodule src="https://cdn.jsdelivr.net/npm/ionicons@7.4.0/dist/ionicons/ionicons.js" integrity="sha256-mr7eJMX3VC3F7G32mk4oWp1C6a2tlMYxUdptfT7uKI8=" crossorigin="anonymous"></script>
+  </body>
+</html>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Tags on dO.ob&#39;s Blog</title>
+    <link>http://localhost:1313/tags/</link>
+    <description>Recent content in Tags on dO.ob&#39;s Blog</description>
+    <generator>Hugo</generator>
+    <language>zh-Hans</language>
+    <lastBuildDate>Mon, 26 May 2025 19:54:26 +0800</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Tag1</title>
+      <link>http://localhost:1313/tags/tag1/</link>
+      <pubDate>Mon, 26 May 2025 19:54:26 +0800</pubDate>
+      <guid>http://localhost:1313/tags/tag1/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Tag2</title>
+      <link>http://localhost:1313/tags/tag2/</link>
+      <pubDate>Mon, 26 May 2025 19:54:26 +0800</pubDate>
+      <guid>http://localhost:1313/tags/tag2/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>ONNX</title>
+      <link>http://localhost:1313/tags/onnx/</link>
+      <pubDate>Fri, 23 May 2025 11:43:39 +0800</pubDate>
+      <guid>http://localhost:1313/tags/onnx/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>TensorRT</title>
+      <link>http://localhost:1313/tags/tensorrt/</link>
+      <pubDate>Fri, 23 May 2025 11:43:39 +0800</pubDate>
+      <guid>http://localhost:1313/tags/tensorrt/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>AGI</title>
+      <link>http://localhost:1313/tags/agi/</link>
+      <pubDate>Mon, 14 Apr 2025 22:49:09 +0800</pubDate>
+      <guid>http://localhost:1313/tags/agi/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>LLM</title>
+      <link>http://localhost:1313/tags/llm/</link>
+      <pubDate>Mon, 14 Apr 2025 22:49:09 +0800</pubDate>
+      <guid>http://localhost:1313/tags/llm/</guid>
+      <description></description>
+    </item>
+  </channel>
+</rss>

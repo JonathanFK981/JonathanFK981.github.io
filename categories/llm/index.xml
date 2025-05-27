@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>LLM on dO.ob&#39;s Blog</title>
+    <link>http://localhost:1313/categories/llm/</link>
+    <description>Recent content in LLM on dO.ob&#39;s Blog</description>
+    <generator>Hugo</generator>
+    <language>zh-Hans</language>
+    <lastBuildDate>Sat, 19 Apr 2025 01:32:06 +0800</lastBuildDate>
+    <atom:link href="http://localhost:1313/categories/llm/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Steel LLM</title>
+      <link>http://localhost:1313/posts/steel-llm/</link>
+      <pubDate>Sat, 19 Apr 2025 01:32:06 +0800</pubDate>
+      <guid>http://localhost:1313/posts/steel-llm/</guid>
+      <description>&lt;p&gt;偶然发现一个大佬从零开始的LLM项目：&lt;a href=&#34;https://zhuanlan.zhihu.com/p/687338497&#34; target=&#34;_blank&#34;&gt;Steel-LLM&lt;/a&gt;&#xA;&#xA;有些细节需要深挖一下&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Text Embedding</title>
+      <link>http://localhost:1313/posts/text-embedding/</link>
+      <pubDate>Fri, 18 Apr 2025 12:43:06 +0800</pubDate>
+      <guid>http://localhost:1313/posts/text-embedding/</guid>
+      <description>&lt;p&gt;Cut out summary from your post content here.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Scaling Laws</title>
+      <link>http://localhost:1313/posts/scaling-laws/</link>
+      <pubDate>Fri, 18 Apr 2025 12:09:51 +0800</pubDate>
+      <guid>http://localhost:1313/posts/scaling-laws/</guid>
+      <description>&lt;p&gt;我们研究了语言模型在交叉熵损失方面的性能的经验性缩放定律。&#xA;损失与模型规模、数据集规模以及用于训练的计算量之间呈幂律关系，某些趋势涵盖了七个以上的数量级。而诸如网络宽度或深度等其他架构细节，在广泛的范围内影响极小。简单的方程式可以描述过拟合对模型规模/数据集规模的依赖关系，以及训练速度对模型规模的依赖关系。这些关系使我们能够确定在固定计算资源预算下的最优分配方式。更大的模型在样本利用效率上要高得多，因此，要实现最优的计算效率训练，就需要在相对适量的数据上训练非常大的模型，并且在远未收敛之前就显著地停止训练。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>GPTQ</title>
+      <link>http://localhost:1313/posts/gptq/</link>
+      <pubDate>Thu, 17 Apr 2025 19:28:19 +0800</pubDate>
+      <guid>http://localhost:1313/posts/gptq/</guid>
+      <description>&lt;p&gt;首先，模型压缩的方法需要model retraining，例如低比特位宽量化和剪枝。&lt;/p&gt;&#xA;&lt;p&gt;其次，使用one-shot的post-training方法较为复杂&lt;/p&gt;&#xA;&lt;p&gt;最后，round-to-nearest的量化方法在8-bit的权重上起了作用，但在高速情况下不能保持精度&lt;/p&gt;&#xA;&lt;p&gt;GPTQ的一大改进：&lt;/p&gt;&#xA;&lt;p&gt;1.可以将模型压缩到3-bit或者4-bit且不会显著降低精度&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>ZeRO</title>
+      <link>http://localhost:1313/posts/zero/</link>
+      <pubDate>Thu, 17 Apr 2025 10:51:05 +0800</pubDate>
+      <guid>http://localhost:1313/posts/zero/</guid>
+      <description>&lt;p&gt;大型深度学习模型提供了显著的精度增益，但训练数十亿到数万亿的参数是具有挑战性的。现有的解决方案，例如数据和模型并行化，在获得计算、通信和开发效率的同时，在将这些模型装入有限的设备存储器方面表现出基本的局限性。我们开发了一种新的解决方案，ZeRO冗余优化器(Zero)，以优化内存，大大提高训练速度，同时增加可以有效训练的模型大小。ZeRO消除了数据和模型并行训练中的内存冗余，同时保留了较低的通信量和较高的计算粒度，使我们能够以持续的高效率按比例扩展模型大小。我们对内存需求和通信量的分析表明:使用今天的硬件，ZeRO有潜力扩展到超过1万亿个参数。（1000B参数）&lt;/p&gt;&#xA;&lt;p&gt;我们实现并评估了ZeRO:它在400个GPU上以超线性加速训练了超过100B参数的大型模型，实现了15 Petaflops的吞吐量。就可用性而言，ZeRO可以训练高达13B参数的大型模型(例如，大于 Megatron GPT 8.3B和T5 11B)，而不需要模型并行性，这对于科学家来说更难应用。最后但并非最不重要的是，研究人员利用ZeRO的系统突破，创造了世界上最大的语言模型(17B参数)，具有破纪录的准确性。&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

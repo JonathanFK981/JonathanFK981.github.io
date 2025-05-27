@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="zh-Hans"
+  x-data
+  :class="$store.darkMode.class()"
+  :data-theme="$store.darkMode.theme()">
+  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RoPE | dO.ob&#39;s Blog</title>
+
+    
+
+<link rel="canonical" href="http://localhost:1313/posts/rope/" />
+
+
+
+<meta name="author" content="Author Name" />
+<meta name="description" content="位置编码最近在Transformer架构中已显示出有效性。它为对序列中不同位置的元素之间的依赖关系进行建模提供了有价值的监督信息。在本文中，我们首先研究了将位置信息整合到基于Transformer的语言模型学习过程中的各种方法。然后，我们提出了一种名为旋转位置嵌入（RoPE）的新方法，以有效地利用位置信息。具体而言，所提出的RoPE使用旋转矩阵对绝对位置进行编码，同时在自注意力公式中纳入了明确的相对位置依赖关系。值得注意的是，RoPE具有一些有价值的特性，包括序列长度的灵活性、随着相对距离增加而衰减的词间依赖关系，以及为线性自注意力配备相对位置编码的能力。最后，我们在各种长文本分类基准数据集上对采用了旋转位置嵌入的增强型Transformer（也称为RoFormer）进行了评估。我们的实验表明，它始终优于其他替代方法。此外，我们提供了一个理论分析来解释一些实验结果。RoFormer已经集成到了Huggingface中：https://huggingface.co/docs/transformers/model_doc/roformer 。
+" />
+
+
+<meta name="keywords" content="Tag1,Tag2">
+
+
+
+<meta name="generator" content="Hugo 0.146.2">
+
+
+<meta property="og:url" content="http://localhost:1313/posts/rope/">
+  <meta property="og:site_name" content="dO.ob&#39;s Blog">
+  <meta property="og:title" content="RoPE">
+  <meta property="og:description" content="位置编码最近在Transformer架构中已显示出有效性。它为对序列中不同位置的元素之间的依赖关系进行建模提供了有价值的监督信息。在本文中，我们首先研究了将位置信息整合到基于Transformer的语言模型学习过程中的各种方法。然后，我们提出了一种名为旋转位置嵌入（RoPE）的新方法，以有效地利用位置信息。具体而言，所提出的RoPE使用旋转矩阵对绝对位置进行编码，同时在自注意力公式中纳入了明确的相对位置依赖关系。值得注意的是，RoPE具有一些有价值的特性，包括序列长度的灵活性、随着相对距离增加而衰减的词间依赖关系，以及为线性自注意力配备相对位置编码的能力。最后，我们在各种长文本分类基准数据集上对采用了旋转位置嵌入的增强型Transformer（也称为RoFormer）进行了评估。我们的实验表明，它始终优于其他替代方法。此外，我们提供了一个理论分析来解释一些实验结果。RoFormer已经集成到了Huggingface中：https://huggingface.co/docs/transformers/model_doc/roformer 。">
+  <meta property="og:locale" content="zh_Hans">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2025-04-18T17:47:12+08:00">
+    <meta property="article:modified_time" content="2025-04-18T17:47:12+08:00">
+    <meta property="article:tag" content="Tag1">
+    <meta property="article:tag" content="Tag2">
+
+
+
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="RoPE">
+  <meta name="twitter:description" content="位置编码最近在Transformer架构中已显示出有效性。它为对序列中不同位置的元素之间的依赖关系进行建模提供了有价值的监督信息。在本文中，我们首先研究了将位置信息整合到基于Transformer的语言模型学习过程中的各种方法。然后，我们提出了一种名为旋转位置嵌入（RoPE）的新方法，以有效地利用位置信息。具体而言，所提出的RoPE使用旋转矩阵对绝对位置进行编码，同时在自注意力公式中纳入了明确的相对位置依赖关系。值得注意的是，RoPE具有一些有价值的特性，包括序列长度的灵活性、随着相对距离增加而衰减的词间依赖关系，以及为线性自注意力配备相对位置编码的能力。最后，我们在各种长文本分类基准数据集上对采用了旋转位置嵌入的增强型Transformer（也称为RoFormer）进行了评估。我们的实验表明，它始终优于其他替代方法。此外，我们提供了一个理论分析来解释一些实验结果。RoFormer已经集成到了Huggingface中：https://huggingface.co/docs/transformers/model_doc/roformer 。">
+
+
+
+
+<link rel="stylesheet" href="/css/output.css" />
+
+
+
+
+<script>
+  MathJax = {
+    tex: {
+      inlineMath: [['\\(', '\\)']],
+      displayMath: [['$$','$$']],
+      processEscapes: true,
+      processEnvironments: true
+    },
+    options: {
+      skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+    }
+  };
+</script>
+
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+ 
+
+
+    
+<script>
+  MathJax = {
+    tex: {
+      inlineMath: [['\\(', '\\)'], ['$', '$']],
+      displayMath: [['$$', '$$'], ['\\[', '\\]']],
+      processEscapes: true,
+      processEnvironments: true
+    },
+    options: {
+      skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+    }
+  };
+</script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+ 
+
+
+    
+
+
+<style>
+  pre {
+    padding: 1em;
+    overflow: auto;
+  }
+</style>
+
+
+
+
+
+
+
+
+
+    
+
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3/dist/cdn.min.js" integrity="sha256-PtHu0lJIiSHfZeNj1nFd6wTX+Squ255SGZ/fc8seCtM=" crossorigin="anonymous"></script>
+  </head>
+
+  <body x-data="{
+    flip: false,
+  }">
+    
+    <div id="dream-global-bg"></div>
+
+    
+<nav class="mt-4 lg:mt-8 py-4">
+
+  
+  <div class="container flex justify-between max-w-[65ch] mx-auto px-4 md:px-0">
+  
+    <section class="flex items-center gap-4">
+      <div class="avatar cursor-pointer hover:avatar-online" @click="flip = !flip" title="翻转一下！">
+        <div class="h-10 rounded-full">
+          <img src="/img/logo.jpg" alt="Jonathan&#39;s Blog" />
+        </div>
+      </div>
+
+      
+      <div>
+        
+        <a href="http://localhost:1313/" class="text-lg font-semibold cursor-pointer">
+          Jonathan&#39;s Blog
+        </a>
+        
+        
+      </div>
+      
+    </section>
+
+    
+    
+
+    <div class="dropdown dropdown-end sm:hidden">
+      <div tabindex="0" role="button" class="btn btn-ghost btn-square" aria-label="Select an option">
+        <ion-icon name="menu" class="text-2xl"></ion-icon>
+      </div>
+      <ul tabindex="0" class="dropdown-content menu w-36 bg-base-100 rounded-box z-1 shadow-md">
+        
+
+
+
+
+
+
+
+<li>
+  <div role="link" tabindex="0" class="inline-flex items-center p-2 cursor-pointer" @click="flip = !flip" title="关于">
+    <ion-icon name="information-circle"></ion-icon>关于</div>
+</li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li>
+  <a class="inline-flex items-center p-2 cursor-pointer" href="/posts" title="归档">
+    <ion-icon name="archive"></ion-icon>
+    归档
+  </a>
+</li>
+
+
+
+
+<li>
+  <a class="inline-flex items-center p-2 cursor-pointer" href="/categories" title="所有分类">
+    <ion-icon name="grid"></ion-icon>
+    所有分类
+  </a>
+</li>
+
+
+
+
+<li>
+  <a class="inline-flex items-center p-2 cursor-pointer" href="/tags" title="所有标签">
+    <ion-icon name="pricetags"></ion-icon>
+    所有标签
+  </a>
+</li>
+
+
+
+
+
+
+      </ul>
+    </div>
+    <section class="hidden sm:flex sm:items-center sm:gap-2 md:gap-4">
+      
+
+      
+      
+
+
+
+
+<div role="link" tabindex="0" class="text-sm font-semibold cursor-pointer hover:underline" @click="flip = !flip" title="关于">关于</div>
+
+
+
+
+
+      
+      
+
+
+
+
+
+      
+      
+
+
+
+
+
+      
+      
+<a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/posts" title="归档">
+  <ion-icon class="group-hover:text-primary-content" name="archive"></ion-icon>
+</a>
+
+
+      
+      
+<a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/categories" title="所有分类">
+  <ion-icon class="group-hover:text-primary-content" name="grid"></ion-icon>
+</a>
+
+
+      
+      
+<a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/tags" title="所有标签">
+  <ion-icon class="group-hover:text-primary-content" name="pricetags"></ion-icon>
+</a>
+
+
+      
+
+      
+
+      
+    </section>
+  </div>
+</nav>
+
+
+    <div class="flip-container" :class="{ 'flip-it': flip }">
+      <div class="flipper">
+        <div class="front">
+          <div class="container">
+            
+<div class="lg:grid lg:grid-cols-4 gap-4 mt-4 px-4">
+  <div class="hidden lg:block">
+    
+  </div>
+
+  <div class="lg:col-span-2">
+    <article class="mx-auto prose prose-quoteless dark:prose-invert" id="dream-single-post-main" itemscope itemtype="http://schema.org/Article">
+      
+  <meta itemprop="name" content="RoPE">
+  <meta itemprop="description" content="位置编码最近在Transformer架构中已显示出有效性。它为对序列中不同位置的元素之间的依赖关系进行建模提供了有价值的监督信息。在本文中，我们首先研究了将位置信息整合到基于Transformer的语言模型学习过程中的各种方法。然后，我们提出了一种名为旋转位置嵌入（RoPE）的新方法，以有效地利用位置信息。具体而言，所提出的RoPE使用旋转矩阵对绝对位置进行编码，同时在自注意力公式中纳入了明确的相对位置依赖关系。值得注意的是，RoPE具有一些有价值的特性，包括序列长度的灵活性、随着相对距离增加而衰减的词间依赖关系，以及为线性自注意力配备相对位置编码的能力。最后，我们在各种长文本分类基准数据集上对采用了旋转位置嵌入的增强型Transformer（也称为RoFormer）进行了评估。我们的实验表明，它始终优于其他替代方法。此外，我们提供了一个理论分析来解释一些实验结果。RoFormer已经集成到了Huggingface中：https://huggingface.co/docs/transformers/model_doc/roformer 。">
+  <meta itemprop="datePublished" content="2025-04-18T17:47:12+08:00">
+  <meta itemprop="dateModified" content="2025-04-18T17:47:12+08:00">
+  <meta itemprop="wordCount" content="885">
+  <meta itemprop="keywords" content="Tag1,Tag2">
+
+      <header>
+        <h1 itemprop="headline">RoPE</h1>
+        <p class="text-sm">
+          
+            星期五, 4月 18, 2025
+          
+
+          | <span>5分钟阅读</span>
+
+          
+          | <span>更新于
+            
+              星期五, 4月 18, 2025
+            </span>
+          
+        </p>
+
+        
+        <div class="flex justify-between">
+          
+            <div class="flex items-center">
+  
+  <span>@</span>
+  
+
+  <span itemprop="author" itemscope itemtype="https://schema.org/Person">
+  
+    
+      <span itemprop="name">Author Name</span>
+    
+  
+  </span>
+</div>
+
+          
+
+          <div class="flex items-center gap-2">
+  
+  
+
+  
+  
+  
+  
+  
+    <a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary"
+      href="https://x.com/intent/post?text=RoPE&amp;url=http://localhost:1313/posts/rope/" target="_blank" rel="noopener noreferrer"
+      title="Share on X">
+      <ion-icon class="group-hover:text-primary-content" name="logo-x"></ion-icon>
+    </a>
+  
+    <a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary"
+      href="https://facebook.com/sharer/sharer.php?u=http://localhost:1313/posts/rope/" target="_blank" rel="noopener noreferrer"
+      title="Share on Facebook">
+      <ion-icon class="group-hover:text-primary-content" name="logo-facebook"></ion-icon>
+    </a>
+  
+    <a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary"
+      href="https://wa.me/?text=RoPE%20http://localhost:1313/posts/rope/" target="_blank" rel="noopener noreferrer"
+      title="Share on WhatsApp">
+      <ion-icon class="group-hover:text-primary-content" name="logo-whatsapp"></ion-icon>
+    </a>
+  
+
+  
+  
+</div>
+
+        </div>
+      </header>
+
+      <section id="dream-single-post-content" itemprop="articleBody">
+        
+          <img class="w-full z-30" src="/img/a.jpg" alt="RoPE" />
+        
+
+        <p>位置编码最近在Transformer架构中已显示出有效性。它为对序列中不同位置的元素之间的依赖关系进行建模提供了有价值的监督信息。在本文中，我们首先研究了将位置信息整合到基于Transformer的语言模型学习过程中的各种方法。然后，我们提出了一种名为旋转位置嵌入（RoPE）的新方法，以有效地利用位置信息。具体而言，所提出的RoPE使用旋转矩阵对绝对位置进行编码，同时在自注意力公式中纳入了明确的相对位置依赖关系。值得注意的是，RoPE具有一些有价值的特性，包括序列长度的灵活性、随着相对距离增加而衰减的词间依赖关系，以及为线性自注意力配备相对位置编码的能力。最后，我们在各种长文本分类基准数据集上对采用了旋转位置嵌入的增强型Transformer（也称为RoFormer）进行了评估。我们的实验表明，它始终优于其他替代方法。此外，我们提供了一个理论分析来解释一些实验结果。RoFormer已经集成到了Huggingface中：https://huggingface.co/docs/transformers/model_doc/roformer 。</p>
+<p>单词的顺序对于自然语言理解具有重大价值。基于循环神经网络（RNNs）的模型通过沿着时间维度递归地计算隐藏状态来对词元的顺序进行编码。基于卷积神经网络（CNNs）的模型（如Gehring等人在2017年的研究成果）通常被认为与位置无关，但最近Islam等人在2020年的研究表明，常用的填充操作能够隐式地学习位置信息。最近，基于Transformer（Vaswani等人于2017年提出）构建的预训练语言模型（PLMs）在各种自然语言处理（NLP）任务中取得了领先的性能，比如上下文表示学习（Devlin等人在2019年的研究）、机器翻译（Vaswani等人在2017年的研究）以及语言建模（Radford等人在2019年的研究）等。与基于RNN和CNN的模型不同，预训练语言模型利用自注意力机制从语义上捕捉给定语料库的上下文表示。因此，相较于RNN，预训练语言模型在并行化方面有了显著提升，并且与CNN相比，其在对更长的词内关系进行建模的能力上也有所提高。</p>
+<p>值得注意的是，当前预训练语言模型的自注意力架构已被证明是与位置无关的（Yun等人，2020年）。基于这一观点，人们提出了各种方法来将位置信息编码到学习过程中。一方面，通过预定义函数生成的绝对位置编码（Vaswani等人，2017年）被添加到上下文表示中，同时还有可训练的绝对位置编码（Gehring等人，2017年；Devlin等人，2019年；Lan等人，2020年；Clark等人，2020年；Radford等人，2019年；Radford和Narasimhan，2018年）。另一方面，先前的研究工作（Parikh等人，2016年；Shaw等人，2018年；Huang等人，2018年；Dai等人，2019年；Yang等人，2019年；Raffel等人，2020年；Ke等人，2020年；He等人，2020年；Huang等人，2020年）则专注于相对位置编码，这种编码通常会将相对位置信息编码到注意力机制中。除了这些方法之外，Liu等人（2020年）的作者从神经常微分方程（Neural ODE，Chen等人，2018a）的角度提出对位置编码的依赖关系进行建模，而Wang等人（2020年）的作者则提出在复空间中对位置信息进行建模。尽管这些方法都有一定的效果，但它们通常是将位置信息添加到上下文表示中，因此并不适用于线性自注意力架构。</p>
+<p>在本文中，我们引入了一种新颖的方法，即旋转位置嵌入（RoPE），以便在预训练语言模型的学习过程中利用位置信息。具体而言，RoPE使用旋转矩阵对绝对位置进行编码，同时在自注意力公式中纳入了明确的相对位置依赖关系。需要注意的是，所提出的RoPE通过一些有价值的特性优于现有方法，这些特性包括序列长度的灵活性、随着相对距离增加而衰减的词间依赖关系，以及为线性自注意力配备相对位置编码的能力。在各种长文本分类基准数据集上的实验结果表明，采用旋转位置嵌入的增强型Transformer，即RoFormer，与基线方法相比能够取得更好的性能，从而证明了所提出的RoPE的有效性。</p>
+<p>简而言之，我们的贡献有以下三个方面:</p>
+<ol>
+<li>
+<p>我们研究了现有的相对位置编码方法，发现它们大多是基于将位置编码添加到上下文表示中并进行分解的思路构建的。我们引入了一种新颖的方法，即旋转位置嵌入（RoPE），以便将位置信息利用到预训练语言模型（PLMs）的学习过程中。其核心思想是通过将上下文表示与一个具有明确理论解释的旋转矩阵相乘来对相对位置进行编码。</p>
+</li>
+<li>
+<p>我们研究了旋转位置嵌入（RoPE）的特性，结果表明它会随着相对距离的增加而衰减，这正是自然语言编码所期望的。我们认为，先前基于相对位置编码的方法并不适用于线性自注意力机制。</p>
+</li>
+<li>
+<p>我们在各种长文本基准数据集上对所提出的RoFormer进行了评估。我们的实验表明，与其他同类模型相比，它始终能取得更好的性能。一些使用预训练语言模型的实验内容可在GitHub上获取，网址为：https://github.com/ZhuiyiTechnology/roformer 。</p>
+</li>
+</ol>
+<p>本文的其余部分组织如下。我们在第（2）节中对自注意力架构中的位置编码问题进行了正式描述，并回顾了先前的研究成果。然后，我们在第（3）节中介绍旋转位置编码（RoPE）并研究其特性。我们在第（4）节中报告实验结果。最后，我们在第（5）节中对本文进行总结。</p>
+<h2 id="背景和相关工作">背景和相关工作</h2>
+<h3 id="预备工作">预备工作</h3>
+<p>设 $S_N = \{ w_i \}_{i = 1}^N$ 为一个由 $N$ 个输入词元组成的序列，其中 $w_{i}$ 是第 $i$ 个元素。$S_N$ 对应的词嵌入表示为 $E_N = \{ x_i \}_{i = 1}^N$ ，其中 $x_i \in \mathbb{R}^d$ 是词元 $w_{i}$ 的 $d$ 维词嵌入向量，且不包含位置信息。自注意力机制首先将位置信息融入词嵌入中，然后将它们转换为查询、键和值表示。</p>
+\[{q_m} = {f_q}\left( {{x_m},m} \right)\]<p>
+</p>
+\[{k_n} = {f_k}\left( {{x_n},n} \right)\]<p>
+</p>
+\[{v_n} = {f_v}\left( {{x_n},n} \right)\]<p>其中 \(q_m\)、\(k_n\)和\(v_n\) 分别通过 \(f_q\)、\(f_k\) 和 \(f_v\) 融入了第 \(m\) 个和第 \(n\) 个位置的信息。然后，查询值和键值被用于计算注意力权重，而输出则计算为值表示的加权和。</p>
+\[{a_{m,n}} = \frac{{\exp \left( {\frac{{q_m^T{k_n}}}{{\sqrt d }}} \right)}}{{\sum\nolimits_{j = 1}^N {\exp \left( {\frac{{q_m^T{k_j}}}{{\sqrt d }}} \right)} }}\]\[{o_m} = \sum\limits_{n - 1}^N {{a_{m,n}}{\upsilon _n}} \]<p>现有的基于Transformer的位置编码方法主要侧重于选择一个合适的函数来构成公式（1）。</p>
+<h3 id="absolute-position-embedding">Absolute position embedding</h3>
+<p>公式（1）的一个典型选择是：</p>
+\[{f_{t:t \in \left\{ {q,k,v} \right\}}}\left( {{x_i},i} \right): = {W_{t:t \in \left\{ {q,k,v} \right\}}}\left( {{x_i} + {p_i}} \right)\]<p>（解释：对于\(t\in\{q,k,v\}\)，\(f_{t:t \in \{ {q,k,v} \} }(x_i, i)\)定义为：对于\(t\in\{q,k,v\}\)，\(W_{t:t \in \{ {q,k,v} \} }\)作用于\((x_i + p_i)\)  ，其中\(x_i\)和\(p_i\)为相关向量，\(W_{t:t \in \{ {q,k,v} \} }\)为相应的矩阵变换。）</p>
+<p>其中 \(p_i\in\mathbb{R}^d\)是一个 \(d\) 维向量，它取决于词元 \(x_i\) 的位置。先前的研究引入了使用一组可训练向量 \(p_i\in\{p_t\}_{t = 1}^L\) 的方法，其中 \(L\) 是最大序列长度。瓦斯瓦尼等人（2017年）的作者提出使用正弦函数来生成 \(p_i\)。</p>
+\[\left\{ {\begin{array}{*{20}{c}}
+{{p_{i,2t}} = \sin \left( {k/{{10000}^{2t/d}}} \right)}\\
+{{p_{i,2t + 1}} = \cos \left( {k/{{10000}^{2t/d}}} \right)}
+\end{array}} \right.\]<p>其中 \(p_{i,2t}\) 是 \(d\) 维向量 \(p_i\) 的第 \(2t\) 个元素。在下一节中，我们将表明，从正弦函数的角度来看，我们提出的旋转位置嵌入（RoPE）与这种直觉相关。然而，RoPE不是直接将位置信息添加到上下文表示中，而是提议通过与正弦函数相乘来融入相对位置信息。</p>
+<h3 id="relative-position-embedding">Relative position embedding</h3>
+<p>肖（Shaw）等人（2018年）的作者采用了如下对公式（1）的不同设置：</p>
+\[{f_q}\left( {{x_m}} \right): = {W_q}{x_m}\]\[{f_k}\left( {{x_n},n} \right): = {W_k}\left( {{x_n} + \tilde p_r^k} \right)\]\[{f_v}\left( {{x_n},n} \right): = {W_v}\left( {{x_n} + \tilde p_r^v} \right)\]<p>其中 \(\tilde p_r^k\)，\(\tilde p_r^v \in \mathbb{R}^d\) 是可训练的相对位置嵌入。请注意，\(r = clip(m - n, r_{min}, r_{max})\) 表示位置 \(m\) 和 \(n\) 之间的相对距离。他们对相对距离进行了截断处理，其假设是超过一定距离后，精确的相对位置信息就没有用处了。戴（Dai）等人（2019年）在保持公式（3）形式的情况下，提议将公式（2）中的 \(q_m^T{k_n}\) 分解为:
+</p>
+\[q_m^T{k_n} = x_m^TW_q^T{W_k}{x_n} + x_m^TW_q^T{W_k}{p_n} + p_m^TW_q^T{W_k}{x_n} + p_m^TW_q^T{W_k}{p_n}\]<p>其核心思想是用经过正弦编码的相对位置嵌入\(\tilde{p}_{m - n}\)来替代绝对位置嵌入\(p_n\)，而第三项和第四项中的绝对位置\(p_m\)则用两个与查询位置无关的可训练向量\(u\)和\(v\)来代替。此外，对于基于内容的键向量\(x_n\)和基于位置的键向量\(p_n\)，\(W_k\)是有区别的，分别记为\(W_k\)和 ${\tilde W}_k$，从而得到：</p>
+\[q_m^T{k_n} = x_m^TW_q^T{W_k}{x_n} + x_m^TW_q^T{{\tilde W}_k}{{\tilde p}_{m - n}} + {u^T}W_q^T{W_k}{x_n} + {v^T}W_q^T{{\tilde W}_k}{{\tilde p}_{m - n}}\]<p>值得注意的是，通过设置\(f_v(x_j): = W_vx_j\)，值项中的位置信息被去除了。后来的研究中沿用了这些设置，仅将相对位置信息编码到注意力权重中。然而，拉菲尔（Raffel）等人（2020年）的作者将公式（6）修改为：</p>
+\[q_m^T{k_n} = x_m^TW_q^T{W_k}{x_n} + {b_{i,j}}\]<p>其中\(b_{i,j}\)是一个可训练的偏差项。柯（Ke）等人（2020年）的作者研究了公式（6）中间的两项，发现绝对位置和单词之间几乎没有相关性。拉菲尔（Raffel）等人（2020年）的作者提议使用不同的投影矩阵对一对单词或位置进行建模。
+</p>
+\[q_m^T{k_n} = x_m^TW_q^T{W_k}{x_n} + p_m^TU_q^T{U_k}{p_n} + {b_{i,j}}\]<p>何等人（2020年）的作者认为，只有使用公式（6）中间的两项才能对两个词元的相对位置进行完整建模。因此，绝对位置嵌入\(p_m\)和\(p_n\)被简单地替换为相对位置嵌入\(\tilde{p}_{m - n}\)：</p>
+\[q_m^T{k_n} = x_m^TW_q^T{W_k}{x_n} + x_m^TW_q^T{W_k}{{\tilde p}_{m - n}} + \tilde p_{m - n}^TW_q^T{W_k}{x_n}\]<p>拉德福德（Radford）和纳拉西姆汉（Narasimhan）（2018年）对相对位置嵌入的四种变体进行了比较，结果表明，与公式（10）类似的变体在其他三种变体中效率最高。一般来说，所有这些方法都试图在公式（2）的自注意力设置下，基于公式（3）的分解来修改公式（6），而公式（2）最初是由瓦斯瓦尼（Vaswani）等人（2017年）提出的。它们通常采用直接将位置信息添加到上下文表示中的方式。不同的是，我们的方法旨在在一些约束条件下从公式（1）推导出相对位置编码。接下来，我们将表明，通过将相对位置信息与上下文表示的旋转相结合，所推导出的方法更具可解释性。</p>
+<h2 id="proposed-approach">Proposed approach</h2>
+<p>在本节中，我们将讨论所提出的旋转位置嵌入（RoPE）。我们首先在第（3.1）节中阐述相对位置编码问题，然后在第（3.2）节中推导出旋转位置嵌入（RoPE），并在第（3.3）节中研究其特性。</p>
+<h3 id="formulation">Formulation</h3>
+<p>基于Transformer的语言建模通常通过自注意力机制来利用单个词元的位置信息。正如在公式（2）中可以看到的那样，\(q_m^T{k_n}\) 通常能够在不同位置的词元之间传递信息。为了融入相对位置信息，我们要求查询向量 \(q_m\) 和键向量 \(k_n\) 的内积由一个函数 \(g\) 来表示，该函数仅将词嵌入向量 \(x_m\)、\(x_n\) 以及它们的相对位置 \(m - n\) 作为输入变量。换句话说，我们希望这个内积仅以相对形式对位置信息进行编码：</p>
+\[\left\langle {{f_q}\left( {{x_m},m} \right),{f_k}\left( {{x_n},n} \right)} \right\rangle  = g\left( {{x_m},{x_n},m - n} \right)\]<p>最终目标是找到一种等效的编码机制来求解函数 \(f_q(x_m, m)\)和\(f_k(x_n, n)\)，使其符合上述关系。</p>
+<h2 id="rotary-position-embedding">Rotary position embedding</h2>
+<h3 id="a-2d-case">A 2D case</h3>
+<p>我们从维度 \(d = 2\) 的简单情况入手。在这些设定下，我们利用二维平面上向量的几何性质及其复数形式来证明（更多细节请参考第（3.4.1）节），我们的公式（11）的一个解为：</p>
+\[g\left( {{x_m},{x_n},m - n} \right) = {\mathop{\rm Re}\nolimits} \left[ {\left( {{W_q}{x_m}} \right){{\left( {{W_k}{x_n}} \right)}^*}{e^{i\left( {m - n} \right)\theta }}} \right]\]<p>其中 \(Re[\cdot]\) 表示复数的实部，\((W_k x_n)^*\) 表示 \((W_k x_n)\) 的共轭复数。
+\(\theta\in\mathbb{R}\) 是一个预先设定的非零常数。我们可以进一步将 \(f_{\{q,k\}}\) 写成一个乘法矩阵的形式：</p>
+\[{f_{\left\{ {q,k} \right\}}}\left( {{x_m},m} \right) = \left( {\begin{array}{*{20}{c}}
+{\cos m\theta }&{ - \sin m\theta }\\
+{\sin m\theta }&{\cos m\theta }
+\end{array}} \right)\left( {\begin{array}{*{20}{c}}
+{W_{\left\{ {q,k} \right\}}^{\left( {11} \right)}}&{W_{\left\{ {q,k} \right\}}^{\left( {12} \right)}}\\
+{W_{\left\{ {q,k} \right\}}^{\left( {21} \right)}}&{W_{\left\{ {q,k} \right\}}^{\left( {22} \right)}}
+\end{array}} \right)\left( {\begin{array}{*{20}{c}}
+{x_m^{\left( 1 \right)}}\\
+{x_m^{\left( 2 \right)}}
+\end{array}} \right)\]<p>其中 \((x_m^{(1)}, x_m^{(2)})\) 是 \(x_m\) 在二维坐标中的表示形式。类似地，\(g\) 可以被看作是一个矩阵，因此在二维情况下能够求解第（3.1）节中的公式。具体来说，融入相对位置嵌入很直接：只需将经过仿射变换的词嵌入向量按其位置索引的角度倍数进行旋转，从而解释旋转位置嵌入背后的原理。</p>
+<h3 id="general-form">General form</h3>
+<p>为了将我们在二维空间中的结果推广到任意 \(x_i \in \mathbb{R}^d\)（其中 \(d\) 为偶数）的情况，我们将 \(d\) 维空间划分为 \(d/2\) 个子空间，并利用内积的线性性质将它们组合起来，从而将 \(f_{\{q,k\}}\) 转化为：
+</p>
+\[{f_{\left\{ {q,k} \right\}}}\left( {{x_m},m} \right) = R_{\Theta ,m}^d{W_{\left\{ {q,k} \right\}}}{x_m}\]<p>
+其中：
+</p>
+\[R_{\Theta ,m}^d = \left( {\begin{array}{*{20}{c}}
+{\cos m{\theta _1}}&{ - \sin m{\theta _1}}&0&0& \cdots &0&0\\
+{\sin m{\theta _1}}&{\cos m{\theta _1}}&0&0& \cdots &0&0\\
+0&0&{\cos m{\theta _2}}&{ - \sin m{\theta _2}}& \cdots &0&0\\
+0&0&{\sin m{\theta _2}}&{\cos m{\theta _2}}& \cdots &0&0\\
+ \vdots & \vdots & \vdots & \vdots & \ddots & \vdots & \vdots \\
+0&0&0&0& \cdots &{\cos m{\theta _{d/2}}}&{ - \sin m{\theta _{d/2}}}\\
+0&0&0&0& \cdots &{\sin m{\theta _{d/2}}}&{\cos m{\theta _{d/2}}}
+\end{array}} \right)\]<p>
+是具有预定义参数 \(\Theta = \{ \theta_i = 10000^{-2(i - 1)/d}, i \in [1, 2, \ldots, d/2] \}\) 的旋转矩阵。旋转位置嵌入（RoPE）的图示如图（1）所示。将我们的旋转位置嵌入（RoPE）应用于公式（2）中的自注意力机制，我们得到：</p>
+\[q_m^T{k_n} = {\left( {R_{\Theta ,m}^d{W_q}{x_m}} \right)^T}\left( {R_{\Theta ,n}^d{W_k}{x_n}} \right) = {x^T}{W_q}R_{\Theta ,n - m}^d{W_k}{x_n}\]<p>其中 \(R_{\Theta, n - m}^d = (R_{\Theta, m}^d)^T R_{\Theta, n}^d\)。请注意，\(R_{\Theta, m}^d\) 是一个正交矩阵，这确保了在编码位置信息的过程中具有稳定性。此外，由于 \(R_{\Theta, m}^d\) 具有稀疏性，直接像公式（16）那样进行矩阵乘法在计算上并不高效；我们将在理论解释部分给出另一种实现方式。</p>
+<p>与先前研究中所采用的位置嵌入方法（即公式（3）至（10））的加法性质不同，我们的方法是乘法性质的。此外，当应用于自注意力机制时，旋转位置嵌入（RoPE）通过旋转矩阵乘积自然地融入了相对位置信息，而不是去改变加法位置编码展开式中的各项。
+<div class="embed-pdf-container" id="embed-pdf-container-013b2179">
+    <div class="pdf-loadingWrapper" id="pdf-loadingWrapper-013b2179">
+        <div class="pdf-loading" id="pdf-loading-013b2179"></div>
+    </div>
+    <div id="overlayText">
+      <a href="./pic/1.pdf" aria-label="Download" download>
+        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18">
+            <path d="M9 13c.3 0 .5-.1.7-.3L15.4 7 14 5.6l-4 4V1H8v8.6l-4-4L2.6 7l5.7 5.7c.2.2.4.3.7.3zm-7 2h14v2H2z" />
+        </svg>
+      </a>
+    </div>
+    <canvas class="pdf-canvas" id="pdf-canvas-013b2179"></canvas>
+</div>
+
+<div class="pdf-paginator" id="pdf-paginator-013b2179">
+    <button id="pdf-prev-013b2179">Previous</button>
+    <button id="pdf-next-013b2179">Next</button> &nbsp; &nbsp;
+    <span>
+      <span class="pdf-pagenum" id="pdf-pagenum-013b2179"></span> / <span class="pdf-pagecount" id="pdf-pagecount-013b2179"></span>
+    </span>
+    <a class="pdf-source" id="pdf-source-013b2179" href="./pic/1.pdf">[pdf]</a>
+</div>
+
+<noscript>
+View the PDF file <a class="pdf-source" id="pdf-source-noscript-013b2179" href="./pic/1.pdf">here</a>.
+</noscript>
+
+<script type="text/javascript">
+    (function(){
+    var url = '.\/pic\/1.pdf';
+
+    var hidePaginator = "" === "true";
+    var hideLoader = "" === "true";
+    var selectedPageNum = parseInt("") || 1;
+
+
+    var showSource = "" === "true";
+    var pageSource = document.getElementById("pdf-source-013b2179");
+
+    
+    function showSourcef() {
+        if(showSource) {
+            pageSource.style.display = 'inline';
+        } else {
+            pageSource.style.display = 'none';
+        }
+    }
+
+    
+    showSourcef();
+
+
+    
+    var pdfjsLib = window['pdfjs-dist/build/pdf'];
+
+    
+    if (pdfjsLib.GlobalWorkerOptions.workerSrc == '')
+      pdfjsLib.GlobalWorkerOptions.workerSrc = "http:\/\/localhost:1313\/" + 'js/pdf-js/build/pdf.worker.js';
+
+    
+    var pdfDoc = null,
+        pageNum = selectedPageNum,
+        pageRendering = false,
+        pageNumPending = null,
+        scale = 3,
+        canvas = document.getElementById('pdf-canvas-013b2179'),
+        ctx = canvas.getContext('2d'),
+        paginator = document.getElementById("pdf-paginator-013b2179"),
+        loadingWrapper = document.getElementById('pdf-loadingWrapper-013b2179');
+
+
+    
+    showPaginator();
+    showLoader();
+
+    
+
+    function renderPage(num) {
+      pageRendering = true;
+      
+      pdfDoc.getPage(num).then(function(page) {
+        var viewport = page.getViewport({scale: scale});
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        
+        var renderContext = {
+          canvasContext: ctx,
+          viewport: viewport
+        };
+        var renderTask = page.render(renderContext);
+
+        
+        renderTask.promise.then(function() {
+          pageRendering = false;
+          showContent();
+
+          if (pageNumPending !== null) {
+            
+            renderPage(pageNumPending);
+            pageNumPending = null;
+          }
+        });
+      });
+
+      
+      document.getElementById('pdf-pagenum-013b2179').textContent = num;
+    }
+
+    
+
+    function showContent() {
+      loadingWrapper.style.display = 'none';
+      canvas.style.display = 'block';
+    }
+
+    
+
+    function showLoader() {
+      if(hideLoader) return
+      loadingWrapper.style.display = 'flex';
+      canvas.style.display = 'none';
+    }
+
+    
+
+    function showPaginator() {
+      if(hidePaginator) return
+      paginator.style.display = 'block';
+    }
+
+    
+
+    function queueRenderPage(num) {
+      if (pageRendering) {
+        pageNumPending = num;
+      } else {
+        renderPage(num);
+      }
+    }
+
+    
+
+    function onPrevPage() {
+      if (pageNum <= 1) {
+        return;
+      }
+      pageNum--;
+      queueRenderPage(pageNum);
+    }
+    document.getElementById('pdf-prev-013b2179').addEventListener('click', onPrevPage);
+
+    
+
+    function onNextPage() {
+      if (pageNum >= pdfDoc.numPages) {
+        return;
+      }
+      pageNum++;
+      queueRenderPage(pageNum);
+    }
+    document.getElementById('pdf-next-013b2179').addEventListener('click', onNextPage);
+
+    
+
+    pdfjsLib.getDocument(url).promise.then(function(pdfDoc_) {
+      pdfDoc = pdfDoc_;
+      var numPages = pdfDoc.numPages;
+      document.getElementById('pdf-pagecount-013b2179').textContent = numPages;
+
+      
+      if(pageNum > numPages) {
+        pageNum = numPages
+      }
+
+      
+      renderPage(pageNum);
+    });
+    })();
+</script>
+</p>
+<h3 id="properties-of-rope">Properties of RoPE</h3>
+<p>长期衰减：
+遵循瓦斯瓦尼（Vaswani）等人在2017年的研究，我们设定\(\theta_i = 10000^{- \frac{2i}{d}}\)。可以证明，这种设定具有长期衰减特性（更多细节请参考第3.4.3节），这意味着当相对位置增加时，内积将会衰减。这一特性与这样的直觉相符，即一对相对距离较远的词元之间的联系应该更少。</p>
+<p>带线性注意力的旋转位置嵌入（RoPE）：
+自注意力机制可以被改写为一种更通用的形式。</p>
+\[Attention{\left( {Q,K,V} \right)_m} = \frac{{\sum\nolimits_{n = 1}^N {sim\left( {{q_m},{k_n}} \right){v_n}} }}{{\sum\nolimits_{n = 1}^N {sim\left( {{q_m},{k_n}} \right)} }}\]<p>原始的自注意力机制选择
+\( sim\left( {{q_m},{k_n}} \right) = \exp \left( {\frac{{q_m^T{k_n}}}{{\sqrt d }}} \right)\)。
+请注意，原始的自注意力机制需要为每一对词元计算查询向量（query）和键向量（key）的内积，其具有二次方复杂度\(\mathbb{O}(N^2)\)。遵循卡塔罗波洛斯（Katharopoulos）等人在2020年的研究，线性注意力机制将公式（17）重新表述为:
+</p>
+\[Attention{\left( {Q,K,V} \right)_m} = \frac{{\sum\nolimits_{n = 1}^N {\phi {{\left( {{q_m}} \right)}^T}\varphi \left( {{k_n}} \right){v_n}} }}{{\sum\nolimits_{n = 1}^N {\phi {{\left( {{q_m}} \right)}^T}\varphi \left( {{k_n}} \right)} }}\]<p>其中\(\phi(\cdot)\)、\(\varphi(\cdot)\)通常为非负函数。卡塔罗波洛斯（Katharopoulos）等人（2020年）的论文作者提出\(\phi(x)=\varphi(x)=\text{elu}(x) + 1\)，并且首先利用矩阵乘法的结合律计算了键（keys）和值（values）之间的乘积。沈（Shen）等人（2021年）使用了一个Softmax函数，在内积运算之前分别对查询（queries）和键（keys）进行归一化，这相当于\(\phi(q_i)=\text{softmax}(q_i)\)且\(\phi(k_j)=\exp(k_j)\)。关于线性注意力的更多细节，我们建议读者参考相关的原始论文。在本节中，我们重点讨论如何将旋转位置嵌入（RoPE）与公式（18）相结合。由于旋转位置嵌入（RoPE）是通过旋转来注入位置信息的，这使得隐藏表示的范数保持不变，所以我们可以通过将旋转矩阵与非负函数的输出相乘，来将旋转位置嵌入（RoPE）和线性注意力结合起来:</p>
+\[Attention{\left( {Q,K,V} \right)_m} = \frac{{\sum\nolimits_{n = 1}^N {{{\left( {R_{\Theta ,m}^d\phi \left( {{q_m}} \right)} \right)}^T}\left( {R_{\Theta ,n}^d\varphi \left( {{k_n}} \right)} \right){v_n}} }}{{\sum\nolimits_{n = 1}^N {\phi {{\left( {{q_m}} \right)}^T}\varphi \left( {{k_n}} \right)} }}\]<p>值得注意的是，我们保持分母不变，以避免出现除零的风险，并且分子中的求和可能包含负项。尽管公式（19）中每个值\(v_i\)的权重并非严格按照概率进行归一化，但我们认为这种计算方式仍然能够对值的重要性进行建模。</p>
+<h3 id="theoretical-explanation">Theoretical Explanation</h3>
+<h4 id="derivation-of-rope-under-2d">Derivation of RoPE under 2D</h4>
+<p>Under the case of d = 2, we consider two-word embedding vectors xq, xk corresponds to query and key and their
+position m and n, respectively. According to eq. (1), their position-encoded counterparts are:
+</p>
+\[{q_m} = {f_q}\left( {{x_m},m} \right)\]<p>
+</p>
+\[{k_n} = {f_k}\left( {{x_k},n} \right)\]<p>
+where the subscripts of qm and kn indicate the encoded positions information. Assume that there exists a function g
+that defines the inner product between vectors produced by f{q,k}:</p>
+\[q_m^T{k_n} = \left\langle {{f_q}\left( {{x_m},m} \right),{f_k}\left( {{x_n},n} \right)} \right\rangle  = g\left( {{x_m},{x_n},n - m} \right)\]<p>we further require below initial condition to be satisfied:
+</p>
+\[q = {f_q}\left( {{x_q},0} \right)\]<p>
+</p>
+\[k = {f_k}\left( {{x_k},0} \right)\]<p>
+which can be read as the vectors with empty position information encoded. Given these settings, we attempt to find a
+solution of fq, fk. First, we take advantage of the geometric meaning of vector in 2D and its complex counter part,
+decompose functions in Equations (20) and (21) into:</p>
+\[{f_q}\left( {{x_q},m} \right) = {R_q}\left( {{x_q},m} \right){e^{i{\Theta _q}\left( {{x_q},m} \right)}}\]<p>
+</p>
+\[{f_k}\left( {{x_k},n} \right) = {R_k}\left( {{x_k},n} \right){e^{i{\Theta _k}\left( {{x_k},n} \right)}}\]<p>
+</p>
+\[g\left( {{x_q},{x_k},n - m} \right) = {R_g}\left( {{x_q},{x_k},n - m} \right){e^{i{\Theta _g}\left( {{x_q},{x_k},n - m} \right)}}\]<p>
+where Rf, Rg and Θf, Θg are the radical and angular components for f{q,k} and g, respectively. Plug them into
+Equation (21), we get the relation:</p>
+
+        
+      </section>
+
+      
+
+      
+    </article>
+  </div>
+
+  <div
+    x-data="tocHighlighter()"
+    @scroll.window="debouncedScroll"
+    class="hidden lg:flex lg:flex-col lg:items-end">
+    
+      <nav id="TableOfContents">
+  <ol>
+    <li><a href="#背景和相关工作">背景和相关工作</a></li>
+    <li><a href="#proposed-approach">Proposed approach</a></li>
+    <li><a href="#rotary-position-embedding">Rotary position embedding</a></li>
+  </ol>
+</nav>
+    
+  </div>
+</div>
+
+
+            
+<footer class="flex justify-between items-center gap-2 max-w-[65ch] mx-auto px-4 md:px-0 py-12">
+
+  <div>
+  
+  <p>
+    © 2025 dO.ob&#39;s Blog
+  </p>
+  
+
+  
+  <p class="text-sm">
+    🌱
+    <span class="text-base-content/60">
+      Powered by <a class="hover:underline" href="https://gohugo.io/" target="_blank">Hugo</a> with theme
+      <a class="hover:underline" href="https://github.com/g1eny0ung/hugo-theme-dream" target="_blank">Dream</a>.</span
+    >
+  </p>
+  
+</div>
+
+  <div
+  x-data="{ icons: [
+    { name: 'sunny', status: 'n' },
+    { name: 'moon', status: 'y' },
+    { name: 'desktop', status: 'auto' }
+  ] }"
+  class="flex items-center gap-2 h-[32px] px-2 bg-base-100 border border-base-content/30 rounded-full"
+>
+  <template x-for="icon in icons">
+    <div
+      role="button"
+      tabindex="0"
+      :aria-label="'Select ' + icon.name + ' mode'"
+      class="group inline-flex justify-center items-center p-1 rounded-full cursor-pointer hover:bg-primary"
+      :class="$store.darkMode.icon() === icon.name && 'bg-primary'"
+      @click="$store.darkMode.toggle(icon.status)"
+    >
+      <ion-icon
+        :name="`${icon.name}-outline`"
+        class="group-hover:text-primary-content"
+        :class="$store.darkMode.icon() === icon.name && 'text-primary-content'"
+      >
+      </ion-icon>
+    </div>
+  </template>
+</div>
+
+</footer>
+
+          </div>
+        </div>
+        <div class="back">
+          <div class="container">
+            
+            <div class="max-w-[65ch] mt-8 mx-auto px-4">
+  
+  
+  
+  <div>
+    <div class="mb-4 text-lg font-medium">关于我</div>
+
+    <div class="prose dark:prose-invert">
+      <p>我是一名AI从业者，致力于人工智能和数据驱动行业。</p>
+<p>踏上取经路，比抵达灵山更重要</p>
+
+    </div>
+  </div>
+  <div class="divider divider-vertical"></div>
+  
+  
+
+  
+
+  
+</div>
+
+            
+
+            
+<footer class="flex justify-between items-center gap-2 max-w-[65ch] mx-auto px-4 md:px-0 py-12">
+
+  <div>
+  
+  <p>
+    © 2025 dO.ob&#39;s Blog
+  </p>
+  
+
+  
+  <p class="text-sm">
+    🌱
+    <span class="text-base-content/60">
+      Powered by <a class="hover:underline" href="https://gohugo.io/" target="_blank">Hugo</a> with theme
+      <a class="hover:underline" href="https://github.com/g1eny0ung/hugo-theme-dream" target="_blank">Dream</a>.</span
+    >
+  </p>
+  
+</div>
+
+  <div
+  x-data="{ icons: [
+    { name: 'sunny', status: 'n' },
+    { name: 'moon', status: 'y' },
+    { name: 'desktop', status: 'auto' }
+  ] }"
+  class="flex items-center gap-2 h-[32px] px-2 bg-base-100 border border-base-content/30 rounded-full"
+>
+  <template x-for="icon in icons">
+    <div
+      role="button"
+      tabindex="0"
+      :aria-label="'Select ' + icon.name + ' mode'"
+      class="group inline-flex justify-center items-center p-1 rounded-full cursor-pointer hover:bg-primary"
+      :class="$store.darkMode.icon() === icon.name && 'bg-primary'"
+      @click="$store.darkMode.toggle(icon.status)"
+    >
+      <ion-icon
+        :name="`${icon.name}-outline`"
+        class="group-hover:text-primary-content"
+        :class="$store.darkMode.icon() === icon.name && 'text-primary-content'"
+      >
+      </ion-icon>
+    </div>
+  </template>
+</div>
+
+</footer>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+  window.lightTheme = "emerald"
+  window.darkTheme = "forest"
+</script>
+
+
+
+
+
+<script src="/js/main.js"></script>
+
+    
+
+
+
+
+
+
+
+<script src="/js/toc.js"></script>
+
+
+
+
+
+    
+
+    
+
+    
+
+    
+
+    <script type="module" src="https://cdn.jsdelivr.net/npm/ionicons@7.4.0/dist/ionicons/ionicons.esm.js" integrity="sha256-/IFmi82bIhdYWctu0UddSlJqpnzWm7Vh2C4CM32wF/k=" crossorigin="anonymous"></script>
+    <script nomodule src="https://cdn.jsdelivr.net/npm/ionicons@7.4.0/dist/ionicons/ionicons.js" integrity="sha256-mr7eJMX3VC3F7G32mk4oWp1C6a2tlMYxUdptfT7uKI8=" crossorigin="anonymous"></script>
+  </body>
+</html>

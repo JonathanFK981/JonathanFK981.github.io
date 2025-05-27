@@ -1,0 +1,2408 @@
+<!DOCTYPE html>
+<html lang="zh-Hans"
+  x-data
+  :class="$store.darkMode.class()"
+  :data-theme="$store.darkMode.theme()">
+  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CenterFormer 中文版 | dO.ob&#39;s Blog</title>
+
+    
+
+<link rel="canonical" href="http://localhost:1313/posts/centerformer%E4%B8%AD%E6%96%87%E7%89%88/" />
+
+
+
+<meta name="author" content="dO.ob" />
+<meta name="description" content="这是一篇由图森未来和中佛罗里达大学计算成像实验室在2022年联合出品的关于3D目标检测的论文
+" />
+
+
+<meta name="keywords" content="Tag1,Tag2">
+
+
+
+<meta name="generator" content="Hugo 0.146.2">
+
+
+<meta property="og:url" content="http://localhost:1313/posts/centerformer%E4%B8%AD%E6%96%87%E7%89%88/">
+  <meta property="og:site_name" content="dO.ob&#39;s Blog">
+  <meta property="og:title" content="CenterFormer 中文版">
+  <meta property="og:description" content="这是一篇由图森未来和中佛罗里达大学计算成像实验室在2022年联合出品的关于3D目标检测的论文">
+  <meta property="og:locale" content="zh_Hans">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2025-05-27T13:51:41+08:00">
+    <meta property="article:modified_time" content="2025-05-27T13:51:41+08:00">
+    <meta property="article:tag" content="Tag1">
+    <meta property="article:tag" content="Tag2">
+
+
+
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="CenterFormer 中文版">
+  <meta name="twitter:description" content="这是一篇由图森未来和中佛罗里达大学计算成像实验室在2022年联合出品的关于3D目标检测的论文">
+
+
+
+
+<link rel="stylesheet" href="/css/output.css" />
+
+
+
+
+<script>
+  MathJax = {
+    tex: {
+      inlineMath: [['\\(', '\\)']],
+      displayMath: [['$$','$$']],
+      processEscapes: true,
+      processEnvironments: true
+    },
+    options: {
+      skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+    }
+  };
+</script>
+
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+ 
+
+
+    
+<script>
+  MathJax = {
+    tex: {
+      inlineMath: [['\\(', '\\)'], ['$', '$']],
+      displayMath: [['$$', '$$'], ['\\[', '\\]']],
+      processEscapes: true,
+      processEnvironments: true
+    },
+    options: {
+      skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+    }
+  };
+</script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+ 
+
+
+    
+
+
+<style>
+  pre {
+    padding: 1em;
+    overflow: auto;
+  }
+</style>
+
+
+
+
+
+
+
+
+
+    
+
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3/dist/cdn.min.js" integrity="sha256-PtHu0lJIiSHfZeNj1nFd6wTX+Squ255SGZ/fc8seCtM=" crossorigin="anonymous"></script>
+  </head>
+
+  <body x-data="{
+    flip: false,
+  }">
+    
+    <div id="dream-global-bg"></div>
+
+    
+<nav class="mt-4 lg:mt-8 py-4">
+
+  
+  <div class="container flex justify-between max-w-[65ch] mx-auto px-4 md:px-0">
+  
+    <section class="flex items-center gap-4">
+      <div class="avatar cursor-pointer hover:avatar-online" @click="flip = !flip" title="翻转一下！">
+        <div class="h-10 rounded-full">
+          <img src="/img/logo.jpg" alt="Jonathan&#39;s Blog" />
+        </div>
+      </div>
+
+      
+      <div>
+        
+        <a href="http://localhost:1313/" class="text-lg font-semibold cursor-pointer">
+          Jonathan&#39;s Blog
+        </a>
+        
+        
+      </div>
+      
+    </section>
+
+    
+    
+
+    <div class="dropdown dropdown-end sm:hidden">
+      <div tabindex="0" role="button" class="btn btn-ghost btn-square" aria-label="Select an option">
+        <ion-icon name="menu" class="text-2xl"></ion-icon>
+      </div>
+      <ul tabindex="0" class="dropdown-content menu w-36 bg-base-100 rounded-box z-1 shadow-md">
+        
+
+
+
+
+
+
+
+<li>
+  <div role="link" tabindex="0" class="inline-flex items-center p-2 cursor-pointer" @click="flip = !flip" title="关于">
+    <ion-icon name="information-circle"></ion-icon>关于</div>
+</li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li>
+  <a class="inline-flex items-center p-2 cursor-pointer" href="/posts" title="归档">
+    <ion-icon name="archive"></ion-icon>
+    归档
+  </a>
+</li>
+
+
+
+
+<li>
+  <a class="inline-flex items-center p-2 cursor-pointer" href="/categories" title="所有分类">
+    <ion-icon name="grid"></ion-icon>
+    所有分类
+  </a>
+</li>
+
+
+
+
+<li>
+  <a class="inline-flex items-center p-2 cursor-pointer" href="/tags" title="所有标签">
+    <ion-icon name="pricetags"></ion-icon>
+    所有标签
+  </a>
+</li>
+
+
+
+
+
+
+      </ul>
+    </div>
+    <section class="hidden sm:flex sm:items-center sm:gap-2 md:gap-4">
+      
+
+      
+      
+
+
+
+
+<div role="link" tabindex="0" class="text-sm font-semibold cursor-pointer hover:underline" @click="flip = !flip" title="关于">关于</div>
+
+
+
+
+
+      
+      
+
+
+
+
+
+      
+      
+
+
+
+
+
+      
+      
+<a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/posts" title="归档">
+  <ion-icon class="group-hover:text-primary-content" name="archive"></ion-icon>
+</a>
+
+
+      
+      
+<a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/categories" title="所有分类">
+  <ion-icon class="group-hover:text-primary-content" name="grid"></ion-icon>
+</a>
+
+
+      
+      
+<a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/tags" title="所有标签">
+  <ion-icon class="group-hover:text-primary-content" name="pricetags"></ion-icon>
+</a>
+
+
+      
+
+      
+
+      
+    </section>
+  </div>
+</nav>
+
+
+    <div class="flip-container" :class="{ 'flip-it': flip }">
+      <div class="flipper">
+        <div class="front">
+          <div class="container">
+            
+<div class="lg:grid lg:grid-cols-4 gap-4 mt-4 px-4">
+  <div class="hidden lg:block">
+    
+  </div>
+
+  <div class="lg:col-span-2">
+    <article class="mx-auto prose prose-quoteless dark:prose-invert" id="dream-single-post-main" itemscope itemtype="http://schema.org/Article">
+      
+  <meta itemprop="name" content="CenterFormer 中文版">
+  <meta itemprop="description" content="这是一篇由图森未来和中佛罗里达大学计算成像实验室在2022年联合出品的关于3D目标检测的论文">
+  <meta itemprop="datePublished" content="2025-05-27T13:51:41+08:00">
+  <meta itemprop="dateModified" content="2025-05-27T13:51:41+08:00">
+  <meta itemprop="wordCount" content="629">
+  <meta itemprop="keywords" content="Tag1,Tag2">
+
+      <header>
+        <h1 itemprop="headline">CenterFormer 中文版</h1>
+        <p class="text-sm">
+          
+            星期二, 5月 27, 2025
+          
+
+          | <span>3分钟阅读</span>
+
+          
+          | <span>更新于
+            
+              星期二, 5月 27, 2025
+            </span>
+          
+        </p>
+
+        
+        <div class="flex justify-between">
+          
+            <div class="flex items-center">
+  
+  <span>@</span>
+  
+
+  <span itemprop="author" itemscope itemtype="https://schema.org/Person">
+  
+    
+      <span itemprop="name">dO.ob</span>
+    
+  
+  </span>
+</div>
+
+          
+
+          <div class="flex items-center gap-2">
+  
+  
+
+  
+  
+  
+  
+  
+    <a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary"
+      href="https://x.com/intent/post?text=CenterFormer%20%e4%b8%ad%e6%96%87%e7%89%88&amp;url=http://localhost:1313/posts/centerformer%E4%B8%AD%E6%96%87%E7%89%88/" target="_blank" rel="noopener noreferrer"
+      title="Share on X">
+      <ion-icon class="group-hover:text-primary-content" name="logo-x"></ion-icon>
+    </a>
+  
+    <a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary"
+      href="https://facebook.com/sharer/sharer.php?u=http://localhost:1313/posts/centerformer%E4%B8%AD%E6%96%87%E7%89%88/" target="_blank" rel="noopener noreferrer"
+      title="Share on Facebook">
+      <ion-icon class="group-hover:text-primary-content" name="logo-facebook"></ion-icon>
+    </a>
+  
+    <a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary"
+      href="https://wa.me/?text=CenterFormer%20%e4%b8%ad%e6%96%87%e7%89%88%20http://localhost:1313/posts/centerformer%E4%B8%AD%E6%96%87%E7%89%88/" target="_blank" rel="noopener noreferrer"
+      title="Share on WhatsApp">
+      <ion-icon class="group-hover:text-primary-content" name="logo-whatsapp"></ion-icon>
+    </a>
+  
+
+  
+  
+</div>
+
+        </div>
+      </header>
+
+      <section id="dream-single-post-content" itemprop="articleBody">
+        
+          <img class="w-full z-30" src="/img/a.jpg" alt="CenterFormer 中文版" />
+        
+
+        <p>这是一篇由图森未来和中佛罗里达大学计算成像实验室在2022年联合出品的关于3D目标检测的论文</p>
+<!-- The remaining content of your post. -->
+<h1 id="摘要">摘要</h1>
+<p>基于查询的 transformer 在许多图像领域任务中展现出构建长距离注意力机制的巨大潜力，但由于点云数据规模庞大，其在基于激光雷达（LiDAR）的3D目标检测中鲜少被研究。本文提出 CenterFormer ，一种基于中心点的 transformer 网络，用于3D目标检测。 CenterFormer 首先在标准的基于体素的点云编码器基础上，利用中心点热图（center heatmap）筛选候选中心点；随后将候选中心点的特征作为 transformer 中的查询嵌入（query embedding）。为进一步聚合多帧特征，我们设计了一种通过交叉注意力（cross-attention）融合特征的方法。最后，通过添加回归头（regression heads）在输出的中心点特征表示上预测边界框。我们的设计降低了 transformer 结构的收敛难度和计算复杂度。实验结果表明，相较于无锚点目标检测网络的强基线模型，该方法实现了显著提升。在Waymo开放数据集上， CenterFormer 作为单模型达到了最先进的性能：验证集mAPH为73.7%，测试集mAPH为75.6%，显著优于此前所有已发表的基于 CNN 和 transformer 的方法。代码已开源，详见https://github.com/TuSimple/CenterFormer。</p>
+<p>关键词：激光雷达点云、三维目标检测、transformer、多帧融合</p>
+<h1 id="1-简介">1 简介</h1>
+<p>激光雷达（LiDAR）因其能够提供被扫描环境的高精度三维点云数据，成为自动驾驶中重要的感知工具。基于激光雷达的三维目标检测旨在检测激光雷达点云中目标的边界框。与图像域目标检测相比，激光雷达数据中的扫描点因距离传感器的远近可能呈现稀疏且不规则分布的特点。</p>
+<p>近期大多数方法依赖于将点云离散化为体素[59,49]或投影为鸟瞰图（BEV）特征图[18]，以使用二维或三维卷积网络。有时，这类方法需要第二阶段 RCNN [11]风格的优化网络来补偿体素化过程中的信息损失。然而，当前的两阶段网络[34,53]缺乏上下文和全局信息的学习，仅利用候选框（RoI）的局部特征优化结果，而其他边界框或邻近位置中可能有助于优化的特征则被忽略。此外，自动驾驶场景的环境并非静止，在使用连续扫描数据时，局部特征学习存在更多局限性。</p>
+<p>在图像领域， transformer 编码器-解码器结构已成为检测[4,64]和分割[43,2]任务中颇具竞争力的方法。 transformer 能够捕获整个特征图及不同特征域中的长距离上下文信息。其中最具代表性的方法之一是 DETR[4]，它利用参数化查询直接从编码器-解码器 transformer 中学习目标信息。DETR 作为集合匹配问题进行端到端训练，避免了非极大值抑制（NMS）等任何手工设计流程。然而，DETR 风格的编码器-解码器 transformer 网络存在两个主要问题：<br>
+第一，计算复杂度随输入尺寸增大呈二次增长，这限制了 transformer 只能以低维特征作为输入，导致其对小目标的检测性能较差；<br>
+第二，查询嵌入通过网络学习获得，因此训练难以收敛。</p>
+<p>我们能否为激光雷达点云设计一个 transformer 编码器-解码器网络，以更好地感知点云数据的全局关联？考虑到激光雷达点云数据的庞大规模以及待检测目标相对较小的尺寸，体素或鸟瞰图（BEV）特征图表示需要足够大，以保留这些目标的可分离特征。因此，由于输入尺寸过大，在特征图上直接使用 transformer 编码器结构并不现实。此外，如果在 transformer 解码器中使用大尺寸特征图，查询嵌入在训练过程中也难以聚焦于有意义的注意力区域。
+为缓解这些收敛问题，一种解决方案是为 transformer 提供良好的初始查询嵌入，并将注意力学习区域限制在较小范围内。在基于中心点的3D目标检测网络[53]中，目标中心点的特征被用于捕获所有目标信息，因此中心特征是目标特征嵌入的理想替代。多尺度图像金字塔和可变形卷积[16]是两种在不显著增加计算复杂度的情况下扩大特征学习感受野的常用方法。近期一些研究[64,15]已将这两种方法应用于 transformer 网络中。</p>
+<p>考虑到上述因素，我们提出了一种基于中心点的 transformer 网络——Center  transformer （ CenterFormer ），用于3D目标检测。具体而言，我们首先使用标准的基于体素的主干网络将点云编码为鸟瞰图（BEV）特征表示。接下来，采用多尺度中心提议网络将特征转换为不同尺度，并预测初始中心位置。提议中心的特征作为查询嵌入输入到 transformer 解码器中。在每个 transformer 模块中，我们使用可变形交叉注意力层来高效聚合多尺度特征图中的特征。输出的目标表示随后回归到其他目标属性，生成最终的目标预测。如图1所示，我们的方法能够建模目标级关联和长距离特征注意力。为进一步探索 transformer 的能力，我们还提出了一种多帧设计，通过交叉注意力融合不同帧的特征。我们在大规模Waymo开放数据集[38]和nuScenes数据集[3]上对 CenterFormer 进行了测试。我们的方法大幅超越了公共基准上占主导地位的流行基于中心点的3D目标检测网络，实现了最先进的性能，在Waymo验证集和测试集上的mAPH分别达到73.7%和75.6%。我们的方法的贡献可总结如下：</p>
+<ul>
+<li>我们提出了一种用于3D目标检测的基于中心点的 transformer 网络。</li>
+<li>我们使用中心点特征作为初始查询嵌入，以促进 transformer 的学习。</li>
+<li>我们提出了一种多尺度交叉注意力层，可在不显著增加计算复杂度的情况下高效聚合邻近特征。</li>
+<li>我们提出使用交叉注意力 transformer 融合不同帧的目标特征。</li>
+<li>我们的方法大幅超越所有先前发表的方法，在Waymo开放数据集上创造了新的最先进性能。</li>
+</ul>
+<script type="text/javascript" src= '/js/pdf-js/build/pdf.js'></script>
+
+<style>
+  .pdf-paginator {
+    text-align:center;}
+
+  #embed-pdf-container {
+    position: relative;
+    width: 100%;
+    height: auto;
+    min-height: 20vh;
+     
+  }
+  
+  .pdf-canvas {
+    border: 1px solid black;
+    direction: ltr;
+    width: 100%;
+    height: auto;
+    display: none;
+  }
+  
+  #the-canvas {
+    border: 1px solid black;
+    direction: ltr;
+    width: 100%;
+    height: auto;
+    display: none;
+  }
+  
+  
+  .pdf-loadingWrapper {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 350px;
+  }
+  
+  .pdf-loading {
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    border: 3px solid #d2d0d0;;
+    border-radius: 50%;
+    border-top-color: #383838;
+    animation: spin 1s ease-in-out infinite;
+    -webkit-animation: spin 1s ease-in-out infinite;
+  }
+  
+  
+  
+  
+  
+  #overlayText {
+    word-wrap: break-word;
+    display: grid;
+    justify-content: end;
+  }
+  
+  #overlayText a {
+    position: relative;
+    top: 10px;
+    right: 4px;
+    color: #000;
+    margin: auto;
+    background-color: #eeeeee;
+    padding: 0.3em 1em;
+    border: solid 2px;
+    border-radius: 12px;
+    border-color: #00000030;
+    text-decoration: none;
+  }
+  
+  #overlayText svg {
+    height: clamp(1em, 2vw, 1.4em);
+    width:  clamp(1em, 2vw, 1.4em);
+  }
+  
+  
+  
+  @keyframes spin {
+    to { -webkit-transform: rotate(360deg); }
+  }
+  @-webkit-keyframes spin {
+    to { -webkit-transform: rotate(360deg); }
+  }
+
+  #overlayText {
+        display: none;
+  }
+
+
+
+
+
+
+
+  </style><div class="embed-pdf-container" id="embed-pdf-container-0c1df04b">
+    <div class="pdf-loadingWrapper" id="pdf-loadingWrapper-0c1df04b">
+        <div class="pdf-loading" id="pdf-loading-0c1df04b"></div>
+    </div>
+    <div id="overlayText">
+      <a href="./pic/fig1.pdf" aria-label="Download" download>
+        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18">
+            <path d="M9 13c.3 0 .5-.1.7-.3L15.4 7 14 5.6l-4 4V1H8v8.6l-4-4L2.6 7l5.7 5.7c.2.2.4.3.7.3zm-7 2h14v2H2z" />
+        </svg>
+      </a>
+    </div>
+    <canvas class="pdf-canvas" id="pdf-canvas-0c1df04b"></canvas>
+</div>
+
+<div class="pdf-paginator" id="pdf-paginator-0c1df04b">
+    <button id="pdf-prev-0c1df04b">Previous</button>
+    <button id="pdf-next-0c1df04b">Next</button> &nbsp; &nbsp;
+    <span>
+      <span class="pdf-pagenum" id="pdf-pagenum-0c1df04b"></span> / <span class="pdf-pagecount" id="pdf-pagecount-0c1df04b"></span>
+    </span>
+    <a class="pdf-source" id="pdf-source-0c1df04b" href="./pic/fig1.pdf">[pdf]</a>
+</div>
+
+<noscript>
+View the PDF file <a class="pdf-source" id="pdf-source-noscript-0c1df04b" href="./pic/fig1.pdf">here</a>.
+</noscript>
+
+<script type="text/javascript">
+    (function(){
+    var url = '.\/pic\/fig1.pdf';
+
+    var hidePaginator = "" === "true";
+    var hideLoader = "" === "true";
+    var selectedPageNum = parseInt("") || 1;
+
+
+    var showSource = "" === "true";
+    var pageSource = document.getElementById("pdf-source-0c1df04b");
+
+    
+    function showSourcef() {
+        if(showSource) {
+            pageSource.style.display = 'inline';
+        } else {
+            pageSource.style.display = 'none';
+        }
+    }
+
+    
+    showSourcef();
+
+
+    
+    var pdfjsLib = window['pdfjs-dist/build/pdf'];
+
+    
+    if (pdfjsLib.GlobalWorkerOptions.workerSrc == '')
+      pdfjsLib.GlobalWorkerOptions.workerSrc = "http:\/\/localhost:1313\/" + 'js/pdf-js/build/pdf.worker.js';
+
+    
+    var pdfDoc = null,
+        pageNum = selectedPageNum,
+        pageRendering = false,
+        pageNumPending = null,
+        scale = 3,
+        canvas = document.getElementById('pdf-canvas-0c1df04b'),
+        ctx = canvas.getContext('2d'),
+        paginator = document.getElementById("pdf-paginator-0c1df04b"),
+        loadingWrapper = document.getElementById('pdf-loadingWrapper-0c1df04b');
+
+
+    
+    showPaginator();
+    showLoader();
+
+    
+
+    function renderPage(num) {
+      pageRendering = true;
+      
+      pdfDoc.getPage(num).then(function(page) {
+        var viewport = page.getViewport({scale: scale});
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        
+        var renderContext = {
+          canvasContext: ctx,
+          viewport: viewport
+        };
+        var renderTask = page.render(renderContext);
+
+        
+        renderTask.promise.then(function() {
+          pageRendering = false;
+          showContent();
+
+          if (pageNumPending !== null) {
+            
+            renderPage(pageNumPending);
+            pageNumPending = null;
+          }
+        });
+      });
+
+      
+      document.getElementById('pdf-pagenum-0c1df04b').textContent = num;
+    }
+
+    
+
+    function showContent() {
+      loadingWrapper.style.display = 'none';
+      canvas.style.display = 'block';
+    }
+
+    
+
+    function showLoader() {
+      if(hideLoader) return
+      loadingWrapper.style.display = 'flex';
+      canvas.style.display = 'none';
+    }
+
+    
+
+    function showPaginator() {
+      if(hidePaginator) return
+      paginator.style.display = 'block';
+    }
+
+    
+
+    function queueRenderPage(num) {
+      if (pageRendering) {
+        pageNumPending = num;
+      } else {
+        renderPage(num);
+      }
+    }
+
+    
+
+    function onPrevPage() {
+      if (pageNum <= 1) {
+        return;
+      }
+      pageNum--;
+      queueRenderPage(pageNum);
+    }
+    document.getElementById('pdf-prev-0c1df04b').addEventListener('click', onPrevPage);
+
+    
+
+    function onNextPage() {
+      if (pageNum >= pdfDoc.numPages) {
+        return;
+      }
+      pageNum++;
+      queueRenderPage(pageNum);
+    }
+    document.getElementById('pdf-next-0c1df04b').addEventListener('click', onNextPage);
+
+    
+
+    pdfjsLib.getDocument(url).promise.then(function(pdfDoc_) {
+      pdfDoc = pdfDoc_;
+      var numPages = pdfDoc.numPages;
+      document.getElementById('pdf-pagecount-0c1df04b').textContent = numPages;
+
+      
+      if(pageNum > numPages) {
+        pageNum = numPages
+      }
+
+      
+      renderPage(pageNum);
+    });
+    })();
+</script>
+
+<h1 id="2-related-work">2 Related Work</h1>
+<h2 id="21-lidar-based-3d-object-detection">2.1 LiDAR-based 3D Object Detection</h2>
+<p>与PointNet[31]和PointNet++[32]等成熟的点云处理网络相比，近期大多数激光雷达检测与分割方法[59,18,56,60,63]将点云在固定三维空间中体素化，生成鸟瞰图（BEV）/体素表示，并使用传统二维/三维卷积网络预测三维边界框。其他方法[46,1,39,9]则在投影距离图像上检测目标。还有一些方法结合体素网络使用混合特征[34,30,51]，或在体素特征表示中融合多视图特征[34]。VoxelNet[59]在每个体素内使用PointNet将所有点编码为体素特征，这种特征编码器后来成为基于体素的点云网络中的核心方法。PointPillar[18]提出柱体特征编码器，直接将点云编码为鸟瞰图特征图，使网络仅需二维卷积即可处理。</p>
+<p>与图像目标检测类似，三维目标检测方法可分为基于锚框（anchor-based）[36,34,18,49]和无锚框（anchor-free）[53,10]两类。基于锚框的方法通过对所有预定义的目标锚框进行分类来检测目标，而无锚框方法通常将目标视为关键点，并通过局部热图的最大值定位这些关键点。尽管基于锚框的方法能取得较好性能，但其高度依赖超参数调优。另一方面，随着无锚框方法在图像域任务中日益流行，许多三维激光雷达相关研究也采用了相同设计，并展现出更高效率和竞争力的性能。许多研究[34,20,6,24]还需要类似 RCNN 的第二阶段优化流程，通过 $RoI Align$ 或 $RoI Pool$ 对每个边界框提议的特征图进行聚合。CenterPoint[53] 通过中心点热图检测目标，并利用中心点特征表示回归其他边界框信息。</p>
+<p>大多数方法基于自车运动估计直接拼接不同帧的点云以利用多帧信息，这一过程假设模型能够对齐不同帧的目标特征。然而，独立运动的物体会导致跨帧特征错位。近期的多帧方法[14,52]采用长短期记忆网络（LSTM）或图神经网络（GNN）模块，将前序状态特征与当前特征图进行融合。3D-MAN[50]则使用多帧对齐与聚合模块，学习多帧预测的时序注意力，每个边界框的特征通过感兴趣区域池化（RoI pooling）生成。</p>
+<h2 id="22-vision--transformer">2.2 Vision  transformer</h2>
+<p>transformer 最初由自然语言处理（NLP）领域提出，如今正成为计算机视觉中颇具竞争力的特征学习模块。与传统卷积神经网络（CNNs）相比， transformer 具有更大的感受野，且特征聚合基于直接从成对特征中学习到的响应。 transformer 编码器[7,54,15]通常用于替代主干网络中的卷积层。与此同时， transformer 解码器使用高维查询特征嵌入作为输入，并通过交叉注意力从特征编码中提取特征，这在检测和分割任务[4,64,58,43]中更为常见。DETR[4]利用 transformer 编码器-解码器结构，通过学习到的查询嵌入预测目标。可变形 DETR[64] 通过可变形注意力层改进了 DETR 的训练过程。近期一些研究[22,26,55]表明，借助锚框等引导信息，DETR 更容易收敛。</p>
+<p>由于 transformer 输入的排列不变性，位置嵌入是 transformer 结构中的一项重要设计。然而，三维点云本身已包含位置信息，这导致三维 transformer 的设计存在差异。Point transformer [57]在 PointNet 结构中提出了Point transformer 层，其中 transformer 的位置嵌入为点对之间的距离。3DETR[27]和[23]在点云中采用了DETR风格的 transformer 解码器，不同之处在于解码器中的查询嵌入通过最远点采样（FPS）进行采样，并通过分类学习得到。Voxel  transformer [25]引入体素 transformer 层，以替代基于体素的点云主干网络中的稀疏卷积层。SST[8]使用单步长稀疏 transformer 作为主干网络，以避免先前三维目标检测器在下采样过程中的信息丢失。CT3D[33]利用 transformer 从局部点中学习对初始预测的优化。与上述方法不同，我们的 CenterFormer 对DETR进行了定制，使其能够在激光雷达点云上运行，且内存占用更低、收敛速度更快。此外， CenterFormer 无需第一阶段的边界框预测，即可同时学习目标级自注意力和局部交叉注意力。</p>
+<h1 id="3-method">3 Method</h1>
+<h2 id="31-preliminaries">3.1 Preliminaries</h2>
+<p>基于中心点的3D目标检测受到近期图像域无锚框目标检测方法[19,17]的启发，该方法通过在鸟瞰图（BEV）特征图上预测热图，将每个目标检测为一个中心点关键点。给定常见体素点云特征编码器的输出$ M \in \mathbb{R}^{h \times w \times c} $（其中$ h $和$ w $为BEV图尺寸，$ c $为特征维度），基于中心点的激光雷达目标检测通过两个独立头部分别预测中心点热图$ H \in \mathbb{R}^{h \times w \times l} $和边界框回归结果$ B \in \mathbb{R}^{h \times w \times 8} $。中心点热图$ H $包含$ l $个通道，每个通道对应一个目标类别。训练时，真实标签由标注边界框中心的高斯热图生成。边界框回归结果$ B $包含8个目标属性：从预测网格中心到真实边界框中心的网格偏移量、目标高度、三维尺寸和偏航旋转角。评估阶段，算法提取热图分数最高的前$ N $个位置的类别和回归预测，并通过非极大值抑制（NMS）生成最终边界框预测。</p>
+<p>transformer 解码器基于查询-键对的注意力机制，将源特征表示中的信息聚合到每个查询中。每个 transformer 模块包含三层结构：多头自注意力层、多头交叉注意力层和前馈神经网络层。每层中还包含连接输入与输出特征的跳跃连接和层归一化操作。设$ f_q $和$ f_k $分别为查询特征和键特征，多头注意力机制可表示为：
+</p>
+\[f_i^{out} = \sum\limits_{m = 1}^M {{W_m}\left[ {\sum\limits_{j \in {\Omega _j}} {\sigma \left( {\frac{{{Q_i}{K_j}}}{{\sqrt d }}} \right) \cdot {V_j}} } \right]} \]<p>
+</p>
+\[
+Q_i=f_i^q W_q+E_i^{p o s}, K_j=f_j^k W_k+E_j^{p o s}, V_j=f_j^k W_v
+\]<p>
+其中，$i$ 和 $j$ 分别为查询特征和源特征的索引，$m$ 为头索引，$\Omega_j$ 为参与注意力计算的键特征集合，$\sigma$ 为 $softmax$ 函数，$d$ 为特征维度，$E_{\text{pos}}$ 为位置嵌入，$W$ 为可学习权重。在自注意力层中，查询特征和键特征来自同一组查询特征嵌入；而在交叉注意力层中，键特征集合为源特征表示。
+<div class="embed-pdf-container" id="embed-pdf-container-a0efbc85">
+    <div class="pdf-loadingWrapper" id="pdf-loadingWrapper-a0efbc85">
+        <div class="pdf-loading" id="pdf-loading-a0efbc85"></div>
+    </div>
+    <div id="overlayText">
+      <a href="./pic/fig2.pdf" aria-label="Download" download>
+        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18">
+            <path d="M9 13c.3 0 .5-.1.7-.3L15.4 7 14 5.6l-4 4V1H8v8.6l-4-4L2.6 7l5.7 5.7c.2.2.4.3.7.3zm-7 2h14v2H2z" />
+        </svg>
+      </a>
+    </div>
+    <canvas class="pdf-canvas" id="pdf-canvas-a0efbc85"></canvas>
+</div>
+
+<div class="pdf-paginator" id="pdf-paginator-a0efbc85">
+    <button id="pdf-prev-a0efbc85">Previous</button>
+    <button id="pdf-next-a0efbc85">Next</button> &nbsp; &nbsp;
+    <span>
+      <span class="pdf-pagenum" id="pdf-pagenum-a0efbc85"></span> / <span class="pdf-pagecount" id="pdf-pagecount-a0efbc85"></span>
+    </span>
+    <a class="pdf-source" id="pdf-source-a0efbc85" href="./pic/fig2.pdf">[pdf]</a>
+</div>
+
+<noscript>
+View the PDF file <a class="pdf-source" id="pdf-source-noscript-a0efbc85" href="./pic/fig2.pdf">here</a>.
+</noscript>
+
+<script type="text/javascript">
+    (function(){
+    var url = '.\/pic\/fig2.pdf';
+
+    var hidePaginator = "" === "true";
+    var hideLoader = "" === "true";
+    var selectedPageNum = parseInt("") || 1;
+
+
+    var showSource = "" === "true";
+    var pageSource = document.getElementById("pdf-source-a0efbc85");
+
+    
+    function showSourcef() {
+        if(showSource) {
+            pageSource.style.display = 'inline';
+        } else {
+            pageSource.style.display = 'none';
+        }
+    }
+
+    
+    showSourcef();
+
+
+    
+    var pdfjsLib = window['pdfjs-dist/build/pdf'];
+
+    
+    if (pdfjsLib.GlobalWorkerOptions.workerSrc == '')
+      pdfjsLib.GlobalWorkerOptions.workerSrc = "http:\/\/localhost:1313\/" + 'js/pdf-js/build/pdf.worker.js';
+
+    
+    var pdfDoc = null,
+        pageNum = selectedPageNum,
+        pageRendering = false,
+        pageNumPending = null,
+        scale = 3,
+        canvas = document.getElementById('pdf-canvas-a0efbc85'),
+        ctx = canvas.getContext('2d'),
+        paginator = document.getElementById("pdf-paginator-a0efbc85"),
+        loadingWrapper = document.getElementById('pdf-loadingWrapper-a0efbc85');
+
+
+    
+    showPaginator();
+    showLoader();
+
+    
+
+    function renderPage(num) {
+      pageRendering = true;
+      
+      pdfDoc.getPage(num).then(function(page) {
+        var viewport = page.getViewport({scale: scale});
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        
+        var renderContext = {
+          canvasContext: ctx,
+          viewport: viewport
+        };
+        var renderTask = page.render(renderContext);
+
+        
+        renderTask.promise.then(function() {
+          pageRendering = false;
+          showContent();
+
+          if (pageNumPending !== null) {
+            
+            renderPage(pageNumPending);
+            pageNumPending = null;
+          }
+        });
+      });
+
+      
+      document.getElementById('pdf-pagenum-a0efbc85').textContent = num;
+    }
+
+    
+
+    function showContent() {
+      loadingWrapper.style.display = 'none';
+      canvas.style.display = 'block';
+    }
+
+    
+
+    function showLoader() {
+      if(hideLoader) return
+      loadingWrapper.style.display = 'flex';
+      canvas.style.display = 'none';
+    }
+
+    
+
+    function showPaginator() {
+      if(hidePaginator) return
+      paginator.style.display = 'block';
+    }
+
+    
+
+    function queueRenderPage(num) {
+      if (pageRendering) {
+        pageNumPending = num;
+      } else {
+        renderPage(num);
+      }
+    }
+
+    
+
+    function onPrevPage() {
+      if (pageNum <= 1) {
+        return;
+      }
+      pageNum--;
+      queueRenderPage(pageNum);
+    }
+    document.getElementById('pdf-prev-a0efbc85').addEventListener('click', onPrevPage);
+
+    
+
+    function onNextPage() {
+      if (pageNum >= pdfDoc.numPages) {
+        return;
+      }
+      pageNum++;
+      queueRenderPage(pageNum);
+    }
+    document.getElementById('pdf-next-a0efbc85').addEventListener('click', onNextPage);
+
+    
+
+    pdfjsLib.getDocument(url).promise.then(function(pdfDoc_) {
+      pdfDoc = pdfDoc_;
+      var numPages = pdfDoc.numPages;
+      document.getElementById('pdf-pagecount-a0efbc85').textContent = numPages;
+
+      
+      if(pageNum > numPages) {
+        pageNum = numPages
+      }
+
+      
+      renderPage(pageNum);
+    });
+    })();
+</script>
+</p>
+<h2 id="32-center--transformer">3.2 Center  transformer</h2>
+<p>我们的模型架构如图2所示。我们使用标准的基于稀疏体素的主干网络[53]将每个点云处理为鸟瞰图（BEV）特征表示。随后，我们将BEV特征编码为多尺度特征图并预测中心提议。这些提议的中心点将作为 transformer 解码器中的查询特征嵌入，用于聚合来自其他中心点和多尺度特征图的特征。最后，我们使用回归头在每个增强后的中心特征处预测边界框。在多帧 CenterFormer 中，各帧的最终BEV特征会在中心预测阶段和交叉注意力 transformer 中进行融合。</p>
+<h3 id="多尺度中心提议网络">多尺度中心提议网络</h3>
+<p>DETR 风格的 transformer 编码器需要将特征图压缩至较小尺寸以控制计算成本，这会导致网络丢失对小目标检测至关重要的细粒度特征（小目标在BEV图中通常仅占&lt;1%的空间）。因此，我们提出多尺度中心提议网络（CPN）以替代BEV特征的 transformer 编码器。为生成多尺度特征图，我们使用特征金字塔网络（FPN）将BEV特征表示处理为三种不同尺度。在每个尺度末端，我们添加卷积块注意力模块（CBAM）[45]，通过通道注意力和空间注意力增强特征。
+我们在最高尺度特征图 $\mathcal{C}$ 上使用中心点头（center head）预测目标中心的 $ l $ 通道热图。每个通道包含一个类别的热图分数。热图分数最高的前 $ N $ 个位置将作为中心提议提取出来。在我们的实验中，根据经验设置 $ N = 500 $。</p>
+<h3 id="多尺度中心-transformer-解码器">多尺度中心 transformer 解码器</h3>
+<p>我们提取提议中心位置的特征作为 transformer 解码器的查询嵌入。使用线性层将中心点的位置编码为位置嵌入。传统 DETR 解码器通过可学习参数初始化查询，导致解码器中获取的注意力权重在所有特征间几乎相同。通过将中心特征作为初始查询嵌入，我们能够引导训练聚焦于包含有意义目标信息的特征。</p>
+<p>我们采用标准 transformer 解码器中的自注意力层来学习目标间的上下文注意力。计算中心查询对所有多尺度BEV特征的交叉注意力的复杂度为$ O(\sum_{s=1}^S h_s w_s N) $。由于BEV图分辨率需足够大以保留小目标的细粒度特征，将所有BEV特征作为参与注意力的关键点并不现实。因此，我们将参与注意力的关键点限制在每个尺度下中心位置附近的 $3×3$ 小窗口内，如图3所示。这种交叉注意力的复杂度为$ O(9SN) $，比常规实现更高效。借助多尺度特征，我们能够捕获提议中心周围的广泛特征。多尺度交叉注意力可表示为：
+</p>
+$$
+\operatorname{MSCA}(p)=\sum_{m=1}^M W_m\left[\sum_{s=1}^S \sum_{j \in \Omega_j} \sigma\left(\frac{Q_i K_j^s}{\sqrt{d}}\right) \cdot V_j^s\right]
+$$<p>其中，$ p $ 表示中心提议，$ \Omega_j $ 在此处为中心周围的窗口，$ s $ 为尺度索引。前馈神经网络层也保持不变。</p>
+<p><strong>多尺度可变形交叉注意力层</strong>
+受[64]启发，我们还采用了可变形交叉注意力层来自动采样参与注意力计算的关键点。图3展示了可变形交叉注意力层的结构。与常规多头交叉注意力层相比，可变形交叉注意力使用线性层在所有注意力头和尺度下学习参考中心位置 $ p $ 的二维偏移量 $ \Delta p $。通过双线性采样，$ p + \Delta p $ 位置的特征将被提取为交叉注意力参与特征。我们使用线性层直接从查询嵌入中学习注意力分数。来自多个尺度的特征被聚合在一起，形成交叉注意力层的输出：</p>
+$$
+\operatorname{MSDCA}(p)=\sum_{m=1}^M W_m\left[\sum_{s=1}^S \sum_{k=1}^K \sigma\left(W_{m s k} \mathcal{C}(p)\right) x^s\left(p+\Delta p_{m s k}\right)\right],
+$$<p>其中，$ x_s $ 为多尺度鸟瞰图（BEV）特征，$ C(p) $ 为中心特征，$ \sigma(W_{\text{msk}}C(p)) $ 为注意力权重。在我们的实验中，设置 $ K = 15 $。
+<div class="embed-pdf-container" id="embed-pdf-container-aa39db95">
+    <div class="pdf-loadingWrapper" id="pdf-loadingWrapper-aa39db95">
+        <div class="pdf-loading" id="pdf-loading-aa39db95"></div>
+    </div>
+    <div id="overlayText">
+      <a href="./pic/fig3.pdf" aria-label="Download" download>
+        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18">
+            <path d="M9 13c.3 0 .5-.1.7-.3L15.4 7 14 5.6l-4 4V1H8v8.6l-4-4L2.6 7l5.7 5.7c.2.2.4.3.7.3zm-7 2h14v2H2z" />
+        </svg>
+      </a>
+    </div>
+    <canvas class="pdf-canvas" id="pdf-canvas-aa39db95"></canvas>
+</div>
+
+<div class="pdf-paginator" id="pdf-paginator-aa39db95">
+    <button id="pdf-prev-aa39db95">Previous</button>
+    <button id="pdf-next-aa39db95">Next</button> &nbsp; &nbsp;
+    <span>
+      <span class="pdf-pagenum" id="pdf-pagenum-aa39db95"></span> / <span class="pdf-pagecount" id="pdf-pagecount-aa39db95"></span>
+    </span>
+    <a class="pdf-source" id="pdf-source-aa39db95" href="./pic/fig3.pdf">[pdf]</a>
+</div>
+
+<noscript>
+View the PDF file <a class="pdf-source" id="pdf-source-noscript-aa39db95" href="./pic/fig3.pdf">here</a>.
+</noscript>
+
+<script type="text/javascript">
+    (function(){
+    var url = '.\/pic\/fig3.pdf';
+
+    var hidePaginator = "" === "true";
+    var hideLoader = "" === "true";
+    var selectedPageNum = parseInt("") || 1;
+
+
+    var showSource = "" === "true";
+    var pageSource = document.getElementById("pdf-source-aa39db95");
+
+    
+    function showSourcef() {
+        if(showSource) {
+            pageSource.style.display = 'inline';
+        } else {
+            pageSource.style.display = 'none';
+        }
+    }
+
+    
+    showSourcef();
+
+
+    
+    var pdfjsLib = window['pdfjs-dist/build/pdf'];
+
+    
+    if (pdfjsLib.GlobalWorkerOptions.workerSrc == '')
+      pdfjsLib.GlobalWorkerOptions.workerSrc = "http:\/\/localhost:1313\/" + 'js/pdf-js/build/pdf.worker.js';
+
+    
+    var pdfDoc = null,
+        pageNum = selectedPageNum,
+        pageRendering = false,
+        pageNumPending = null,
+        scale = 3,
+        canvas = document.getElementById('pdf-canvas-aa39db95'),
+        ctx = canvas.getContext('2d'),
+        paginator = document.getElementById("pdf-paginator-aa39db95"),
+        loadingWrapper = document.getElementById('pdf-loadingWrapper-aa39db95');
+
+
+    
+    showPaginator();
+    showLoader();
+
+    
+
+    function renderPage(num) {
+      pageRendering = true;
+      
+      pdfDoc.getPage(num).then(function(page) {
+        var viewport = page.getViewport({scale: scale});
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        
+        var renderContext = {
+          canvasContext: ctx,
+          viewport: viewport
+        };
+        var renderTask = page.render(renderContext);
+
+        
+        renderTask.promise.then(function() {
+          pageRendering = false;
+          showContent();
+
+          if (pageNumPending !== null) {
+            
+            renderPage(pageNumPending);
+            pageNumPending = null;
+          }
+        });
+      });
+
+      
+      document.getElementById('pdf-pagenum-aa39db95').textContent = num;
+    }
+
+    
+
+    function showContent() {
+      loadingWrapper.style.display = 'none';
+      canvas.style.display = 'block';
+    }
+
+    
+
+    function showLoader() {
+      if(hideLoader) return
+      loadingWrapper.style.display = 'flex';
+      canvas.style.display = 'none';
+    }
+
+    
+
+    function showPaginator() {
+      if(hidePaginator) return
+      paginator.style.display = 'block';
+    }
+
+    
+
+    function queueRenderPage(num) {
+      if (pageRendering) {
+        pageNumPending = num;
+      } else {
+        renderPage(num);
+      }
+    }
+
+    
+
+    function onPrevPage() {
+      if (pageNum <= 1) {
+        return;
+      }
+      pageNum--;
+      queueRenderPage(pageNum);
+    }
+    document.getElementById('pdf-prev-aa39db95').addEventListener('click', onPrevPage);
+
+    
+
+    function onNextPage() {
+      if (pageNum >= pdfDoc.numPages) {
+        return;
+      }
+      pageNum++;
+      queueRenderPage(pageNum);
+    }
+    document.getElementById('pdf-next-aa39db95').addEventListener('click', onNextPage);
+
+    
+
+    pdfjsLib.getDocument(url).promise.then(function(pdfDoc_) {
+      pdfDoc = pdfDoc_;
+      var numPages = pdfDoc.numPages;
+      document.getElementById('pdf-pagecount-aa39db95').textContent = numPages;
+
+      
+      if(pageNum > numPages) {
+        pageNum = numPages
+      }
+
+      
+      renderPage(pageNum);
+    });
+    })();
+</script>
+</p>
+<h2 id="33-multi-frame--centerformer">3.3 Multi-frame  CenterFormer</h2>
+<p>多帧技术常用于3D检测以提升性能。当前基于CNN的检测器难以有效融合快速运动目标的特征，而 transformer 结构因注意力机制更适合此类融合。为进一步挖掘 CenterFormer 的潜力，我们提出一种基于交叉注意力 transformer 的多帧特征融合方法。如图2所示，我们使用相同的主干网络独立处理每一帧，将前序帧的最终BEV特征变换到当前坐标系，并在中心点头和交叉注意力层中与当前BEV特征融合。</p>
+<p>由于目标运动，同一目标的中心在不同帧中可能发生偏移。考虑到只需预测当前帧的中心，我们在中心点头中引入空间感知融合模块以缓解错位误差。如图4所示，该模块采用与CBAM[45]类似的空间注意力层，基于当前BEV特征计算逐像素注意力权重。我们将当前BEV特征与加权后的前序BEV特征拼接，通过额外的卷积层进行融合，并根据相对时间向BEV特征中添加时间嵌入。最后，将融合后的特征输入中心点头以预测候选中心点。</p>
+<p>在交叉注意力层中，我们利用中心提议的位置在前序对齐帧中查找对应特征，并将其加入参与注意力计算的键特征集合。由于常规交叉注意力设计仅使用中心位置附近小窗口内的特征，当目标因快速运动超出窗口范围时，其学习能力受限。相比之下，可变形交叉注意力能够建模任意程度的运动，更适用于长时范围场景。此外，由于多帧模型仅需前序帧的最终BEV特征，通过将其存储在内存池中，可轻松部署于在线预测。
+<div class="embed-pdf-container" id="embed-pdf-container-23f3d0d9">
+    <div class="pdf-loadingWrapper" id="pdf-loadingWrapper-23f3d0d9">
+        <div class="pdf-loading" id="pdf-loading-23f3d0d9"></div>
+    </div>
+    <div id="overlayText">
+      <a href="./pic/fig4.pdf" aria-label="Download" download>
+        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18">
+            <path d="M9 13c.3 0 .5-.1.7-.3L15.4 7 14 5.6l-4 4V1H8v8.6l-4-4L2.6 7l5.7 5.7c.2.2.4.3.7.3zm-7 2h14v2H2z" />
+        </svg>
+      </a>
+    </div>
+    <canvas class="pdf-canvas" id="pdf-canvas-23f3d0d9"></canvas>
+</div>
+
+<div class="pdf-paginator" id="pdf-paginator-23f3d0d9">
+    <button id="pdf-prev-23f3d0d9">Previous</button>
+    <button id="pdf-next-23f3d0d9">Next</button> &nbsp; &nbsp;
+    <span>
+      <span class="pdf-pagenum" id="pdf-pagenum-23f3d0d9"></span> / <span class="pdf-pagecount" id="pdf-pagecount-23f3d0d9"></span>
+    </span>
+    <a class="pdf-source" id="pdf-source-23f3d0d9" href="./pic/fig4.pdf">[pdf]</a>
+</div>
+
+<noscript>
+View the PDF file <a class="pdf-source" id="pdf-source-noscript-23f3d0d9" href="./pic/fig4.pdf">here</a>.
+</noscript>
+
+<script type="text/javascript">
+    (function(){
+    var url = '.\/pic\/fig4.pdf';
+
+    var hidePaginator = "" === "true";
+    var hideLoader = "" === "true";
+    var selectedPageNum = parseInt("") || 1;
+
+
+    var showSource = "" === "true";
+    var pageSource = document.getElementById("pdf-source-23f3d0d9");
+
+    
+    function showSourcef() {
+        if(showSource) {
+            pageSource.style.display = 'inline';
+        } else {
+            pageSource.style.display = 'none';
+        }
+    }
+
+    
+    showSourcef();
+
+
+    
+    var pdfjsLib = window['pdfjs-dist/build/pdf'];
+
+    
+    if (pdfjsLib.GlobalWorkerOptions.workerSrc == '')
+      pdfjsLib.GlobalWorkerOptions.workerSrc = "http:\/\/localhost:1313\/" + 'js/pdf-js/build/pdf.worker.js';
+
+    
+    var pdfDoc = null,
+        pageNum = selectedPageNum,
+        pageRendering = false,
+        pageNumPending = null,
+        scale = 3,
+        canvas = document.getElementById('pdf-canvas-23f3d0d9'),
+        ctx = canvas.getContext('2d'),
+        paginator = document.getElementById("pdf-paginator-23f3d0d9"),
+        loadingWrapper = document.getElementById('pdf-loadingWrapper-23f3d0d9');
+
+
+    
+    showPaginator();
+    showLoader();
+
+    
+
+    function renderPage(num) {
+      pageRendering = true;
+      
+      pdfDoc.getPage(num).then(function(page) {
+        var viewport = page.getViewport({scale: scale});
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        
+        var renderContext = {
+          canvasContext: ctx,
+          viewport: viewport
+        };
+        var renderTask = page.render(renderContext);
+
+        
+        renderTask.promise.then(function() {
+          pageRendering = false;
+          showContent();
+
+          if (pageNumPending !== null) {
+            
+            renderPage(pageNumPending);
+            pageNumPending = null;
+          }
+        });
+      });
+
+      
+      document.getElementById('pdf-pagenum-23f3d0d9').textContent = num;
+    }
+
+    
+
+    function showContent() {
+      loadingWrapper.style.display = 'none';
+      canvas.style.display = 'block';
+    }
+
+    
+
+    function showLoader() {
+      if(hideLoader) return
+      loadingWrapper.style.display = 'flex';
+      canvas.style.display = 'none';
+    }
+
+    
+
+    function showPaginator() {
+      if(hidePaginator) return
+      paginator.style.display = 'block';
+    }
+
+    
+
+    function queueRenderPage(num) {
+      if (pageRendering) {
+        pageNumPending = num;
+      } else {
+        renderPage(num);
+      }
+    }
+
+    
+
+    function onPrevPage() {
+      if (pageNum <= 1) {
+        return;
+      }
+      pageNum--;
+      queueRenderPage(pageNum);
+    }
+    document.getElementById('pdf-prev-23f3d0d9').addEventListener('click', onPrevPage);
+
+    
+
+    function onNextPage() {
+      if (pageNum >= pdfDoc.numPages) {
+        return;
+      }
+      pageNum++;
+      queueRenderPage(pageNum);
+    }
+    document.getElementById('pdf-next-23f3d0d9').addEventListener('click', onNextPage);
+
+    
+
+    pdfjsLib.getDocument(url).promise.then(function(pdfDoc_) {
+      pdfDoc = pdfDoc_;
+      var numPages = pdfDoc.numPages;
+      document.getElementById('pdf-pagecount-23f3d0d9').textContent = numPages;
+
+      
+      if(pageNum > numPages) {
+        pageNum = numPages
+      }
+
+      
+      renderPage(pageNum);
+    });
+    })();
+</script>
+</p>
+<h2 id="34-loss-functions">3.4 Loss Functions</h2>
+<p>除了常规的分类损失和回归损失函数外，我们额外引入了两个损失函数以更好地适配基于中心点的目标检测任务。首先，受CIA-SSD[47]设计启发，我们将IoU感知置信度校正模块从其他方法的第二阶段迁移至回归头中。具体而言，我们为每个边界框提议预测一个IoU分数$ IoU $，并使用平滑L1损失监督该分数与预测框和所有真实标注框之间最高IoU的差异。在评估阶段，我们通过$\alpha^{\prime} = \alpha ∗ iou^β$ 对置信度分数进行校正，其中 $ \alpha $ 为原始置信度分数，$ \beta $ 为控制校正程度的超参数。其次，与[42,13]类似，我们在中心点热图头之外增加了角点热图头作为辅助监督。对于每个边界框，我们采用与绘制中心点热图相同的方法生成四个边界框边缘中心点和目标中心点的角点热图，但高斯半径设置为前者的一半。训练过程中，我们对真实热图分数高于0的区域使用均方误差（MSE）损失监督角点预测。模型最终的损失函数由以下四部分加权组合而成：$\mathcal{L} = w_{hm}\mathcal{L}_{hm} + w_{reg}\mathcal{L}_{reg} + w_{iou}\mathcal{L}_{iou} + w_{cor}\mathcal{L}_{cor}$。我们对热图分类任务使用焦点损失[21]，对边界框回归任务使用 L1 损失。在实验中，热图分类损失、边界框回归损失、IoU校正损失和角点分类损失的权重分别设置为[1, 2, 1, 1]。</p>
+<h1 id="4-experiments">4 Experiments</h1>
+<p>我们在两个大规模激光雷达目标检测基准数据集上展示了实验结果：Waymo 开放数据集[38]和 nuScenes 数据集[3]。由于篇幅限制，nuScenes 数据集上的实验结果、更多分析以及网络参数选择的细节和额外可视化内容包含在补充材料中。</p>
+<h2 id="41-dataset">4.1 Dataset</h2>
+<p>Waymo开放数据集（WOD）是一个面向自动驾驶场景的大规模激光雷达点云数据集。它包含798、202和150个序列，分别用于训练、验证和测试。每个序列时长20秒，由 10 FPS的64线360°激光雷达传感器采集。WOD为车辆、行人和骑行者三类目标提供了边界框标注。该数据集使用的评估指标包括平均精度均值（mAP）和基于航向精度加权的mAP（mAPH）。每个目标被划分为两个难度等级：LEVEL_1（L1表示目标上有超过5个点，LEVEL_2（L2）表示目标上有1到5个点或被人工标注为L2。主要评估指标mAPH L2同时包含L1和L2目标。我们将三维体素空间的范围设置为：X轴和Y轴为[−75.2米, 75.2米]，Z轴为[−2米, 4米]，每个体素的尺寸设置为（0.1米, 0.1米, 0.15米）。</p>
+<h2 id="42-implementation-details">4.2 Implementation Details</h2>
+<p>我们沿用了与[61,53,34]相同的VoxelNet主干网络设计。在中心提议网络中，我们通过一个上采样层和一个下采样层将BEV特征的输出处理为三个尺度。当使用常规交叉注意力时，我们将 transformer 层/头的数量设置为3/4，而使用可变形交叉注意力时则设置为2/6。评估阶段，我们对车辆、行人和骑行者分别使用[0.8, 0.55, 0.55]的NMS IoU阈值和 $\beta$ =[1, 1, 4]。对于8帧模型，我们将 $\beta$ 设置为[1, 1, 1]以提升骑行者类别的检测效果，并在评估中将中心提议数量 $N$ 增加至1000。</p>
+<p>我们使用AdamW优化器结合单周期策略训练模型，单帧和多帧模型分别在8块Nvidia A100 GPU上进行训练，批量大小为32和16。由于内存限制，4帧和8帧数据会先拆分为两个2帧和4帧的小批量，每个小批量内的各帧点云将先进行拼接，因此我们的多帧模型只需融合两个BEV特征。训练过程中，我们采用与[41]相同的淡入淡出策略应用目标复制粘贴增强。更多细节见补充材料。</p>
+<div class="embed-pdf-container" id="embed-pdf-container-9a561d56">
+    <div class="pdf-loadingWrapper" id="pdf-loadingWrapper-9a561d56">
+        <div class="pdf-loading" id="pdf-loading-9a561d56"></div>
+    </div>
+    <div id="overlayText">
+      <a href="./pic/table1.pdf" aria-label="Download" download>
+        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18">
+            <path d="M9 13c.3 0 .5-.1.7-.3L15.4 7 14 5.6l-4 4V1H8v8.6l-4-4L2.6 7l5.7 5.7c.2.2.4.3.7.3zm-7 2h14v2H2z" />
+        </svg>
+      </a>
+    </div>
+    <canvas class="pdf-canvas" id="pdf-canvas-9a561d56"></canvas>
+</div>
+
+<div class="pdf-paginator" id="pdf-paginator-9a561d56">
+    <button id="pdf-prev-9a561d56">Previous</button>
+    <button id="pdf-next-9a561d56">Next</button> &nbsp; &nbsp;
+    <span>
+      <span class="pdf-pagenum" id="pdf-pagenum-9a561d56"></span> / <span class="pdf-pagecount" id="pdf-pagecount-9a561d56"></span>
+    </span>
+    <a class="pdf-source" id="pdf-source-9a561d56" href="./pic/table1.pdf">[pdf]</a>
+</div>
+
+<noscript>
+View the PDF file <a class="pdf-source" id="pdf-source-noscript-9a561d56" href="./pic/table1.pdf">here</a>.
+</noscript>
+
+<script type="text/javascript">
+    (function(){
+    var url = '.\/pic\/table1.pdf';
+
+    var hidePaginator = "" === "true";
+    var hideLoader = "" === "true";
+    var selectedPageNum = parseInt("") || 1;
+
+
+    var showSource = "" === "true";
+    var pageSource = document.getElementById("pdf-source-9a561d56");
+
+    
+    function showSourcef() {
+        if(showSource) {
+            pageSource.style.display = 'inline';
+        } else {
+            pageSource.style.display = 'none';
+        }
+    }
+
+    
+    showSourcef();
+
+
+    
+    var pdfjsLib = window['pdfjs-dist/build/pdf'];
+
+    
+    if (pdfjsLib.GlobalWorkerOptions.workerSrc == '')
+      pdfjsLib.GlobalWorkerOptions.workerSrc = "http:\/\/localhost:1313\/" + 'js/pdf-js/build/pdf.worker.js';
+
+    
+    var pdfDoc = null,
+        pageNum = selectedPageNum,
+        pageRendering = false,
+        pageNumPending = null,
+        scale = 3,
+        canvas = document.getElementById('pdf-canvas-9a561d56'),
+        ctx = canvas.getContext('2d'),
+        paginator = document.getElementById("pdf-paginator-9a561d56"),
+        loadingWrapper = document.getElementById('pdf-loadingWrapper-9a561d56');
+
+
+    
+    showPaginator();
+    showLoader();
+
+    
+
+    function renderPage(num) {
+      pageRendering = true;
+      
+      pdfDoc.getPage(num).then(function(page) {
+        var viewport = page.getViewport({scale: scale});
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        
+        var renderContext = {
+          canvasContext: ctx,
+          viewport: viewport
+        };
+        var renderTask = page.render(renderContext);
+
+        
+        renderTask.promise.then(function() {
+          pageRendering = false;
+          showContent();
+
+          if (pageNumPending !== null) {
+            
+            renderPage(pageNumPending);
+            pageNumPending = null;
+          }
+        });
+      });
+
+      
+      document.getElementById('pdf-pagenum-9a561d56').textContent = num;
+    }
+
+    
+
+    function showContent() {
+      loadingWrapper.style.display = 'none';
+      canvas.style.display = 'block';
+    }
+
+    
+
+    function showLoader() {
+      if(hideLoader) return
+      loadingWrapper.style.display = 'flex';
+      canvas.style.display = 'none';
+    }
+
+    
+
+    function showPaginator() {
+      if(hidePaginator) return
+      paginator.style.display = 'block';
+    }
+
+    
+
+    function queueRenderPage(num) {
+      if (pageRendering) {
+        pageNumPending = num;
+      } else {
+        renderPage(num);
+      }
+    }
+
+    
+
+    function onPrevPage() {
+      if (pageNum <= 1) {
+        return;
+      }
+      pageNum--;
+      queueRenderPage(pageNum);
+    }
+    document.getElementById('pdf-prev-9a561d56').addEventListener('click', onPrevPage);
+
+    
+
+    function onNextPage() {
+      if (pageNum >= pdfDoc.numPages) {
+        return;
+      }
+      pageNum++;
+      queueRenderPage(pageNum);
+    }
+    document.getElementById('pdf-next-9a561d56').addEventListener('click', onNextPage);
+
+    
+
+    pdfjsLib.getDocument(url).promise.then(function(pdfDoc_) {
+      pdfDoc = pdfDoc_;
+      var numPages = pdfDoc.numPages;
+      document.getElementById('pdf-pagecount-9a561d56').textContent = numPages;
+
+      
+      if(pageNum > numPages) {
+        pageNum = numPages
+      }
+
+      
+      renderPage(pageNum);
+    });
+    })();
+</script>
+
+<h2 id="43-object-detection-results">4.3 Object Detection Results</h2>
+<p>在表1中，我们展示了验证集上的结果。基于无锚框中心点的方法 CenterPoint 比基于锚框的方法表现更优。PVRCNN++ 是迄今为止最好的基于锚框的方法，但在小目标检测上性能较弱。这表明使用人工设计的锚框来检测尺寸变化较大的目标存在局限性。我们的单帧模型比 CenterPoint 高出1.7%。使用多帧模型可显著提升mAPH性能，我们的2/4/8帧模型的mAPH分别达到 72.8%、73.2% 和 73.7%，成为新的最先进水平。行人类别从多帧模型中受益最大，因为行人点云最容易受遮挡、噪声以及自身尺寸小的影响。整体更优的性能验证了我们提出的 transformer 模型的有效性。在表2中，我们展示了测试集上的单模型结果，预测结果提交至在线服务器进行评估。我们的方法大幅超越所有先前方法，由于 transformer 对长距离上下文信息的学习，车辆和行人类别在L2 mAPH上分别取得了显著提升（+3.8% 和 +3.1%）。</p>
+<p>为了与仅针对车辆类别训练模型并报告结果的最新方法[25,6,24,33]进行公平比较，我们也仅在车辆类别上训练单帧 CenterFormer 。表3展示了实验结果。如表所示，即使采用最简单的设计， CenterFormer 仍优于近期基于 transformer 的方法和基于CNN的基线模型。</p>
+<p><div class="embed-pdf-container" id="embed-pdf-container-e0777b59">
+    <div class="pdf-loadingWrapper" id="pdf-loadingWrapper-e0777b59">
+        <div class="pdf-loading" id="pdf-loading-e0777b59"></div>
+    </div>
+    <div id="overlayText">
+      <a href="./pic/table2.pdf" aria-label="Download" download>
+        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18">
+            <path d="M9 13c.3 0 .5-.1.7-.3L15.4 7 14 5.6l-4 4V1H8v8.6l-4-4L2.6 7l5.7 5.7c.2.2.4.3.7.3zm-7 2h14v2H2z" />
+        </svg>
+      </a>
+    </div>
+    <canvas class="pdf-canvas" id="pdf-canvas-e0777b59"></canvas>
+</div>
+
+<div class="pdf-paginator" id="pdf-paginator-e0777b59">
+    <button id="pdf-prev-e0777b59">Previous</button>
+    <button id="pdf-next-e0777b59">Next</button> &nbsp; &nbsp;
+    <span>
+      <span class="pdf-pagenum" id="pdf-pagenum-e0777b59"></span> / <span class="pdf-pagecount" id="pdf-pagecount-e0777b59"></span>
+    </span>
+    <a class="pdf-source" id="pdf-source-e0777b59" href="./pic/table2.pdf">[pdf]</a>
+</div>
+
+<noscript>
+View the PDF file <a class="pdf-source" id="pdf-source-noscript-e0777b59" href="./pic/table2.pdf">here</a>.
+</noscript>
+
+<script type="text/javascript">
+    (function(){
+    var url = '.\/pic\/table2.pdf';
+
+    var hidePaginator = "" === "true";
+    var hideLoader = "" === "true";
+    var selectedPageNum = parseInt("") || 1;
+
+
+    var showSource = "" === "true";
+    var pageSource = document.getElementById("pdf-source-e0777b59");
+
+    
+    function showSourcef() {
+        if(showSource) {
+            pageSource.style.display = 'inline';
+        } else {
+            pageSource.style.display = 'none';
+        }
+    }
+
+    
+    showSourcef();
+
+
+    
+    var pdfjsLib = window['pdfjs-dist/build/pdf'];
+
+    
+    if (pdfjsLib.GlobalWorkerOptions.workerSrc == '')
+      pdfjsLib.GlobalWorkerOptions.workerSrc = "http:\/\/localhost:1313\/" + 'js/pdf-js/build/pdf.worker.js';
+
+    
+    var pdfDoc = null,
+        pageNum = selectedPageNum,
+        pageRendering = false,
+        pageNumPending = null,
+        scale = 3,
+        canvas = document.getElementById('pdf-canvas-e0777b59'),
+        ctx = canvas.getContext('2d'),
+        paginator = document.getElementById("pdf-paginator-e0777b59"),
+        loadingWrapper = document.getElementById('pdf-loadingWrapper-e0777b59');
+
+
+    
+    showPaginator();
+    showLoader();
+
+    
+
+    function renderPage(num) {
+      pageRendering = true;
+      
+      pdfDoc.getPage(num).then(function(page) {
+        var viewport = page.getViewport({scale: scale});
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        
+        var renderContext = {
+          canvasContext: ctx,
+          viewport: viewport
+        };
+        var renderTask = page.render(renderContext);
+
+        
+        renderTask.promise.then(function() {
+          pageRendering = false;
+          showContent();
+
+          if (pageNumPending !== null) {
+            
+            renderPage(pageNumPending);
+            pageNumPending = null;
+          }
+        });
+      });
+
+      
+      document.getElementById('pdf-pagenum-e0777b59').textContent = num;
+    }
+
+    
+
+    function showContent() {
+      loadingWrapper.style.display = 'none';
+      canvas.style.display = 'block';
+    }
+
+    
+
+    function showLoader() {
+      if(hideLoader) return
+      loadingWrapper.style.display = 'flex';
+      canvas.style.display = 'none';
+    }
+
+    
+
+    function showPaginator() {
+      if(hidePaginator) return
+      paginator.style.display = 'block';
+    }
+
+    
+
+    function queueRenderPage(num) {
+      if (pageRendering) {
+        pageNumPending = num;
+      } else {
+        renderPage(num);
+      }
+    }
+
+    
+
+    function onPrevPage() {
+      if (pageNum <= 1) {
+        return;
+      }
+      pageNum--;
+      queueRenderPage(pageNum);
+    }
+    document.getElementById('pdf-prev-e0777b59').addEventListener('click', onPrevPage);
+
+    
+
+    function onNextPage() {
+      if (pageNum >= pdfDoc.numPages) {
+        return;
+      }
+      pageNum++;
+      queueRenderPage(pageNum);
+    }
+    document.getElementById('pdf-next-e0777b59').addEventListener('click', onNextPage);
+
+    
+
+    pdfjsLib.getDocument(url).promise.then(function(pdfDoc_) {
+      pdfDoc = pdfDoc_;
+      var numPages = pdfDoc.numPages;
+      document.getElementById('pdf-pagecount-e0777b59').textContent = numPages;
+
+      
+      if(pageNum > numPages) {
+        pageNum = numPages
+      }
+
+      
+      renderPage(pageNum);
+    });
+    })();
+</script>
+
+<div class="embed-pdf-container" id="embed-pdf-container-483fec1c">
+    <div class="pdf-loadingWrapper" id="pdf-loadingWrapper-483fec1c">
+        <div class="pdf-loading" id="pdf-loading-483fec1c"></div>
+    </div>
+    <div id="overlayText">
+      <a href="./pic/table3.pdf" aria-label="Download" download>
+        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18">
+            <path d="M9 13c.3 0 .5-.1.7-.3L15.4 7 14 5.6l-4 4V1H8v8.6l-4-4L2.6 7l5.7 5.7c.2.2.4.3.7.3zm-7 2h14v2H2z" />
+        </svg>
+      </a>
+    </div>
+    <canvas class="pdf-canvas" id="pdf-canvas-483fec1c"></canvas>
+</div>
+
+<div class="pdf-paginator" id="pdf-paginator-483fec1c">
+    <button id="pdf-prev-483fec1c">Previous</button>
+    <button id="pdf-next-483fec1c">Next</button> &nbsp; &nbsp;
+    <span>
+      <span class="pdf-pagenum" id="pdf-pagenum-483fec1c"></span> / <span class="pdf-pagecount" id="pdf-pagecount-483fec1c"></span>
+    </span>
+    <a class="pdf-source" id="pdf-source-483fec1c" href="./pic/table3.pdf">[pdf]</a>
+</div>
+
+<noscript>
+View the PDF file <a class="pdf-source" id="pdf-source-noscript-483fec1c" href="./pic/table3.pdf">here</a>.
+</noscript>
+
+<script type="text/javascript">
+    (function(){
+    var url = '.\/pic\/table3.pdf';
+
+    var hidePaginator = "" === "true";
+    var hideLoader = "" === "true";
+    var selectedPageNum = parseInt("") || 1;
+
+
+    var showSource = "" === "true";
+    var pageSource = document.getElementById("pdf-source-483fec1c");
+
+    
+    function showSourcef() {
+        if(showSource) {
+            pageSource.style.display = 'inline';
+        } else {
+            pageSource.style.display = 'none';
+        }
+    }
+
+    
+    showSourcef();
+
+
+    
+    var pdfjsLib = window['pdfjs-dist/build/pdf'];
+
+    
+    if (pdfjsLib.GlobalWorkerOptions.workerSrc == '')
+      pdfjsLib.GlobalWorkerOptions.workerSrc = "http:\/\/localhost:1313\/" + 'js/pdf-js/build/pdf.worker.js';
+
+    
+    var pdfDoc = null,
+        pageNum = selectedPageNum,
+        pageRendering = false,
+        pageNumPending = null,
+        scale = 3,
+        canvas = document.getElementById('pdf-canvas-483fec1c'),
+        ctx = canvas.getContext('2d'),
+        paginator = document.getElementById("pdf-paginator-483fec1c"),
+        loadingWrapper = document.getElementById('pdf-loadingWrapper-483fec1c');
+
+
+    
+    showPaginator();
+    showLoader();
+
+    
+
+    function renderPage(num) {
+      pageRendering = true;
+      
+      pdfDoc.getPage(num).then(function(page) {
+        var viewport = page.getViewport({scale: scale});
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        
+        var renderContext = {
+          canvasContext: ctx,
+          viewport: viewport
+        };
+        var renderTask = page.render(renderContext);
+
+        
+        renderTask.promise.then(function() {
+          pageRendering = false;
+          showContent();
+
+          if (pageNumPending !== null) {
+            
+            renderPage(pageNumPending);
+            pageNumPending = null;
+          }
+        });
+      });
+
+      
+      document.getElementById('pdf-pagenum-483fec1c').textContent = num;
+    }
+
+    
+
+    function showContent() {
+      loadingWrapper.style.display = 'none';
+      canvas.style.display = 'block';
+    }
+
+    
+
+    function showLoader() {
+      if(hideLoader) return
+      loadingWrapper.style.display = 'flex';
+      canvas.style.display = 'none';
+    }
+
+    
+
+    function showPaginator() {
+      if(hidePaginator) return
+      paginator.style.display = 'block';
+    }
+
+    
+
+    function queueRenderPage(num) {
+      if (pageRendering) {
+        pageNumPending = num;
+      } else {
+        renderPage(num);
+      }
+    }
+
+    
+
+    function onPrevPage() {
+      if (pageNum <= 1) {
+        return;
+      }
+      pageNum--;
+      queueRenderPage(pageNum);
+    }
+    document.getElementById('pdf-prev-483fec1c').addEventListener('click', onPrevPage);
+
+    
+
+    function onNextPage() {
+      if (pageNum >= pdfDoc.numPages) {
+        return;
+      }
+      pageNum++;
+      queueRenderPage(pageNum);
+    }
+    document.getElementById('pdf-next-483fec1c').addEventListener('click', onNextPage);
+
+    
+
+    pdfjsLib.getDocument(url).promise.then(function(pdfDoc_) {
+      pdfDoc = pdfDoc_;
+      var numPages = pdfDoc.numPages;
+      document.getElementById('pdf-pagecount-483fec1c').textContent = numPages;
+
+      
+      if(pageNum > numPages) {
+        pageNum = numPages
+      }
+
+      
+      renderPage(pageNum);
+    });
+    })();
+</script>
+</p>
+<h1 id="44-ablation-study">4.4 Ablation Study</h1>
+<p>在表4中，我们研究了单帧情况下我们方法中每个新增组件的影响。我们使用之前的基于中心点的方法作为基线。在将区域提议网络（RPN）更换为多尺度中心提议网络（CPN）并将检测拆分为中心提议和边界框回归后，尽管将回归头简化为1D，我们的方法仍达到了相近的性能。 transformer 自注意力层和交叉注意力层均能提升结果，当两者结合使用时，结果达到 67.0%。这表明自注意力层和交叉注意力层分别学习不同的特征。角点辅助监督可额外将结果提升 0.1%。另一方面，可变形交叉注意力实现了67.3%的更好结果。在使用IoU校正训练时，采用交叉注意力和可变形交叉注意力的模型结果分别显著提升至 68.7% 和 68.3%。淡入淡出增强策略可进一步将结果提升 0.4% 和 0.7%，这是因为模型在训练后期能够适应真实数据分布。</p>
+<div class="embed-pdf-container" id="embed-pdf-container-af0f35c5">
+    <div class="pdf-loadingWrapper" id="pdf-loadingWrapper-af0f35c5">
+        <div class="pdf-loading" id="pdf-loading-af0f35c5"></div>
+    </div>
+    <div id="overlayText">
+      <a href="./pic/table4.pdf" aria-label="Download" download>
+        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18">
+            <path d="M9 13c.3 0 .5-.1.7-.3L15.4 7 14 5.6l-4 4V1H8v8.6l-4-4L2.6 7l5.7 5.7c.2.2.4.3.7.3zm-7 2h14v2H2z" />
+        </svg>
+      </a>
+    </div>
+    <canvas class="pdf-canvas" id="pdf-canvas-af0f35c5"></canvas>
+</div>
+
+<div class="pdf-paginator" id="pdf-paginator-af0f35c5">
+    <button id="pdf-prev-af0f35c5">Previous</button>
+    <button id="pdf-next-af0f35c5">Next</button> &nbsp; &nbsp;
+    <span>
+      <span class="pdf-pagenum" id="pdf-pagenum-af0f35c5"></span> / <span class="pdf-pagecount" id="pdf-pagecount-af0f35c5"></span>
+    </span>
+    <a class="pdf-source" id="pdf-source-af0f35c5" href="./pic/table4.pdf">[pdf]</a>
+</div>
+
+<noscript>
+View the PDF file <a class="pdf-source" id="pdf-source-noscript-af0f35c5" href="./pic/table4.pdf">here</a>.
+</noscript>
+
+<script type="text/javascript">
+    (function(){
+    var url = '.\/pic\/table4.pdf';
+
+    var hidePaginator = "" === "true";
+    var hideLoader = "" === "true";
+    var selectedPageNum = parseInt("") || 1;
+
+
+    var showSource = "" === "true";
+    var pageSource = document.getElementById("pdf-source-af0f35c5");
+
+    
+    function showSourcef() {
+        if(showSource) {
+            pageSource.style.display = 'inline';
+        } else {
+            pageSource.style.display = 'none';
+        }
+    }
+
+    
+    showSourcef();
+
+
+    
+    var pdfjsLib = window['pdfjs-dist/build/pdf'];
+
+    
+    if (pdfjsLib.GlobalWorkerOptions.workerSrc == '')
+      pdfjsLib.GlobalWorkerOptions.workerSrc = "http:\/\/localhost:1313\/" + 'js/pdf-js/build/pdf.worker.js';
+
+    
+    var pdfDoc = null,
+        pageNum = selectedPageNum,
+        pageRendering = false,
+        pageNumPending = null,
+        scale = 3,
+        canvas = document.getElementById('pdf-canvas-af0f35c5'),
+        ctx = canvas.getContext('2d'),
+        paginator = document.getElementById("pdf-paginator-af0f35c5"),
+        loadingWrapper = document.getElementById('pdf-loadingWrapper-af0f35c5');
+
+
+    
+    showPaginator();
+    showLoader();
+
+    
+
+    function renderPage(num) {
+      pageRendering = true;
+      
+      pdfDoc.getPage(num).then(function(page) {
+        var viewport = page.getViewport({scale: scale});
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        
+        var renderContext = {
+          canvasContext: ctx,
+          viewport: viewport
+        };
+        var renderTask = page.render(renderContext);
+
+        
+        renderTask.promise.then(function() {
+          pageRendering = false;
+          showContent();
+
+          if (pageNumPending !== null) {
+            
+            renderPage(pageNumPending);
+            pageNumPending = null;
+          }
+        });
+      });
+
+      
+      document.getElementById('pdf-pagenum-af0f35c5').textContent = num;
+    }
+
+    
+
+    function showContent() {
+      loadingWrapper.style.display = 'none';
+      canvas.style.display = 'block';
+    }
+
+    
+
+    function showLoader() {
+      if(hideLoader) return
+      loadingWrapper.style.display = 'flex';
+      canvas.style.display = 'none';
+    }
+
+    
+
+    function showPaginator() {
+      if(hidePaginator) return
+      paginator.style.display = 'block';
+    }
+
+    
+
+    function queueRenderPage(num) {
+      if (pageRendering) {
+        pageNumPending = num;
+      } else {
+        renderPage(num);
+      }
+    }
+
+    
+
+    function onPrevPage() {
+      if (pageNum <= 1) {
+        return;
+      }
+      pageNum--;
+      queueRenderPage(pageNum);
+    }
+    document.getElementById('pdf-prev-af0f35c5').addEventListener('click', onPrevPage);
+
+    
+
+    function onNextPage() {
+      if (pageNum >= pdfDoc.numPages) {
+        return;
+      }
+      pageNum++;
+      queueRenderPage(pageNum);
+    }
+    document.getElementById('pdf-next-af0f35c5').addEventListener('click', onNextPage);
+
+    
+
+    pdfjsLib.getDocument(url).promise.then(function(pdfDoc_) {
+      pdfDoc = pdfDoc_;
+      var numPages = pdfDoc.numPages;
+      document.getElementById('pdf-pagecount-af0f35c5').textContent = numPages;
+
+      
+      if(pageNum > numPages) {
+        pageNum = numPages
+      }
+
+      
+      renderPage(pageNum);
+    });
+    })();
+</script>
+
+<h2 id="45-analysis">4.5 Analysis</h2>
+<p>与可变形DETR的对比。可变形 DETR[64] 旨在加快 DETR 结构的学习速度并降低计算成本。与可变形 DETR 相比，我们的方法有三个主要区别：</p>
+<ol>
+<li><strong>移除 transformer 编码器</strong>：我们完全移除了 transformer 编码器，以支持更大的编码特征图。</li>
+<li><strong>中心特征作为查询嵌入</strong>：我们使用中心特征而非可学习参数作为 transformer 解码器的查询嵌入。实验表明，将中心特征作为初始查询嵌入的 mAPH 比参数化嵌入高 1.5%。这是因为中心特征已包含目标级信息，更易于学习成对注意力。</li>
+<li><strong>非端到端训练策略</strong>：我们采用与[53]类似的训练策略，而非端到端集合匹配训练策略。集合匹配训练以难以收敛著称，而我们通过预先生成中心提议，仅在提议接近真实标注时引导网络学习，从而加速训练。实验显示，若采用DETR的集合匹配训练策略，mAPH 仅为 46.3%，比当前方法低 20% 以上。</li>
+</ol>
+<p>学习到的注意力可视化。图5展示了学习到的自注意力和交叉注意力的可视化结果：</p>
+<ul>
+<li><strong>自注意力</strong>：主要聚焦于同类目标或具有相同属性的邻近目标特征。例如，同一车道或停车场内的车辆会获得更高的注意力权重。</li>
+<li><strong>可变形注意力偏移</strong>：不同尺度下学习到的偏移量存在差异。两个较小尺度的偏移主要指向目标内部或周围的关键点，而较大尺度的偏移可采样远距离特征。</li>
+</ul>
+<div class="embed-pdf-container" id="embed-pdf-container-e1422475">
+    <div class="pdf-loadingWrapper" id="pdf-loadingWrapper-e1422475">
+        <div class="pdf-loading" id="pdf-loading-e1422475"></div>
+    </div>
+    <div id="overlayText">
+      <a href="./pic/fig5.pdf" aria-label="Download" download>
+        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18">
+            <path d="M9 13c.3 0 .5-.1.7-.3L15.4 7 14 5.6l-4 4V1H8v8.6l-4-4L2.6 7l5.7 5.7c.2.2.4.3.7.3zm-7 2h14v2H2z" />
+        </svg>
+      </a>
+    </div>
+    <canvas class="pdf-canvas" id="pdf-canvas-e1422475"></canvas>
+</div>
+
+<div class="pdf-paginator" id="pdf-paginator-e1422475">
+    <button id="pdf-prev-e1422475">Previous</button>
+    <button id="pdf-next-e1422475">Next</button> &nbsp; &nbsp;
+    <span>
+      <span class="pdf-pagenum" id="pdf-pagenum-e1422475"></span> / <span class="pdf-pagecount" id="pdf-pagecount-e1422475"></span>
+    </span>
+    <a class="pdf-source" id="pdf-source-e1422475" href="./pic/fig5.pdf">[pdf]</a>
+</div>
+
+<noscript>
+View the PDF file <a class="pdf-source" id="pdf-source-noscript-e1422475" href="./pic/fig5.pdf">here</a>.
+</noscript>
+
+<script type="text/javascript">
+    (function(){
+    var url = '.\/pic\/fig5.pdf';
+
+    var hidePaginator = "" === "true";
+    var hideLoader = "" === "true";
+    var selectedPageNum = parseInt("") || 1;
+
+
+    var showSource = "" === "true";
+    var pageSource = document.getElementById("pdf-source-e1422475");
+
+    
+    function showSourcef() {
+        if(showSource) {
+            pageSource.style.display = 'inline';
+        } else {
+            pageSource.style.display = 'none';
+        }
+    }
+
+    
+    showSourcef();
+
+
+    
+    var pdfjsLib = window['pdfjs-dist/build/pdf'];
+
+    
+    if (pdfjsLib.GlobalWorkerOptions.workerSrc == '')
+      pdfjsLib.GlobalWorkerOptions.workerSrc = "http:\/\/localhost:1313\/" + 'js/pdf-js/build/pdf.worker.js';
+
+    
+    var pdfDoc = null,
+        pageNum = selectedPageNum,
+        pageRendering = false,
+        pageNumPending = null,
+        scale = 3,
+        canvas = document.getElementById('pdf-canvas-e1422475'),
+        ctx = canvas.getContext('2d'),
+        paginator = document.getElementById("pdf-paginator-e1422475"),
+        loadingWrapper = document.getElementById('pdf-loadingWrapper-e1422475');
+
+
+    
+    showPaginator();
+    showLoader();
+
+    
+
+    function renderPage(num) {
+      pageRendering = true;
+      
+      pdfDoc.getPage(num).then(function(page) {
+        var viewport = page.getViewport({scale: scale});
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        
+        var renderContext = {
+          canvasContext: ctx,
+          viewport: viewport
+        };
+        var renderTask = page.render(renderContext);
+
+        
+        renderTask.promise.then(function() {
+          pageRendering = false;
+          showContent();
+
+          if (pageNumPending !== null) {
+            
+            renderPage(pageNumPending);
+            pageNumPending = null;
+          }
+        });
+      });
+
+      
+      document.getElementById('pdf-pagenum-e1422475').textContent = num;
+    }
+
+    
+
+    function showContent() {
+      loadingWrapper.style.display = 'none';
+      canvas.style.display = 'block';
+    }
+
+    
+
+    function showLoader() {
+      if(hideLoader) return
+      loadingWrapper.style.display = 'flex';
+      canvas.style.display = 'none';
+    }
+
+    
+
+    function showPaginator() {
+      if(hidePaginator) return
+      paginator.style.display = 'block';
+    }
+
+    
+
+    function queueRenderPage(num) {
+      if (pageRendering) {
+        pageNumPending = num;
+      } else {
+        renderPage(num);
+      }
+    }
+
+    
+
+    function onPrevPage() {
+      if (pageNum <= 1) {
+        return;
+      }
+      pageNum--;
+      queueRenderPage(pageNum);
+    }
+    document.getElementById('pdf-prev-e1422475').addEventListener('click', onPrevPage);
+
+    
+
+    function onNextPage() {
+      if (pageNum >= pdfDoc.numPages) {
+        return;
+      }
+      pageNum++;
+      queueRenderPage(pageNum);
+    }
+    document.getElementById('pdf-next-e1422475').addEventListener('click', onNextPage);
+
+    
+
+    pdfjsLib.getDocument(url).promise.then(function(pdfDoc_) {
+      pdfDoc = pdfDoc_;
+      var numPages = pdfDoc.numPages;
+      document.getElementById('pdf-pagecount-e1422475').textContent = numPages;
+
+      
+      if(pageNum > numPages) {
+        pageNum = numPages
+      }
+
+      
+      renderPage(pageNum);
+    });
+    })();
+</script>
+
+<h1 id="5-conclusion">5 Conclusion</h1>
+<p>在本文中，我们提出了一种新颖的基于中心点的 transformer 三维目标检测方法。我们的方法通过目标级注意力学习，为无锚框三维目标检测网络提供了改进方案。与DETR风格的 transformer 网络相比，我们在 transformer 解码器中使用中心特征作为初始查询嵌入，以加速收敛。我们还通过将每个查询的交叉注意力学习聚焦于小范围多尺度窗口或可变形区域，避免了高计算复杂度。实验结果表明，所提出的方法在 Waymo 开放数据集上优于强基线模型，并且在扩展到多帧时达到了最先进的性能。我们希望我们的设计能为基于查询的 transformer 在激光雷达点云分析中的未来研究提供启发。</p>
+
+        
+      </section>
+
+      
+
+      
+    </article>
+  </div>
+
+  <div
+    x-data="tocHighlighter()"
+    @scroll.window="debouncedScroll"
+    class="hidden lg:flex lg:flex-col lg:items-end">
+    
+      <nav id="TableOfContents">
+  <ol>
+    <li><a href="#21-lidar-based-3d-object-detection">2.1 LiDAR-based 3D Object Detection</a></li>
+    <li><a href="#22-vision--transformer">2.2 Vision  transformer</a></li>
+  </ol>
+
+  <ol>
+    <li><a href="#31-preliminaries">3.1 Preliminaries</a></li>
+    <li><a href="#32-center--transformer">3.2 Center  transformer</a></li>
+    <li><a href="#33-multi-frame--centerformer">3.3 Multi-frame  CenterFormer</a></li>
+    <li><a href="#34-loss-functions">3.4 Loss Functions</a></li>
+  </ol>
+
+  <ol>
+    <li><a href="#41-dataset">4.1 Dataset</a></li>
+    <li><a href="#42-implementation-details">4.2 Implementation Details</a></li>
+    <li><a href="#43-object-detection-results">4.3 Object Detection Results</a></li>
+  </ol>
+
+  <ol>
+    <li><a href="#45-analysis">4.5 Analysis</a></li>
+  </ol>
+</nav>
+    
+  </div>
+</div>
+
+
+            
+<footer class="flex justify-between items-center gap-2 max-w-[65ch] mx-auto px-4 md:px-0 py-12">
+
+  <div>
+  
+  <p>
+    © 2025 dO.ob&#39;s Blog
+  </p>
+  
+
+  
+  <p class="text-sm">
+    🌱
+    <span class="text-base-content/60">
+      Powered by <a class="hover:underline" href="https://gohugo.io/" target="_blank">Hugo</a> with theme
+      <a class="hover:underline" href="https://github.com/g1eny0ung/hugo-theme-dream" target="_blank">Dream</a>.</span
+    >
+  </p>
+  
+</div>
+
+  <div
+  x-data="{ icons: [
+    { name: 'sunny', status: 'n' },
+    { name: 'moon', status: 'y' },
+    { name: 'desktop', status: 'auto' }
+  ] }"
+  class="flex items-center gap-2 h-[32px] px-2 bg-base-100 border border-base-content/30 rounded-full"
+>
+  <template x-for="icon in icons">
+    <div
+      role="button"
+      tabindex="0"
+      :aria-label="'Select ' + icon.name + ' mode'"
+      class="group inline-flex justify-center items-center p-1 rounded-full cursor-pointer hover:bg-primary"
+      :class="$store.darkMode.icon() === icon.name && 'bg-primary'"
+      @click="$store.darkMode.toggle(icon.status)"
+    >
+      <ion-icon
+        :name="`${icon.name}-outline`"
+        class="group-hover:text-primary-content"
+        :class="$store.darkMode.icon() === icon.name && 'text-primary-content'"
+      >
+      </ion-icon>
+    </div>
+  </template>
+</div>
+
+</footer>
+
+          </div>
+        </div>
+        <div class="back">
+          <div class="container">
+            
+            <div class="max-w-[65ch] mt-8 mx-auto px-4">
+  
+  
+  
+  <div>
+    <div class="mb-4 text-lg font-medium">关于我</div>
+
+    <div class="prose dark:prose-invert">
+      <p>我是一名AI从业者，致力于人工智能和数据驱动行业。</p>
+<p>踏上取经路，比抵达灵山更重要</p>
+
+    </div>
+  </div>
+  <div class="divider divider-vertical"></div>
+  
+  
+
+  
+
+  
+</div>
+
+            
+
+            
+<footer class="flex justify-between items-center gap-2 max-w-[65ch] mx-auto px-4 md:px-0 py-12">
+
+  <div>
+  
+  <p>
+    © 2025 dO.ob&#39;s Blog
+  </p>
+  
+
+  
+  <p class="text-sm">
+    🌱
+    <span class="text-base-content/60">
+      Powered by <a class="hover:underline" href="https://gohugo.io/" target="_blank">Hugo</a> with theme
+      <a class="hover:underline" href="https://github.com/g1eny0ung/hugo-theme-dream" target="_blank">Dream</a>.</span
+    >
+  </p>
+  
+</div>
+
+  <div
+  x-data="{ icons: [
+    { name: 'sunny', status: 'n' },
+    { name: 'moon', status: 'y' },
+    { name: 'desktop', status: 'auto' }
+  ] }"
+  class="flex items-center gap-2 h-[32px] px-2 bg-base-100 border border-base-content/30 rounded-full"
+>
+  <template x-for="icon in icons">
+    <div
+      role="button"
+      tabindex="0"
+      :aria-label="'Select ' + icon.name + ' mode'"
+      class="group inline-flex justify-center items-center p-1 rounded-full cursor-pointer hover:bg-primary"
+      :class="$store.darkMode.icon() === icon.name && 'bg-primary'"
+      @click="$store.darkMode.toggle(icon.status)"
+    >
+      <ion-icon
+        :name="`${icon.name}-outline`"
+        class="group-hover:text-primary-content"
+        :class="$store.darkMode.icon() === icon.name && 'text-primary-content'"
+      >
+      </ion-icon>
+    </div>
+  </template>
+</div>
+
+</footer>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+  window.lightTheme = "emerald"
+  window.darkTheme = "forest"
+</script>
+
+
+
+
+
+<script src="/js/main.js"></script>
+
+    
+
+
+
+
+
+
+
+<script src="/js/toc.js"></script>
+
+
+
+
+
+    
+
+    
+
+    
+
+    
+
+    <script type="module" src="https://cdn.jsdelivr.net/npm/ionicons@7.4.0/dist/ionicons/ionicons.esm.js" integrity="sha256-/IFmi82bIhdYWctu0UddSlJqpnzWm7Vh2C4CM32wF/k=" crossorigin="anonymous"></script>
+    <script nomodule src="https://cdn.jsdelivr.net/npm/ionicons@7.4.0/dist/ionicons/ionicons.js" integrity="sha256-mr7eJMX3VC3F7G32mk4oWp1C6a2tlMYxUdptfT7uKI8=" crossorigin="anonymous"></script>
+  </body>
+</html>

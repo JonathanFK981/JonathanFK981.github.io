@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="zh-Hans"
+  x-data
+  :class="$store.darkMode.class()"
+  :data-theme="$store.darkMode.theme()">
+  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DriveLM | dO.ob&#39;s Blog</title>
+
+    
+
+<link rel="canonical" href="http://localhost:1313/posts/drivelm/" />
+
+
+
+<meta name="author" content="Author Name" />
+<meta name="description" content="" />
+
+
+<meta name="keywords" content="Tag1,Tag2">
+
+
+
+<meta name="generator" content="Hugo 0.146.2">
+
+
+<meta property="og:url" content="http://localhost:1313/posts/drivelm/">
+  <meta property="og:site_name" content="dO.ob&#39;s Blog">
+  <meta property="og:title" content="DriveLM">
+  <meta property="og:locale" content="zh_Hans">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2025-05-26T19:54:26+08:00">
+    <meta property="article:modified_time" content="2025-05-26T19:54:26+08:00">
+    <meta property="article:tag" content="Tag1">
+    <meta property="article:tag" content="Tag2">
+
+
+
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="DriveLM">
+
+
+
+
+<link rel="stylesheet" href="/css/output.css" />
+
+
+
+
+<script>
+  MathJax = {
+    tex: {
+      inlineMath: [['\\(', '\\)']],
+      displayMath: [['$$','$$']],
+      processEscapes: true,
+      processEnvironments: true
+    },
+    options: {
+      skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+    }
+  };
+</script>
+
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+ 
+
+
+    
+<script>
+  MathJax = {
+    tex: {
+      inlineMath: [['\\(', '\\)'], ['$', '$']],
+      displayMath: [['$$', '$$'], ['\\[', '\\]']],
+      processEscapes: true,
+      processEnvironments: true
+    },
+    options: {
+      skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+    }
+  };
+</script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+ 
+
+
+    
+
+
+<style>
+  pre {
+    padding: 1em;
+    overflow: auto;
+  }
+</style>
+
+
+
+
+
+
+
+
+
+    
+
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3/dist/cdn.min.js" integrity="sha256-PtHu0lJIiSHfZeNj1nFd6wTX+Squ255SGZ/fc8seCtM=" crossorigin="anonymous"></script>
+  </head>
+
+  <body x-data="{
+    flip: false,
+  }">
+    
+    <div id="dream-global-bg"></div>
+
+    
+<nav class="mt-4 lg:mt-8 py-4">
+
+  
+  <div class="container flex justify-between max-w-[65ch] mx-auto px-4 md:px-0">
+  
+    <section class="flex items-center gap-4">
+      <div class="avatar cursor-pointer hover:avatar-online" @click="flip = !flip" title="翻转一下！">
+        <div class="h-10 rounded-full">
+          <img src="/img/logo.jpg" alt="Jonathan&#39;s Blog" />
+        </div>
+      </div>
+
+      
+      <div>
+        
+        <a href="http://localhost:1313/" class="text-lg font-semibold cursor-pointer">
+          Jonathan&#39;s Blog
+        </a>
+        
+        
+      </div>
+      
+    </section>
+
+    
+    
+
+    <div class="dropdown dropdown-end sm:hidden">
+      <div tabindex="0" role="button" class="btn btn-ghost btn-square" aria-label="Select an option">
+        <ion-icon name="menu" class="text-2xl"></ion-icon>
+      </div>
+      <ul tabindex="0" class="dropdown-content menu w-36 bg-base-100 rounded-box z-1 shadow-md">
+        
+
+
+
+
+
+
+
+<li>
+  <div role="link" tabindex="0" class="inline-flex items-center p-2 cursor-pointer" @click="flip = !flip" title="关于">
+    <ion-icon name="information-circle"></ion-icon>关于</div>
+</li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li>
+  <a class="inline-flex items-center p-2 cursor-pointer" href="/posts" title="归档">
+    <ion-icon name="archive"></ion-icon>
+    归档
+  </a>
+</li>
+
+
+
+
+<li>
+  <a class="inline-flex items-center p-2 cursor-pointer" href="/categories" title="所有分类">
+    <ion-icon name="grid"></ion-icon>
+    所有分类
+  </a>
+</li>
+
+
+
+
+<li>
+  <a class="inline-flex items-center p-2 cursor-pointer" href="/tags" title="所有标签">
+    <ion-icon name="pricetags"></ion-icon>
+    所有标签
+  </a>
+</li>
+
+
+
+
+
+
+      </ul>
+    </div>
+    <section class="hidden sm:flex sm:items-center sm:gap-2 md:gap-4">
+      
+
+      
+      
+
+
+
+
+<div role="link" tabindex="0" class="text-sm font-semibold cursor-pointer hover:underline" @click="flip = !flip" title="关于">关于</div>
+
+
+
+
+
+      
+      
+
+
+
+
+
+      
+      
+
+
+
+
+
+      
+      
+<a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/posts" title="归档">
+  <ion-icon class="group-hover:text-primary-content" name="archive"></ion-icon>
+</a>
+
+
+      
+      
+<a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/categories" title="所有分类">
+  <ion-icon class="group-hover:text-primary-content" name="grid"></ion-icon>
+</a>
+
+
+      
+      
+<a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/tags" title="所有标签">
+  <ion-icon class="group-hover:text-primary-content" name="pricetags"></ion-icon>
+</a>
+
+
+      
+
+      
+
+      
+    </section>
+  </div>
+</nav>
+
+
+    <div class="flip-container" :class="{ 'flip-it': flip }">
+      <div class="flipper">
+        <div class="front">
+          <div class="container">
+            
+<div class="lg:grid lg:grid-cols-4 gap-4 mt-4 px-4">
+  <div class="hidden lg:block">
+    
+  </div>
+
+  <div class="lg:col-span-2">
+    <article class="mx-auto prose prose-quoteless dark:prose-invert" id="dream-single-post-main" itemscope itemtype="http://schema.org/Article">
+      
+  <meta itemprop="name" content="DriveLM">
+  <meta itemprop="datePublished" content="2025-05-26T19:54:26+08:00">
+  <meta itemprop="dateModified" content="2025-05-26T19:54:26+08:00">
+  <meta itemprop="wordCount" content="1378">
+  <meta itemprop="keywords" content="Tag1,Tag2">
+
+      <header>
+        <h1 itemprop="headline">DriveLM</h1>
+        <p class="text-sm">
+          
+            星期一, 5月 26, 2025
+          
+
+          | <span>7分钟阅读</span>
+
+          
+          | <span>更新于
+            
+              星期一, 5月 26, 2025
+            </span>
+          
+        </p>
+
+        
+        <div class="flex justify-between">
+          
+            <div class="flex items-center">
+  
+  <span>@</span>
+  
+
+  <span itemprop="author" itemscope itemtype="https://schema.org/Person">
+  
+    
+      <span itemprop="name">Author Name</span>
+    
+  
+  </span>
+</div>
+
+          
+
+          <div class="flex items-center gap-2">
+  
+  
+
+  
+  
+  
+  
+  
+    <a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary"
+      href="https://x.com/intent/post?text=DriveLM&amp;url=http://localhost:1313/posts/drivelm/" target="_blank" rel="noopener noreferrer"
+      title="Share on X">
+      <ion-icon class="group-hover:text-primary-content" name="logo-x"></ion-icon>
+    </a>
+  
+    <a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary"
+      href="https://facebook.com/sharer/sharer.php?u=http://localhost:1313/posts/drivelm/" target="_blank" rel="noopener noreferrer"
+      title="Share on Facebook">
+      <ion-icon class="group-hover:text-primary-content" name="logo-facebook"></ion-icon>
+    </a>
+  
+    <a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary"
+      href="https://wa.me/?text=DriveLM%20http://localhost:1313/posts/drivelm/" target="_blank" rel="noopener noreferrer"
+      title="Share on WhatsApp">
+      <ion-icon class="group-hover:text-primary-content" name="logo-whatsapp"></ion-icon>
+    </a>
+  
+
+  
+  
+</div>
+
+        </div>
+      </header>
+
+      <section id="dream-single-post-content" itemprop="articleBody">
+        
+          <img class="w-full z-30" src="/img/a.jpg" alt="DriveLM" />
+        
+
+        <!-- Cut out summary from your post content here. -->
+<!-- The remaining content of your post. -->
+<p>Abstract.
+We study how vision-language models (VLMs) trained on web-scale data can be integrated into end-to-end driving systems to boost generalization and enable interactivity with human users. While recent approaches adapt VLMs to driving via single-round visual question answering (VQA), human drivers reason about decisions in multiple steps. Starting from the localization of key objects, humans estimate object interactions before taking actions. The key insight is that with our proposed task, Graph VQA, where we model graph-structured reasoning through perception, prediction, and planning question-answer pairs, we obtain a suitable proxy task to mimic the human reasoning process. We instantiate datasets (DriveLM-Data) built upon nuScenes and CARLA, and propose a VLM-based baseline approach (DriveLM-Agent) for jointly performing Graph VQA and end-to-end driving. The experiments demonstrate that Graph VQA provides a simple, principled framework for reasoning about a driving scene, and DriveLM-Data provides a challenging benchmark for this task. Our DriveLM-Agent baseline performs end-to-end autonomous driving competitively in comparison to state-of-the-art driving-specific architectures. Notably, its benefits are pronounced when it is evaluated zero-shot on unseen sensor configurations. Our question-wise ablation study shows that the performance gain comes from the rich annotation of prediction and planning QA pairs in the graph structure. All data, models, and an official evaluation server are available at <a href="https://github.com/OpenDriveLab/DriveLM" target="_blank">https://github.com/OpenDriveLab/DriveLM</a>
+.</p>
+<p>摘要
+我们研究了在网络规模数据上训练的视觉语言模型（VLMs）如何集成到端到端驾驶系统中，以增强泛化能力并实现与人类用户的交互。尽管最近的方法通过单轮视觉问答（VQA）使视觉语言模型适应驾驶场景，但人类驾驶员会通过多个步骤对决策进行推理——从关键物体的定位开始，人类会在采取行动前评估物体间的相互作用。核心观点在于，我们提出的图视觉问答（Graph VQA）任务通过感知、预测和规划问答对来建模图结构推理，从而获得了一个模拟人类推理过程的合适代理任务。</p>
+<p>我们基于nuScenes和CARLA构建了数据集（DriveLM-Data），并提出了一种基于视觉语言模型的基线方法（DriveLM-Agent）来联合执行图视觉问答和端到端驾驶任务。实验表明，图视觉问答为驾驶场景推理提供了一个简单且有原则的框架，而DriveLM-Data为该任务提供了具有挑战性的基准。与最先进的驾驶专用架构相比，我们的DriveLM-Agent基线在端到端自动驾驶任务中表现出了竞争力。值得注意的是，当在未见传感器配置上进行零样本评估时，其优势尤为显著。我们的逐项消融研究表明，性能提升来自于图结构中预测和规划问答对的丰富注释。</p>
+<p>所有数据、模型和官方评估服务器均可在https://github.com/OpenDriveLab/DriveLM获取。</p>
+<p>1 综述
+Current Autonomous Driving (AD) stacks are still lacking crucial capabilities [10, 15]. One key requirement is generalization, which involves the ability to handle unseen scenarios or unfamiliar sensor configurations. A secondary requirement pertains to the interaction of these models with humans, highlighted, for example, by EU regulations that mandate explainability in deployment [3]. Furthermore, unlike today&rsquo;s AD models, humans do not navigate based on geometrically precise bird&rsquo;s-eye view (BEV) representations [17, 32, 46]. Instead, humans implicitly perform object-centric perception, prediction, and planning (which we refer to as P-3): a rough identification and localization of key objects, followed by reasoning about their possible movement and aggregation of this information into a driving action [60, 76].</p>
+<p>当前的自动驾驶（AD）系统仍缺乏关键能力[10,15]。其中一项核心需求是<strong>泛化能力</strong>，即处理未见场景或陌生传感器配置的能力。第二项需求涉及模型与人类的交互——例如，欧盟法规要求部署的模型具备可解释性[3]，即凸显了这一点。此外，与当今的自动驾驶模型不同，人类并非基于几何精确的鸟瞰图（BEV）表征进行导航[17,32,46]。相反，人类会隐性地执行<strong>以物体为中心的感知、预测和规划（简称P-3）</strong>：首先对关键物体进行粗略识别和定位，随后推理其可能的运动轨迹，并将这些信息整合为驾驶动作[60,76]。</p>
+<p>Simultaneously, another field has been forging ahead: Vision-Language Models (VLMs) [47, 54, 90, 106]. These models have several strengths. First, they hold a base understanding of the world from internet-scale data that could potentially facilitate generalization for planning in AD. In fact, this sort of generalization has already been achieved by VLMs for simpler robotics tasks [23, 108]. Second, the use of language representations as an input and output offers a platform for human-friendly interaction with these models, unlike bounding boxes or trajectories that are more common to current methods [19, 31, 49, 70]. Finally, VLMs are able to make decisions in multiple steps linked by logical reasoningsoning [5,21,93,95,103,108]. Importantly, even though they reason in multiple separate steps, VLMs are end-to-end differentiable architectures, a characteristic that is highly desirable for autonomous driving [10].</p>
+<p>与此同时，另一个领域也在蓬勃发展：视觉语言模型（VLMs）[47, 54, 90, 106]。这类模型具备多项优势：<br>
+首先，它们通过互联网规模的数据形成了对世界的基础理解，这可能有助于提升自动驾驶规划的泛化能力。事实上，VLMs已在更简单的机器人任务中实现了这种泛化能力[23, 108]。<br>
+其次，与当前方法中常见的边界框或轨迹不同，VLMs使用语言表征作为输入和输出，为模型与人类的友好交互提供了平台[19, 31, 49, 70]。<br>
+最后，VLMs能够通过逻辑推理实现多步骤决策[5,21,93,95,103,108]。重要的是，尽管VLMs通过多个独立步骤进行推理，但它们属于端到端可微分架构——这一特性正是自动驾驶所高度需要的[10]。</p>
+<p>Recent work towards enabling the application of VLMs to AD systems falls into two categories: scene-level or single object-level Visual Question Answering (VQA). Scene-level VQA refers to the task of describing the driving behavior by one or two supporting reasons, e.g., &ldquo;The car is moving into the right lane because it is safe to do so.&rdquo; [41,42]. Single object-level VQA formulates the understanding of the ego vehicle&rsquo;s response to a single object by a chain of QAs in the form of &ldquo;what-which-where-how-why,&rdquo; e.g., &ldquo;The ego vehicle stops because there is a pedestrian in a white shirt crossing the intersection in front of the ego vehicle and it does not want to crash into the pedestrian.&rdquo; [56,67,71]. Unfortunately, neither of these paradigms provides a suitable proxy task to mimic the P-3 reasoning process in humans, who consider multiple objects and reason about each in multiple steps. Therefore, in this paper, we propose a new task, along with corresponding datasets and a baseline model architecture (Fig. 1).</p>
+<p>近期将视觉语言模型（VLMs）应用于自动驾驶系统的研究工作主要分为两类：场景级或单物体级的视觉问答（VQA）。场景级VQA指的是通过一两个支持性理由描述驾驶行为的任务，例如“车辆正在驶入右车道，因为这样做是安全的”[41,42]。单物体级VQA则通过“什么-哪个-哪里-如何-为什么”的问答链来构建对自车响应单个物体的理解，例如“自车停止是因为有一个穿白衬衫的行人正在自车前方的路口横穿，且自车不想撞到行人”[56,67,71]。遗憾的是，这两种范式都未能提供一个合适的代理任务来模拟人类的P-3推理过程——人类会考虑多个物体并对每个物体进行多步骤推理。因此，本文提出了一项新任务，并配套相应的数据集和基线模型架构（图1）。</p>
+<p><strong>Task. Graph Visual Question Answering (GVQA)</strong> involves formulating P1-3 reasoning as a series of question-answer pairs (QAs) in a directed graph. Its key difference to the aforementioned VQA tasks for AD is the availability of logical dependencies between QAs which can be used to guide the answering process. GVQA also encompasses questions regarding behavior and motion planning, with dedicated metrics (details in Section 2).</p>
+<p><strong>任务：图视觉问答（GVQA）</strong><br>
+图视觉问答（GVQA）任务将P1-3推理过程建模为有向图中的一系列问答对（QAs）。其与上述自动驾驶VQA任务的核心区别在于，问答对之间存在可用于指导回答过程的逻辑依赖关系。GVQA还涵盖了与行为和运动规划相关的问题，并配备了专门的评估指标（具体细节见第2节）。</p>
+<p><strong>Datasets. DriveLM-nuScenes and DriveLM-CARLA</strong> consist of annotated QAs, arranged in a graph, linking images with driving behavior through logical reasoning. In comparison to existing benchmarks, they provide significantly more text annotations per frame (Table 1 and Fig. 2). Furthermore, as an integral component of DriveLM-CARLA, we build PDM-Lite [4], the first working rule-based expert algorithm for CARLA Leaderboard 2.0. We pair these training datasets with challenging test data for evaluating zero-shot generalization.</p>
+<p><strong>数据集：DriveLM-nuScenes和DriveLM-CARLA</strong><br>
+这两个数据集包含以图结构排列的带注释问答对（QAs），通过逻辑推理将图像与驾驶行为关联起来。与现有基准数据集相比，它们每帧提供的文本注释显著更多（表1和图2）。此外，作为DriveLM-CARLA的组成部分，我们构建了PDM-Lite[4]——首个适用于CARLA排行榜2.0的基于规则的专家算法。我们将这些训练数据集与具有挑战性的测试数据结合，用于评估零样本泛化能力。</p>
+<p><strong>Baseline. DriveLM-Agent</strong> employs a trajectory tokenizer that can be applied to any general VLM [47,54,65,106], coupled with a graph prompting scheme that models logical dependencies as context inputs for VLMs. The result is a simple methodology to effectively repurpose VLMs for end-to-end AD (Section 3).</p>
+<p><strong>基线模型：DriveLM-Agent</strong><br>
+DriveLM-Agent采用了可应用于任意通用视觉语言模型（VLM）[47,54,65,106]的轨迹标记器，并结合图提示方案——该方案将逻辑依赖关系建模为视觉语言模型的上下文输入。最终形成了一种将视觉语言模型高效适配于端到端自动驾驶任务的简单方法（第3节）。</p>
+<p>Our experiments provide encouraging results. We find that GVQA on DriveLM is a challenging task, where current methods obtain moderate scores and better modeling of logical dependencies is likely necessary to achieve strong QA performance. Even so, DriveLM-Agent already performs competitively to state-of-the-art driving-specific models [32] when tested in the open-loop planning setting, despite its task-agnostic architecture. Furthermore, employing a graph structure improves zero-shot generalization, enabling DriveLM-Agent to correctly handle unseen deployment on Waymo data [77] after training only on nuScenes [6] data. Finally, with a question-wise analysis, we find that the QA pairs from the prediction and planning stages help the final driving decision most. From these results, we believe that improving GVQA holds great potential towards building autonomous driving agents with strong generalization.</p>
+<p>我们的实验提供了令人鼓舞的结果。我们发现，在DriveLM数据集上进行图视觉问答（GVQA）是一项具有挑战性的任务，当前方法仅获得中等分数，而若要实现强大的问答性能，可能需要对逻辑依赖关系进行更优的建模。即便如此，尽管DriveLM-Agent采用与任务无关的架构，但在开环规划场景中测试时，其性能已可与最先进的驾驶专用模型[32]相媲美。此外，图结构的使用提升了零样本泛化能力，使得DriveLM-Agent仅在nuScenes[6]数据上训练后，即可正确处理在Waymo数据[77]上的未见部署场景。最后，通过逐项分析我们发现，来自预测和规划阶段的问答对（QA pairs）对最终驾驶决策的帮助最大。基于这些结果，我们认为改进图视觉问答（GVQA）在构建具有强泛化能力的自动驾驶智能体方面具有巨大潜力。</p>
+<p>2 DriveLM:Task, Data, Metrics
+Human drivers usually decompose their decision-making process into distinct stages that follow a logical progression, which encompasses the identification and localization of key objects, their possible future actions and interactions, and ego planning based on all this information [27,55]. This inspires us to propose the GVQA as the critical ingredient of DriveLM, which serves as a suitable proxy task to mimic the human reasoning process. Within this section, we illustrate the formulation of the GVQA task (Section 2.1), introduce DriveLM-Data (Section 2.2) to exemplify the instantiation of GVQA using prominent driving datasets, and overview the DriveLM-Metrics used for evaluation (Section 2.3). To encourage further research in this direction, an official evaluation server (with a public leaderboard) will be set up to benchmark different methods and discover more insights about combining language models with autonomous driving.</p>
+<p>人类驾驶员通常会将决策过程分解为遵循逻辑递进的不同阶段，包括关键物体的识别与定位、其未来可能的动作及交互，以及基于所有这些信息的自车规划[27,55]。这启发我们将图视觉问答（GVQA）作为DriveLM的核心组成部分，使其成为模拟人类推理过程的合适代理任务。在本节中，我们将阐述GVQA任务的形式化定义（第2.1节），介绍DriveLM-Data数据集（第2.2节）以说明如何利用主流驾驶数据集实现GVQA任务实例化，并概述用于评估的DriveLM指标（第2.3节）。为推动该方向的进一步研究，我们将搭建官方评估服务器（含公开排行榜），以对不同方法进行基准测试，并探索语言模型与自动驾驶结合的更多洞见。</p>
+<p>2.1 DriveLM-Task:GVQA</p>
+<p>We organize all the question-answer pairs (QAs) for an image frame into a graph. We use the terminology &ldquo;graph-structured&rdquo; to refer to a directed acyclic graph (DAG), e.g., the current question can get context from (multiple) parent and grandparent nodes. The graph $G = (V, E)$ contains a set of vertices $V$, where each vertex represents a QA pair $v = (q, a)$ associated with one or more key objects in the scenario. The key difference between GVQA and ordinary VQA is that the QAs in GVQA have logical dependencies, which we formulate as the edges between the vertices. $E \subseteq V × V$ is a set of directed edges, where each edge $e = (v_p, v_c)$ connects the parent QA and the child QA. We formulate the edge set $E$ by incorporating two dimensions: object-level and task-level edges. At the object level, we construct the logical edges $e \in E$ to represent the impact of interactions between different objects. For example, the planning QA node for the sedan is influenced by the perception QA node of the pedestrian in the illustration from Fig. 1 (center). At the task level, we establish the logical edges $e \in E$ to capture the logical chain of different reasoning stages:</p>
+<p>我们将图像帧的所有问答对（QAs）组织成图结构。此处“图结构”指有向无环图（DAG），例如当前问题可从（多个）父节点和祖父节点获取上下文。图 $G = (V, E)$ 包含一组顶点 $V$，每个顶点表示一个问答对 $v = (q, a)$，该问答对与场景中的一个或多个关键物体相关联。GVQA 与普通 VQA 的核心区别在于，GVQA 中的问答对具有逻辑依赖关系，我们将其表示为顶点之间的边。$E \subseteq V × V$ 是一组有向边，每条边 $e = (v_p, v_c)$ 连接父问答对和子问答对。我们通过融合两个维度来构建边集 $E$：<strong>物体级边</strong>和<strong>任务级边</strong>。</p>
+<ul>
+<li><strong>物体级</strong>：我们构建逻辑边 $e \in E$ 以表示不同物体间交互的影响。例如，图1（中心）示例中，轿车的规划问答节点会受到行人的感知问答节点的影响。</li>
+<li><strong>任务级</strong>：我们建立逻辑边 $e \in E$ 以捕捉不同推理阶段的逻辑链条：</li>
+<li>感知$(P_1)$：识别、描述并定位当前场景中的关键物体。</li>
+<li>预测$(P_2)$：基于感知结果，估计关键物体可能的动作或交互。</li>
+<li>规划$(P_3)$：自车可能采取的安全动作。</li>
+<li>行为$(B)$：对驾驶决策进行分类。</li>
+<li>运动$(M)$：自车未来轨迹的路径点。</li>
+</ul>
+<p>感知、预测和规划 $P_{1-3})$ 的概念与端到端自动驾驶中的概念类似[10]，而运动和行为的概念则基于自车未来轨迹。具体而言，我们将运动 $M$ 定义为自车未来轨迹，它是鸟瞰图（BEV）中一组坐标为 $(x, y)$ 的 $N$ 个点，记为 $M={(x_0,y_0),(x_1,y_1),...,(x_N,y_N)}$。每个点是未来位置与当前位置在固定时间间隔下的偏移量。然后，每个时间间隔内 $x, y$ 的距离计算为：</p>
+<p>其中，对于$i = 1, 2, \dots, N$，$\delta x_i = x_i - x_{i-1}$且$\delta y_i = y_i - y_{i-1}$。行为表征的目标是作为连接P1-3（感知、预测、规划）与运动M的接口。为了获得行为表征，我们将$x$方向距离变化（$x_{\text{dist}}$）和$y$方向距离变化（$y_{\text{dist}}$）的均值映射到预定义的区间之一，每个区间对应速度或转向中的一个类别，分别记为$B_{\text{sp}}$和$B_{\text{st}}$。在本研究中，我们考虑5个区间：</p>
+
+        
+      </section>
+
+      
+
+      
+    </article>
+  </div>
+
+  <div
+    x-data="tocHighlighter()"
+    @scroll.window="debouncedScroll"
+    class="hidden lg:flex lg:flex-col lg:items-end">
+    
+      <nav id="TableOfContents"></nav>
+    
+  </div>
+</div>
+
+
+            
+<footer class="flex justify-between items-center gap-2 max-w-[65ch] mx-auto px-4 md:px-0 py-12">
+
+  <div>
+  
+  <p>
+    © 2025 dO.ob&#39;s Blog
+  </p>
+  
+
+  
+  <p class="text-sm">
+    🌱
+    <span class="text-base-content/60">
+      Powered by <a class="hover:underline" href="https://gohugo.io/" target="_blank">Hugo</a> with theme
+      <a class="hover:underline" href="https://github.com/g1eny0ung/hugo-theme-dream" target="_blank">Dream</a>.</span
+    >
+  </p>
+  
+</div>
+
+  <div
+  x-data="{ icons: [
+    { name: 'sunny', status: 'n' },
+    { name: 'moon', status: 'y' },
+    { name: 'desktop', status: 'auto' }
+  ] }"
+  class="flex items-center gap-2 h-[32px] px-2 bg-base-100 border border-base-content/30 rounded-full"
+>
+  <template x-for="icon in icons">
+    <div
+      role="button"
+      tabindex="0"
+      :aria-label="'Select ' + icon.name + ' mode'"
+      class="group inline-flex justify-center items-center p-1 rounded-full cursor-pointer hover:bg-primary"
+      :class="$store.darkMode.icon() === icon.name && 'bg-primary'"
+      @click="$store.darkMode.toggle(icon.status)"
+    >
+      <ion-icon
+        :name="`${icon.name}-outline`"
+        class="group-hover:text-primary-content"
+        :class="$store.darkMode.icon() === icon.name && 'text-primary-content'"
+      >
+      </ion-icon>
+    </div>
+  </template>
+</div>
+
+</footer>
+
+          </div>
+        </div>
+        <div class="back">
+          <div class="container">
+            
+            <div class="max-w-[65ch] mt-8 mx-auto px-4">
+  
+  
+  
+  <div>
+    <div class="mb-4 text-lg font-medium">关于我</div>
+
+    <div class="prose dark:prose-invert">
+      <p>我是一名AI从业者，致力于人工智能和数据驱动行业。</p>
+<p>踏上取经路，比抵达灵山更重要</p>
+
+    </div>
+  </div>
+  <div class="divider divider-vertical"></div>
+  
+  
+
+  
+
+  
+</div>
+
+            
+
+            
+<footer class="flex justify-between items-center gap-2 max-w-[65ch] mx-auto px-4 md:px-0 py-12">
+
+  <div>
+  
+  <p>
+    © 2025 dO.ob&#39;s Blog
+  </p>
+  
+
+  
+  <p class="text-sm">
+    🌱
+    <span class="text-base-content/60">
+      Powered by <a class="hover:underline" href="https://gohugo.io/" target="_blank">Hugo</a> with theme
+      <a class="hover:underline" href="https://github.com/g1eny0ung/hugo-theme-dream" target="_blank">Dream</a>.</span
+    >
+  </p>
+  
+</div>
+
+  <div
+  x-data="{ icons: [
+    { name: 'sunny', status: 'n' },
+    { name: 'moon', status: 'y' },
+    { name: 'desktop', status: 'auto' }
+  ] }"
+  class="flex items-center gap-2 h-[32px] px-2 bg-base-100 border border-base-content/30 rounded-full"
+>
+  <template x-for="icon in icons">
+    <div
+      role="button"
+      tabindex="0"
+      :aria-label="'Select ' + icon.name + ' mode'"
+      class="group inline-flex justify-center items-center p-1 rounded-full cursor-pointer hover:bg-primary"
+      :class="$store.darkMode.icon() === icon.name && 'bg-primary'"
+      @click="$store.darkMode.toggle(icon.status)"
+    >
+      <ion-icon
+        :name="`${icon.name}-outline`"
+        class="group-hover:text-primary-content"
+        :class="$store.darkMode.icon() === icon.name && 'text-primary-content'"
+      >
+      </ion-icon>
+    </div>
+  </template>
+</div>
+
+</footer>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+  window.lightTheme = "emerald"
+  window.darkTheme = "forest"
+</script>
+
+
+
+
+
+<script src="/js/main.js"></script>
+
+    
+
+
+
+
+
+
+
+<script src="/js/toc.js"></script>
+
+
+
+
+
+    
+
+    
+
+    
+
+    
+
+    <script type="module" src="https://cdn.jsdelivr.net/npm/ionicons@7.4.0/dist/ionicons/ionicons.esm.js" integrity="sha256-/IFmi82bIhdYWctu0UddSlJqpnzWm7Vh2C4CM32wF/k=" crossorigin="anonymous"></script>
+    <script nomodule src="https://cdn.jsdelivr.net/npm/ionicons@7.4.0/dist/ionicons/ionicons.js" integrity="sha256-mr7eJMX3VC3F7G32mk4oWp1C6a2tlMYxUdptfT7uKI8=" crossorigin="anonymous"></script>
+  </body>
+</html>

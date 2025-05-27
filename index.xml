@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>dO.ob&#39;s Blog</title>
+    <link>http://localhost:1313/</link>
+    <description>Recent content on dO.ob&#39;s Blog</description>
+    <generator>Hugo</generator>
+    <language>zh-Hans</language>
+    <lastBuildDate>Tue, 27 May 2025 13:51:41 +0800</lastBuildDate>
+    <atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>CenterFormer 中文版</title>
+      <link>http://localhost:1313/posts/centerformer%E4%B8%AD%E6%96%87%E7%89%88/</link>
+      <pubDate>Tue, 27 May 2025 13:51:41 +0800</pubDate>
+      <guid>http://localhost:1313/posts/centerformer%E4%B8%AD%E6%96%87%E7%89%88/</guid>
+      <description>&lt;p&gt;这是一篇由图森未来和中佛罗里达大学计算成像实验室在2022年联合出品的关于3D目标检测的论文&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>CenterFormer</title>
+      <link>http://localhost:1313/posts/centerformer/</link>
+      <pubDate>Tue, 27 May 2025 09:51:23 +0800</pubDate>
+      <guid>http://localhost:1313/posts/centerformer/</guid>
+      <description>&lt;!-- Cut out summary from your post content here. --&gt;</description>
+    </item>
+    <item>
+      <title>DriveLM</title>
+      <link>http://localhost:1313/posts/drivelm/</link>
+      <pubDate>Mon, 26 May 2025 19:54:26 +0800</pubDate>
+      <guid>http://localhost:1313/posts/drivelm/</guid>
+      <description>&lt;!-- Cut out summary from your post content here. --&gt;</description>
+    </item>
+    <item>
+      <title>Faster RCNN</title>
+      <link>http://localhost:1313/posts/faster-rcnn/</link>
+      <pubDate>Sat, 24 May 2025 17:37:02 +0800</pubDate>
+      <guid>http://localhost:1313/posts/faster-rcnn/</guid>
+      <description>&lt;!-- Cut out summary from your post content here. --&gt;</description>
+    </item>
+    <item>
+      <title>手撕AI之了解TensorRT（一）</title>
+      <link>http://localhost:1313/posts/%E6%89%8B%E6%92%95ai%E4%B9%8B%E4%BA%86%E8%A7%A3tensorrt%E4%B8%80/</link>
+      <pubDate>Fri, 23 May 2025 11:43:39 +0800</pubDate>
+      <guid>http://localhost:1313/posts/%E6%89%8B%E6%92%95ai%E4%B9%8B%E4%BA%86%E8%A7%A3tensorrt%E4%B8%80/</guid>
+      <description>&lt;!-- Cut out summary from your post content here. --&gt;</description>
+    </item>
+    <item>
+      <title>AI岗位问答（二）</title>
+      <link>http://localhost:1313/posts/ai%E5%B2%97%E4%BD%8D%E9%97%AE%E7%AD%94%E4%BA%8C/</link>
+      <pubDate>Thu, 22 May 2025 13:42:45 +0800</pubDate>
+      <guid>http://localhost:1313/posts/ai%E5%B2%97%E4%BD%8D%E9%97%AE%E7%AD%94%E4%BA%8C/</guid>
+      <description>&lt;!-- Cut out summary from your post content here. --&gt;</description>
+    </item>
+    <item>
+      <title>AI岗位问答（一）</title>
+      <link>http://localhost:1313/posts/ai%E5%B2%97%E4%BD%8D%E9%97%AE%E7%AD%94%E4%B8%80/</link>
+      <pubDate>Wed, 14 May 2025 06:23:43 +0800</pubDate>
+      <guid>http://localhost:1313/posts/ai%E5%B2%97%E4%BD%8D%E9%97%AE%E7%AD%94%E4%B8%80/</guid>
+      <description>&lt;!-- Cut out summary from your post content here. --&gt;</description>
+    </item>
+    <item>
+      <title>Steel LLM</title>
+      <link>http://localhost:1313/posts/steel-llm/</link>
+      <pubDate>Sat, 19 Apr 2025 01:32:06 +0800</pubDate>
+      <guid>http://localhost:1313/posts/steel-llm/</guid>
+      <description>&lt;p&gt;偶然发现一个大佬从零开始的LLM项目：&lt;a href=&#34;https://zhuanlan.zhihu.com/p/687338497&#34; target=&#34;_blank&#34;&gt;Steel-LLM&lt;/a&gt;&#xA;&#xA;有些细节需要深挖一下&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>RoPE</title>
+      <link>http://localhost:1313/posts/rope/</link>
+      <pubDate>Fri, 18 Apr 2025 17:47:12 +0800</pubDate>
+      <guid>http://localhost:1313/posts/rope/</guid>
+      <description>&lt;p&gt;位置编码最近在Transformer架构中已显示出有效性。它为对序列中不同位置的元素之间的依赖关系进行建模提供了有价值的监督信息。在本文中，我们首先研究了将位置信息整合到基于Transformer的语言模型学习过程中的各种方法。然后，我们提出了一种名为旋转位置嵌入（RoPE）的新方法，以有效地利用位置信息。具体而言，所提出的RoPE使用旋转矩阵对绝对位置进行编码，同时在自注意力公式中纳入了明确的相对位置依赖关系。值得注意的是，RoPE具有一些有价值的特性，包括序列长度的灵活性、随着相对距离增加而衰减的词间依赖关系，以及为线性自注意力配备相对位置编码的能力。最后，我们在各种长文本分类基准数据集上对采用了旋转位置嵌入的增强型Transformer（也称为RoFormer）进行了评估。我们的实验表明，它始终优于其他替代方法。此外，我们提供了一个理论分析来解释一些实验结果。RoFormer已经集成到了Huggingface中：https://huggingface.co/docs/transformers/model_doc/roformer 。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>GLM 130B</title>
+      <link>http://localhost:1313/posts/glm-130b/</link>
+      <pubDate>Fri, 18 Apr 2025 17:22:18 +0800</pubDate>
+      <guid>http://localhost:1313/posts/glm-130b/</guid>
+      <description>&lt;p&gt;Cut out summary from your post content here.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Text Embedding</title>
+      <link>http://localhost:1313/posts/text-embedding/</link>
+      <pubDate>Fri, 18 Apr 2025 12:43:06 +0800</pubDate>
+      <guid>http://localhost:1313/posts/text-embedding/</guid>
+      <description>&lt;p&gt;Cut out summary from your post content here.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Scaling Laws</title>
+      <link>http://localhost:1313/posts/scaling-laws/</link>
+      <pubDate>Fri, 18 Apr 2025 12:09:51 +0800</pubDate>
+      <guid>http://localhost:1313/posts/scaling-laws/</guid>
+      <description>&lt;p&gt;我们研究了语言模型在交叉熵损失方面的性能的经验性缩放定律。&#xA;损失与模型规模、数据集规模以及用于训练的计算量之间呈幂律关系，某些趋势涵盖了七个以上的数量级。而诸如网络宽度或深度等其他架构细节，在广泛的范围内影响极小。简单的方程式可以描述过拟合对模型规模/数据集规模的依赖关系，以及训练速度对模型规模的依赖关系。这些关系使我们能够确定在固定计算资源预算下的最优分配方式。更大的模型在样本利用效率上要高得多，因此，要实现最优的计算效率训练，就需要在相对适量的数据上训练非常大的模型，并且在远未收敛之前就显著地停止训练。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>GPTQ</title>
+      <link>http://localhost:1313/posts/gptq/</link>
+      <pubDate>Thu, 17 Apr 2025 19:28:19 +0800</pubDate>
+      <guid>http://localhost:1313/posts/gptq/</guid>
+      <description>&lt;p&gt;首先，模型压缩的方法需要model retraining，例如低比特位宽量化和剪枝。&lt;/p&gt;&#xA;&lt;p&gt;其次，使用one-shot的post-training方法较为复杂&lt;/p&gt;&#xA;&lt;p&gt;最后，round-to-nearest的量化方法在8-bit的权重上起了作用，但在高速情况下不能保持精度&lt;/p&gt;&#xA;&lt;p&gt;GPTQ的一大改进：&lt;/p&gt;&#xA;&lt;p&gt;1.可以将模型压缩到3-bit或者4-bit且不会显著降低精度&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>ZeRO</title>
+      <link>http://localhost:1313/posts/zero/</link>
+      <pubDate>Thu, 17 Apr 2025 10:51:05 +0800</pubDate>
+      <guid>http://localhost:1313/posts/zero/</guid>
+      <description>&lt;p&gt;大型深度学习模型提供了显著的精度增益，但训练数十亿到数万亿的参数是具有挑战性的。现有的解决方案，例如数据和模型并行化，在获得计算、通信和开发效率的同时，在将这些模型装入有限的设备存储器方面表现出基本的局限性。我们开发了一种新的解决方案，ZeRO冗余优化器(Zero)，以优化内存，大大提高训练速度，同时增加可以有效训练的模型大小。ZeRO消除了数据和模型并行训练中的内存冗余，同时保留了较低的通信量和较高的计算粒度，使我们能够以持续的高效率按比例扩展模型大小。我们对内存需求和通信量的分析表明:使用今天的硬件，ZeRO有潜力扩展到超过1万亿个参数。（1000B参数）&lt;/p&gt;&#xA;&lt;p&gt;我们实现并评估了ZeRO:它在400个GPU上以超线性加速训练了超过100B参数的大型模型，实现了15 Petaflops的吞吐量。就可用性而言，ZeRO可以训练高达13B参数的大型模型(例如，大于 Megatron GPT 8.3B和T5 11B)，而不需要模型并行性，这对于科学家来说更难应用。最后但并非最不重要的是，研究人员利用ZeRO的系统突破，创造了世界上最大的语言模型(17B参数)，具有破纪录的准确性。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>DeepSeek-V3</title>
+      <link>http://localhost:1313/posts/deepseek-v3/</link>
+      <pubDate>Tue, 15 Apr 2025 23:57:17 +0800</pubDate>
+      <guid>http://localhost:1313/posts/deepseek-v3/</guid>
+      <description>&lt;p&gt;Cut out summary from your post content here.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>DeepSeek-V2</title>
+      <link>http://localhost:1313/posts/deepseek-v2/</link>
+      <pubDate>Mon, 14 Apr 2025 22:49:09 +0800</pubDate>
+      <guid>http://localhost:1313/posts/deepseek-v2/</guid>
+      <description>&lt;p&gt;&lt;em&gt;DeepSeek-V2&lt;/em&gt;关键技术&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>2025_Apr_12_ThEconomist_概览</title>
+      <link>http://localhost:1313/posts/2025_apr_12_theconomist_%E6%A6%82%E8%A7%88/</link>
+      <pubDate>Mon, 14 Apr 2025 15:24:04 +0800</pubDate>
+      <guid>http://localhost:1313/posts/2025_apr_12_theconomist_%E6%A6%82%E8%A7%88/</guid>
+      <description>&lt;p&gt;The world this week.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

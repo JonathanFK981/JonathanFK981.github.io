@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="zh-Hans"
+  x-data
+  :class="$store.darkMode.class()"
+  :data-theme="$store.darkMode.theme()">
+  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeepSeek-V2 | dO.ob&#39;s Blog</title>
+
+    
+
+<link rel="canonical" href="http://localhost:1313/posts/deepseek-v2/" />
+
+
+
+<meta name="author" content="dO.ob" />
+<meta name="description" content="DeepSeek-V2关键技术
+" />
+
+
+<meta name="keywords" content="LLM,AGI">
+
+
+
+<meta name="generator" content="Hugo 0.146.2">
+
+
+<meta property="og:url" content="http://localhost:1313/posts/deepseek-v2/">
+  <meta property="og:site_name" content="dO.ob&#39;s Blog">
+  <meta property="og:title" content="DeepSeek-V2">
+  <meta property="og:description" content="DeepSeek-V2关键技术">
+  <meta property="og:locale" content="zh_Hans">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2025-04-14T22:49:09+08:00">
+    <meta property="article:modified_time" content="2025-04-14T22:49:09+08:00">
+    <meta property="article:tag" content="LLM">
+    <meta property="article:tag" content="AGI">
+
+
+
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="DeepSeek-V2">
+  <meta name="twitter:description" content="DeepSeek-V2关键技术">
+
+
+
+
+<link rel="stylesheet" href="/css/output.css" />
+
+
+
+
+<script>
+  MathJax = {
+    tex: {
+      inlineMath: [['\\(', '\\)']],
+      displayMath: [['$$','$$']],
+      processEscapes: true,
+      processEnvironments: true
+    },
+    options: {
+      skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+    }
+  };
+</script>
+
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+ 
+
+
+    
+<script>
+  MathJax = {
+    tex: {
+      inlineMath: [['\\(', '\\)'], ['$', '$']],
+      displayMath: [['$$', '$$'], ['\\[', '\\]']],
+      processEscapes: true,
+      processEnvironments: true
+    },
+    options: {
+      skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+    }
+  };
+</script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+ 
+
+
+    
+
+
+<style>
+  pre {
+    padding: 1em;
+    overflow: auto;
+  }
+</style>
+
+
+
+
+
+
+
+
+
+    
+
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3/dist/cdn.min.js" integrity="sha256-PtHu0lJIiSHfZeNj1nFd6wTX+Squ255SGZ/fc8seCtM=" crossorigin="anonymous"></script>
+  </head>
+
+  <body x-data="{
+    flip: false,
+  }">
+    
+    <div id="dream-global-bg"></div>
+
+    
+<nav class="mt-4 lg:mt-8 py-4">
+
+  
+  <div class="container flex justify-between max-w-[65ch] mx-auto px-4 md:px-0">
+  
+    <section class="flex items-center gap-4">
+      <div class="avatar cursor-pointer hover:avatar-online" @click="flip = !flip" title="翻转一下！">
+        <div class="h-10 rounded-full">
+          <img src="/img/logo.jpg" alt="Jonathan&#39;s Blog" />
+        </div>
+      </div>
+
+      
+      <div>
+        
+        <a href="http://localhost:1313/" class="text-lg font-semibold cursor-pointer">
+          Jonathan&#39;s Blog
+        </a>
+        
+        
+      </div>
+      
+    </section>
+
+    
+    
+
+    <div class="dropdown dropdown-end sm:hidden">
+      <div tabindex="0" role="button" class="btn btn-ghost btn-square" aria-label="Select an option">
+        <ion-icon name="menu" class="text-2xl"></ion-icon>
+      </div>
+      <ul tabindex="0" class="dropdown-content menu w-36 bg-base-100 rounded-box z-1 shadow-md">
+        
+
+
+
+
+
+
+
+<li>
+  <div role="link" tabindex="0" class="inline-flex items-center p-2 cursor-pointer" @click="flip = !flip" title="关于">
+    <ion-icon name="information-circle"></ion-icon>关于</div>
+</li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li>
+  <a class="inline-flex items-center p-2 cursor-pointer" href="/posts" title="归档">
+    <ion-icon name="archive"></ion-icon>
+    归档
+  </a>
+</li>
+
+
+
+
+<li>
+  <a class="inline-flex items-center p-2 cursor-pointer" href="/categories" title="所有分类">
+    <ion-icon name="grid"></ion-icon>
+    所有分类
+  </a>
+</li>
+
+
+
+
+<li>
+  <a class="inline-flex items-center p-2 cursor-pointer" href="/tags" title="所有标签">
+    <ion-icon name="pricetags"></ion-icon>
+    所有标签
+  </a>
+</li>
+
+
+
+
+
+
+      </ul>
+    </div>
+    <section class="hidden sm:flex sm:items-center sm:gap-2 md:gap-4">
+      
+
+      
+      
+
+
+
+
+<div role="link" tabindex="0" class="text-sm font-semibold cursor-pointer hover:underline" @click="flip = !flip" title="关于">关于</div>
+
+
+
+
+
+      
+      
+
+
+
+
+
+      
+      
+
+
+
+
+
+      
+      
+<a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/posts" title="归档">
+  <ion-icon class="group-hover:text-primary-content" name="archive"></ion-icon>
+</a>
+
+
+      
+      
+<a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/categories" title="所有分类">
+  <ion-icon class="group-hover:text-primary-content" name="grid"></ion-icon>
+</a>
+
+
+      
+      
+<a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/tags" title="所有标签">
+  <ion-icon class="group-hover:text-primary-content" name="pricetags"></ion-icon>
+</a>
+
+
+      
+
+      
+
+      
+    </section>
+  </div>
+</nav>
+
+
+    <div class="flip-container" :class="{ 'flip-it': flip }">
+      <div class="flipper">
+        <div class="front">
+          <div class="container">
+            
+<div class="lg:grid lg:grid-cols-4 gap-4 mt-4 px-4">
+  <div class="hidden lg:block">
+    
+  </div>
+
+  <div class="lg:col-span-2">
+    <article class="mx-auto prose prose-quoteless dark:prose-invert" id="dream-single-post-main" itemscope itemtype="http://schema.org/Article">
+      
+  <meta itemprop="name" content="DeepSeek-V2">
+  <meta itemprop="description" content="DeepSeek-V2关键技术">
+  <meta itemprop="datePublished" content="2025-04-14T22:49:09+08:00">
+  <meta itemprop="dateModified" content="2025-04-14T22:49:09+08:00">
+  <meta itemprop="wordCount" content="872">
+  <meta itemprop="keywords" content="LLM,AGI">
+
+      <header>
+        <h1 itemprop="headline">DeepSeek-V2</h1>
+        <p class="text-sm">
+          
+            星期一, 4月 14, 2025
+          
+
+          | <span>5分钟阅读</span>
+
+          
+          | <span>更新于
+            
+              星期一, 4月 14, 2025
+            </span>
+          
+        </p>
+
+        
+        <div class="flex justify-between">
+          
+            <div class="flex items-center">
+  
+  <span>@</span>
+  
+
+  <span itemprop="author" itemscope itemtype="https://schema.org/Person">
+  
+    
+      <span itemprop="name">dO.ob</span>
+    
+  
+  </span>
+</div>
+
+          
+
+          <div class="flex items-center gap-2">
+  
+  
+
+  
+  
+  
+  
+  
+    <a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary"
+      href="https://x.com/intent/post?text=DeepSeek-V2&amp;url=http://localhost:1313/posts/deepseek-v2/" target="_blank" rel="noopener noreferrer"
+      title="Share on X">
+      <ion-icon class="group-hover:text-primary-content" name="logo-x"></ion-icon>
+    </a>
+  
+    <a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary"
+      href="https://facebook.com/sharer/sharer.php?u=http://localhost:1313/posts/deepseek-v2/" target="_blank" rel="noopener noreferrer"
+      title="Share on Facebook">
+      <ion-icon class="group-hover:text-primary-content" name="logo-facebook"></ion-icon>
+    </a>
+  
+    <a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary"
+      href="https://wa.me/?text=DeepSeek-V2%20http://localhost:1313/posts/deepseek-v2/" target="_blank" rel="noopener noreferrer"
+      title="Share on WhatsApp">
+      <ion-icon class="group-hover:text-primary-content" name="logo-whatsapp"></ion-icon>
+    </a>
+  
+
+  
+  
+</div>
+
+        </div>
+      </header>
+
+      <section id="dream-single-post-content" itemprop="articleBody">
+        
+          <img class="w-full z-30" src="/img/a.jpg" alt="DeepSeek-V2" />
+        
+
+        <p><em>DeepSeek-V2</em>关键技术</p>
+<h2 id="architecture">Architecture</h2>
+<p>总体而言，<em>DeepSeek-V2</em> 仍然采用的是 <em>Transformer</em> 架构，其中每个 <em>Transformer</em> 模块都由一个注意力模块和一个 <em>FFN</em> 组成。然而，对于注意力模块和 <em>FFN</em>，团队均设计并采用了创新的架构。在注意力方面，团队设计了 <em>Multi-head Latent Attention（MLA）</em>，它利用 <em>Low-Rank Key-Value Joint Compression</em> 来消除推理时 <em>KV cache</em> 的瓶颈，从而实现高效的推理。对于 <em>FFN</em>，团队采用了 <em>DeepSeekMoE</em> 架构，这是一种高性能的 <em>MoE</em> 架构，能够以经济的成本训练出强大的模型。<em>DeepSeek-V2</em> 的架构示意图如下图所示，团队将在本节中介绍 <em>MLA</em> 和 <em>DeepSeekMoE</em> 的详细信息。<em>DeepSeek-V2</em> 遵循 <em>DeepSeek-67B</em> 的设置。
+<div class="embed-pdf-container" id="embed-pdf-container-29d60025">
+    <div class="pdf-loadingWrapper" id="pdf-loadingWrapper-29d60025">
+        <div class="pdf-loading" id="pdf-loading-29d60025"></div>
+    </div>
+    <div id="overlayText">
+      <a href="./fig1.pdf" aria-label="Download" download>
+        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18">
+            <path d="M9 13c.3 0 .5-.1.7-.3L15.4 7 14 5.6l-4 4V1H8v8.6l-4-4L2.6 7l5.7 5.7c.2.2.4.3.7.3zm-7 2h14v2H2z" />
+        </svg>
+      </a>
+    </div>
+    <canvas class="pdf-canvas" id="pdf-canvas-29d60025"></canvas>
+</div>
+
+<div class="pdf-paginator" id="pdf-paginator-29d60025">
+    <button id="pdf-prev-29d60025">Previous</button>
+    <button id="pdf-next-29d60025">Next</button> &nbsp; &nbsp;
+    <span>
+      <span class="pdf-pagenum" id="pdf-pagenum-29d60025"></span> / <span class="pdf-pagecount" id="pdf-pagecount-29d60025"></span>
+    </span>
+    <a class="pdf-source" id="pdf-source-29d60025" href="./fig1.pdf">[pdf]</a>
+</div>
+
+<noscript>
+View the PDF file <a class="pdf-source" id="pdf-source-noscript-29d60025" href="./fig1.pdf">here</a>.
+</noscript>
+
+<script type="text/javascript">
+    (function(){
+    var url = '.\/fig1.pdf';
+
+    var hidePaginator = "" === "true";
+    var hideLoader = "" === "true";
+    var selectedPageNum = parseInt("") || 1;
+
+
+    var showSource = "" === "true";
+    var pageSource = document.getElementById("pdf-source-29d60025");
+
+    
+    function showSourcef() {
+        if(showSource) {
+            pageSource.style.display = 'inline';
+        } else {
+            pageSource.style.display = 'none';
+        }
+    }
+
+    
+    showSourcef();
+
+
+    
+    var pdfjsLib = window['pdfjs-dist/build/pdf'];
+
+    
+    if (pdfjsLib.GlobalWorkerOptions.workerSrc == '')
+      pdfjsLib.GlobalWorkerOptions.workerSrc = "http:\/\/localhost:1313\/" + 'js/pdf-js/build/pdf.worker.js';
+
+    
+    var pdfDoc = null,
+        pageNum = selectedPageNum,
+        pageRendering = false,
+        pageNumPending = null,
+        scale = 3,
+        canvas = document.getElementById('pdf-canvas-29d60025'),
+        ctx = canvas.getContext('2d'),
+        paginator = document.getElementById("pdf-paginator-29d60025"),
+        loadingWrapper = document.getElementById('pdf-loadingWrapper-29d60025');
+
+
+    
+    showPaginator();
+    showLoader();
+
+    
+
+    function renderPage(num) {
+      pageRendering = true;
+      
+      pdfDoc.getPage(num).then(function(page) {
+        var viewport = page.getViewport({scale: scale});
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        
+        var renderContext = {
+          canvasContext: ctx,
+          viewport: viewport
+        };
+        var renderTask = page.render(renderContext);
+
+        
+        renderTask.promise.then(function() {
+          pageRendering = false;
+          showContent();
+
+          if (pageNumPending !== null) {
+            
+            renderPage(pageNumPending);
+            pageNumPending = null;
+          }
+        });
+      });
+
+      
+      document.getElementById('pdf-pagenum-29d60025').textContent = num;
+    }
+
+    
+
+    function showContent() {
+      loadingWrapper.style.display = 'none';
+      canvas.style.display = 'block';
+    }
+
+    
+
+    function showLoader() {
+      if(hideLoader) return
+      loadingWrapper.style.display = 'flex';
+      canvas.style.display = 'none';
+    }
+
+    
+
+    function showPaginator() {
+      if(hidePaginator) return
+      paginator.style.display = 'block';
+    }
+
+    
+
+    function queueRenderPage(num) {
+      if (pageRendering) {
+        pageNumPending = num;
+      } else {
+        renderPage(num);
+      }
+    }
+
+    
+
+    function onPrevPage() {
+      if (pageNum <= 1) {
+        return;
+      }
+      pageNum--;
+      queueRenderPage(pageNum);
+    }
+    document.getElementById('pdf-prev-29d60025').addEventListener('click', onPrevPage);
+
+    
+
+    function onNextPage() {
+      if (pageNum >= pdfDoc.numPages) {
+        return;
+      }
+      pageNum++;
+      queueRenderPage(pageNum);
+    }
+    document.getElementById('pdf-next-29d60025').addEventListener('click', onNextPage);
+
+    
+
+    pdfjsLib.getDocument(url).promise.then(function(pdfDoc_) {
+      pdfDoc = pdfDoc_;
+      var numPages = pdfDoc.numPages;
+      document.getElementById('pdf-pagecount-29d60025').textContent = numPages;
+
+      
+      if(pageNum > numPages) {
+        pageNum = numPages
+      }
+
+      
+      renderPage(pageNum);
+    });
+    })();
+</script>
+</p>
+<h3 id="multi-head-latent-attention-boosting-inference-efficiency">Multi-Head Latent Attention: Boosting Inference Efficiency</h3>
+<p>传统的 <em>Transformer</em> 模型通常采用 <em>MHA</em>，但在生成过程中，其庞大的 <em>KV cache</em> 会成为限制推理效率的瓶颈。为了减少 <em>KV cache</em> ，<em>Multi Query Attention （MQA）</em> 和 <em>Group Query Attention（GQA）</em> 应运而生。它们所需的 <em>KV cache</em> 规模较小，但性能却比不上 <em>MHA</em> （下表给出了关于<em>MHA</em>、<em>GQA</em>和 <em>MQA</em> 的消融实验结果）。</p>
+<p><img src="./pic/3.jpg" alt=""></p>
+<h4 id="comparison-between-mla-and-mha">Comparison Between MLA and MHA</h4>
+<p>在下表中展示了分别配备 <em>MLA</em> 和 <em>MLA</em> 的 <em>MoE</em> 在四个严苛基准测试上的评估结果。为得出可靠结论，团队在两种规模下对模型进行了训练和评估。两个小型 <em>MoE</em> 总参数量约为160亿，团队使用1.33万亿个词元对它们进行训练。两个大型 <em>MoE</em> 总参数量约为2500亿，团队使用4200亿个词元对它们进行训练。此外，除了注意力机制不同之外，两个小型 <em>MoE</em> 和两个大型 <em>MoE</em> 分别具有相同的架构。从表中可以观察到，<em>MLA</em> 的性能优于 <em>MHA</em>。更重要的是，与 <em>MHA</em> 相比，<em>MLA</em> 所需的 <em>KV cache</em> 显著更少（小型 <em>MoE</em> 少14%，大型 <em>MoE</em> 少4%）。</p>
+<p><img src="./pic/4.jpg" alt=""></p>
+<p>对于<em>DeepSeek-V2</em>, <em>MLA</em> 配备了 <em>Low-Rank Key-Value Joint Compression</em> ，其性能优于 <em>MHA</em>，而且所需的 <em>KV cache</em> 大幅减少。</p>
+<h4 id="standard-multi-head-attention">Standard Multi-Head Attention</h4>
+<p>首先介绍标准的 <em>MHA</em> 作为背景。设 $\displaystyle d$ 为嵌入维度，$\displaystyle 𝑛_{ℎ}$ 为 <em>head</em> 的数量，$\displaystyle 𝑑_{ℎ}$ 为每个 <em>head</em> 的维度，$\displaystyle h_{t} \in {\mathbb R}^𝑑 $ 为注意力层中第 $\displaystyle t$ 个 <em>token</em> 的输入。标准 的 <em>MHA</em> 首先通过三个矩阵 $\displaystyle 𝑊^𝑄,𝑊^𝐾,𝑊^𝑉 \in {\mathbb R}^{𝑑_{h}n_{ℎ}×𝑑}$ 分别生成 $\displaystyle q_{t}, k_{t}, v_{t} \in {\mathbb R}^{{d_{h}}{n_{h}}}$：
+\begin{equation}
+\displaystyle q_{t}=𝑊^𝑄h_{t}
+\end{equation}</p>
+<p>\begin{equation}
+\displaystyle k_{t}=𝑊^Kh_{t}
+\end{equation}</p>
+<p>\begin{equation}
+\displaystyle v_{t}=𝑊^Vh_{t}
+\end{equation}</p>
+<p>然后，$\displaystyle q_{t}, k_{t}, v_{t}$ 会被分割成 $\displaystyle 𝑛_{ℎ}$ 个 <em>head</em> 以进行<em>MHA</em>计算：
+</p>
+\[
+\displaystyle [q_{t,1};q_{t,2};\dots ;q_{t,n_{h}}] = q_t
+\]\[
+\displaystyle [k_{t,1};k_{t,2};\dots ;k_{t,n_{h}}] = k_t
+\]\[
+\displaystyle [v_{t,1};v_{t,2};\dots ;v_{t,n_{h}}] = v_t
+\]\[
+\displaystyle {o_{t,i}} = \sum\limits_{j = 1}^t {softmax_j\left( {\frac{{q_{t,i}^T{k_{j,i}}}}{{\sqrt {{d_h}} }}} \right){v_{j,i}}} 
+\]\[\displaystyle {u_t} = {W^O}\left[ {o_{t,1};o_{t,2};\dots ;o_{t,n_{h}}} \right]\]<p>其中 $\displaystyle q_{t,i}, k_{t,i}, v_{t,i} \in {\mathbb R}^{{d_{h}}}$分别表示第 $𝑖$ 个 <em>head</em> 的 <em>query</em>、<em>key</em> 和 <em>value</em>；而 $\displaystyle W^{O} \in {\mathbb R}^{𝑑 \times d_{ℎ}n_{ℎ}}$ 表示输出投影矩阵。在推理过程中，所有的 <em>key</em> 和 <em>value</em> 都需要被缓存以加速推理过程，因此 <em>MHA</em> 需要为每个 <em>token</em> 缓存 $\displaystyle 2n_{ℎ}d_{ℎ}l$ 个元素。在模型部署中，这种庞大的 <em>KV cache</em> 是一个很大的瓶颈，限制了最大 <em>batch</em> 大小和序列长度。</p>
+<h4 id="low-rank-key-value-joint-compression">Low-Rank Key-Value Joint Compression</h4>
+<p><em>MLA</em> 的核心是通过 <em>Low-Rank</em> 联合压缩 <em>key</em> 和 <em>value</em> 来减少 <em>KV cache</em> , 计算方式如下：</p>
+\[
+  c_t^{KV} = {W^{DKV}}{h_t}
+\]\[ k_t^C = {W^{UK}}c_t^{KV} \]\[V_t^C = {W^{UK}}c_t^{KV}\]<p>其中 \( c_{t}^{KV} \in \mathbb{R}^{d_c} \) 是 <em>key</em> 和 <em>value</em> 的 <em>compressed latent vector</em> ；\( d_c (\ll d_h n_h) \) 表示 <em>KV</em> 压缩维度；\( W^{DKV} \in \mathbb{R}^{d_c \times d} \) 是下投影矩阵；\( W^{UK}, W^{UV} \in \mathbb{R}^{d_h n_h \times d_c} \) 分别是 <em>key</em> 和 <em>value</em>  的上投影矩阵。在推理过程中，MLA仅需缓存 \( c_t^{KV} \)，因此其 <em>KV cache</em> 仅有 \( d_c l \) 个元素(\( l \) 表示层数)。此外，在推理时，由于 \( W^{UK} \) 可以被吸收到 \( W^Q \) 中，且 \( W^{UV} \) 可以被吸收到 \( W^O \) 中，团队甚至不需要计算注意力中的 <em>key</em> 和 <em>value</em>。下图直观地展示了<em>MLA</em> 中的 <em>KV joint compression</em> 是如何减少 <em>KV cache</em> 的。
+<div class="embed-pdf-container" id="embed-pdf-container-1cfcaf78">
+    <div class="pdf-loadingWrapper" id="pdf-loadingWrapper-1cfcaf78">
+        <div class="pdf-loading" id="pdf-loading-1cfcaf78"></div>
+    </div>
+    <div id="overlayText">
+      <a href="./fig2.pdf" aria-label="Download" download>
+        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18">
+            <path d="M9 13c.3 0 .5-.1.7-.3L15.4 7 14 5.6l-4 4V1H8v8.6l-4-4L2.6 7l5.7 5.7c.2.2.4.3.7.3zm-7 2h14v2H2z" />
+        </svg>
+      </a>
+    </div>
+    <canvas class="pdf-canvas" id="pdf-canvas-1cfcaf78"></canvas>
+</div>
+
+<div class="pdf-paginator" id="pdf-paginator-1cfcaf78">
+    <button id="pdf-prev-1cfcaf78">Previous</button>
+    <button id="pdf-next-1cfcaf78">Next</button> &nbsp; &nbsp;
+    <span>
+      <span class="pdf-pagenum" id="pdf-pagenum-1cfcaf78"></span> / <span class="pdf-pagecount" id="pdf-pagecount-1cfcaf78"></span>
+    </span>
+    <a class="pdf-source" id="pdf-source-1cfcaf78" href="./fig2.pdf">[pdf]</a>
+</div>
+
+<noscript>
+View the PDF file <a class="pdf-source" id="pdf-source-noscript-1cfcaf78" href="./fig2.pdf">here</a>.
+</noscript>
+
+<script type="text/javascript">
+    (function(){
+    var url = '.\/fig2.pdf';
+
+    var hidePaginator = "" === "true";
+    var hideLoader = "" === "true";
+    var selectedPageNum = parseInt("") || 1;
+
+
+    var showSource = "" === "true";
+    var pageSource = document.getElementById("pdf-source-1cfcaf78");
+
+    
+    function showSourcef() {
+        if(showSource) {
+            pageSource.style.display = 'inline';
+        } else {
+            pageSource.style.display = 'none';
+        }
+    }
+
+    
+    showSourcef();
+
+
+    
+    var pdfjsLib = window['pdfjs-dist/build/pdf'];
+
+    
+    if (pdfjsLib.GlobalWorkerOptions.workerSrc == '')
+      pdfjsLib.GlobalWorkerOptions.workerSrc = "http:\/\/localhost:1313\/" + 'js/pdf-js/build/pdf.worker.js';
+
+    
+    var pdfDoc = null,
+        pageNum = selectedPageNum,
+        pageRendering = false,
+        pageNumPending = null,
+        scale = 3,
+        canvas = document.getElementById('pdf-canvas-1cfcaf78'),
+        ctx = canvas.getContext('2d'),
+        paginator = document.getElementById("pdf-paginator-1cfcaf78"),
+        loadingWrapper = document.getElementById('pdf-loadingWrapper-1cfcaf78');
+
+
+    
+    showPaginator();
+    showLoader();
+
+    
+
+    function renderPage(num) {
+      pageRendering = true;
+      
+      pdfDoc.getPage(num).then(function(page) {
+        var viewport = page.getViewport({scale: scale});
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        
+        var renderContext = {
+          canvasContext: ctx,
+          viewport: viewport
+        };
+        var renderTask = page.render(renderContext);
+
+        
+        renderTask.promise.then(function() {
+          pageRendering = false;
+          showContent();
+
+          if (pageNumPending !== null) {
+            
+            renderPage(pageNumPending);
+            pageNumPending = null;
+          }
+        });
+      });
+
+      
+      document.getElementById('pdf-pagenum-1cfcaf78').textContent = num;
+    }
+
+    
+
+    function showContent() {
+      loadingWrapper.style.display = 'none';
+      canvas.style.display = 'block';
+    }
+
+    
+
+    function showLoader() {
+      if(hideLoader) return
+      loadingWrapper.style.display = 'flex';
+      canvas.style.display = 'none';
+    }
+
+    
+
+    function showPaginator() {
+      if(hidePaginator) return
+      paginator.style.display = 'block';
+    }
+
+    
+
+    function queueRenderPage(num) {
+      if (pageRendering) {
+        pageNumPending = num;
+      } else {
+        renderPage(num);
+      }
+    }
+
+    
+
+    function onPrevPage() {
+      if (pageNum <= 1) {
+        return;
+      }
+      pageNum--;
+      queueRenderPage(pageNum);
+    }
+    document.getElementById('pdf-prev-1cfcaf78').addEventListener('click', onPrevPage);
+
+    
+
+    function onNextPage() {
+      if (pageNum >= pdfDoc.numPages) {
+        return;
+      }
+      pageNum++;
+      queueRenderPage(pageNum);
+    }
+    document.getElementById('pdf-next-1cfcaf78').addEventListener('click', onNextPage);
+
+    
+
+    pdfjsLib.getDocument(url).promise.then(function(pdfDoc_) {
+      pdfDoc = pdfDoc_;
+      var numPages = pdfDoc.numPages;
+      document.getElementById('pdf-pagecount-1cfcaf78').textContent = numPages;
+
+      
+      if(pageNum > numPages) {
+        pageNum = numPages
+      }
+
+      
+      renderPage(pageNum);
+    });
+    })();
+</script>
+
+此外，为了在训练过程中减少激活内存的使用，团队还对 <em>query</em> 进行了 <em>Low-Rank compression</em>，即使这并不会减少 <em>KV</em> 缓存：</p>
+\[c_t^{Q} = {W^{DQ}}{h_t}\]\[q_t^{C} = {W^{UQ}}{c_t^{Q}}\]<p>其中 $c_t^{Q} \in \mathbb{R}^{d_c^{\prime}}$ 是 <em>query</em> 的 <em>compressed latent vector</em>；$d_c^{\prime}( \ll d_hn_h)$ 表示 <em>query</em> 的压缩维度；${W^{DQ}} \in {\mathbb R}^{d_c^{\prime} \times d}$ 和 ${W^{UQ}} \in {\mathbb R}^{d_hn_h \times d_c^{\prime}}$ 分别是 <em>query</em> 的下投影矩阵和上投影矩阵。</p>
+<h4 id="decoupled-rotary-position-embedding">Decoupled Rotary Position Embedding</h4>
+<p>遵循DeepSeek 67B的做法，团队原计划在 <em>DeepSeek-V2</em> 中使用 <em>Rotary Position Embedding(RoPE)</em>。然而，<em>RoPE</em> 与 <em>Low-Rank KV compression</em> 不兼容。具体来说，<em>RoPE</em> 对 <em>key</em> 和 <em>query</em> 都是位置敏感的。如果团队对 <em>key</em>  \( k_t^C \) 应用 <em>RoPE</em> ，那么方程 <em>10</em> 中的 \( W^{UK} \) 将会与一个位置敏感的 <em>RoPE</em> 矩阵耦合。这样一来，在推理过程中，\( W^{UK} \) 不能再被吸收到\( W^Q \)中，因为与当前生成的 <em>token</em> 相关的 <em>RoPE</em> 矩阵会位于 \( W^Q \) 和 \( W^{UK} \) 之间，而矩阵乘法不满足交换律。因此，团队必须在推理时重新计算所有前缀 <em>token</em> 的 <em>key</em> ，这将显著阻碍推理效率。</p>
+<p>作为解决方案，团队提出了 <em>Decoupled RoPE</em> 策略，该策略使用额外的 <em>multi-head queries</em>  $q_{t,i}^R \in {{\mathbb R}^{d_h^R}}$​ 和一个共享的 <em>key</em>  $k_t^R \in {{\mathbb R}^{d_h^R}}$​ 来承载<em>RoPE</em>，其中 $d_h^R$​ 表示<em>Decoupled query</em> 和 <em>key</em> 的 <em>per-head</em> 维度。采用<em>Decoupled RoPE</em> 策略后，<em>MLA</em> 执行以下计算：</p>
+\[\left[ {q_{t,1}^R;q_{t,2}^R; \ldots ;q_{t,{n_h}}^R} \right] = q_t^R = RoPE\left( {{W^{QR}}c_t^Q} \right)\]\[k_t^R = RoPE\left( {{W^{KR}}{h_t}} \right)\]\[{o_{t,i}} = \sum\limits_{j = 1}^t {softmax_{j}} \left( {\frac{{q_{t,i}^T{k_{j,i}}}}{{\sqrt {{d_h} + d_h^R} }}} \right)v_{j,i}^C\]\[{u_t} = {W^O}\left[ {{o_{t,1}};{o_{t,2}}; \ldots ;{o_{t,{n_h}}}} \right]\]<p>其中 ${W^{QR}} \in {{\mathbb R}^{d_h^R{n_h} \times d_c^{\prime}}}$ 和 ${W^{KR}} \in{\mathbb R}^{d_h^R \times d}$ 分别是用于生成解耦 <em>query</em> 和 <em>key</em> 的矩阵；<em>RoPE(·)</em> 表示应用 <em>RoPE</em> 矩阵的操作。在推理过程中，解耦的 <em>key</em> 也需要被缓存。因此，<em>DeepSeek-V2</em>总共需要一个包含 $(dc+d^R_h)l$ 个元素的 <em>KV cache</em>。</p>
+<p>为了完整展示MLA的计算过程，在附录C中整理并提供了其全部公式。这样做可以让读者更清晰地理解<em>MLA</em>的具体运作机制及其数学原理，从而便于进一步的研究和应用。</p>
+<h4 id="comparison-of-key-value-cache">Comparison of Key-Value Cache</h4>
+<p>下表中展示了不同注意力机制之间每个 <em>token</em> 的 <em>KV cache</em> 的比较。<em>MLA</em> 仅需要少量的 <em>KV cache</em> ，与只有2.25个组的 <em>GQA</em> 相当，但却能实现比 <em>MHA</em> 更强的性能。
+<img src="./pic/1.jpg" alt=""></p>
+<h3 id="deepseekmoe-training-strong-models-at-economical-costs">DeepSeekMoE: Training Strong Models at Economical Costs</h3>
+<h4 id="basic-architecture">Basic Architecture</h4>
+<p>对于 <em>FFNs</em>，团队采用了 <em>DeepSeekMoE</em> 架构。<em>DeepSeekMoE</em> 有两个关键理念：一是将专家分割成更细的粒度以提高专家的专业化程度和知识获取的准确性；二是隔离一些共享专家以减少路由专家之间的知识冗余。在激活的专家参数数量和总的专家参数量相同的情况下，<em>DeepSeekMoE</em> 相比传统的 <em>MoE</em> 架构有显著的性能提升。</p>
+<p>令 $u_t$ 表示第 <em>t</em> 个 <em>token</em> 的 <em>FFN</em> 输入，团队按照如下方式计算 <em>FFN</em> 输出 $h_t^{\prime}$​：</p>
+\[h_t^{\prime} = {u_t} + \sum\limits_{i = 1}^{{N_s}} {FFN_i^{\left( s \right)}} \left( {{u_t}} \right) + \sum\limits_{i = 1}^{{N_r}} {{g_{i,t}}FFN_i^{\left( r \right)}} \left( {{u_t}} \right)\]\[{s_{i,t}} = softmax_{i}\left( {u_t^T{e_i}} \right)\]<p>其中，
+$Ns$​ 和 $Nr$ 分别表示共享专家和路由专家的数量；
+$FFN^{(s)}_i(⋅)$ 和 $FFN^{(r)}_i(⋅)$ 分别表示第 <em>i</em> 个共享专家和第 <em>i</em> 个路由专家；
+<em>Kr</em>​ 表示激活的路由专家数量；
+$g_{i,t}$ 是第 <em>i</em> 个专家对于第 <em>t</em> 个 <em>token</em> 的门控值；
+$s_{i,t}$​ 表示 <em>token</em> 到专家的亲和度；
+$e_i$​ 是该层中第 <em>i</em> 个路由专家的中心点；
+$Topk(⋅,K)$ 表示根据为第 <em>t</em> 个 <em>token</em> 和所有路由专家计算出的亲和度分数中的前 <em>K</em> 个最高分数组成的集合。</p>
+<h2 id="alignment">Alignment</h2>
+<h3 id="supervised-fine-tuning">Supervised Fine-Tuning</h3>
+<p>基于团队之前的研究，团队精心策划了指令调优数据集，包含150万条实例，其中120万条用于提高有用性（helpfulness），30万条用于增强安全性（safety）。相比最初的版本，团队提升了数据质量以减少幻觉响应并提高写作能力。在对DeepSeek-V2进行微调时，团队使用了2个epoch，并将学习率设置为5×10^-6。对于DeepSeek-V2 Chat（SFT）的评估，团队主要采用了基于生成的基准测试，除了几个代表性的多选题任务（如MMLU和ARC）。此外，团队还使用了指令遵循评估（IFEval）（Zhou等，2023）来评估DeepSeek-V2 Chat（SFT），采用提示级别的宽松准确率作为评估指标。为了进一步评估聊天模型，团队使用了从2023年9月1日至2024年4月1日的LiveCodeBench（Jain等，2024）问题。除了标准基准测试外，团队还在开放式的对话基准上进一步评估了团队的模型，包括MT-Bench（Zheng等，2023）、AlpacaEval 2.0（Dubois等，2024）和AlignBench（Liu等，2023）。为了进行比较，团队也在相同的评估框架和设置下评估了Qwen1.5 72B Chat、LLaMA-3-70B Instruct以及Mistral-8x22B Instruct。至于DeepSeek 67B Chat的评估结果，团队直接引用了之前发布的评估报告中的数据。</p>
+<h3 id="reinforcement-learning">Reinforcement Learning</h3>
+<p>为了进一步挖掘DeepSeek-V2的潜力并使其与人类偏好对齐，团队采用了强化学习（Reinforcement Learning, RL）来调整其偏好。强化学习算法。为了节省RL的训练成本，团队采用了<strong>组相对策略优化（Group Relative Policy Optimization, GRPO）</strong>。<em>GRPO</em> 放弃了一般与策略模型同样大小的评论家模型（critic model），而是通过组评分来估计基线。具体来说，对于每个问题$\displaystyle q$，GRPO从旧策略$\displaystyle \pi_{\theta_{old}}$中采样一组输出$\displaystyle {o_{1},o_{2},\dots,o_{G}}$，然后通过最大化以下目标函数来优化策略模型$\displaystyle \pi_{\theta}$：</p>
+\[
+\mathcal{J}_{G R P O}(\theta)=\mathbb{E}\left[q \sim P(Q),\left\{o_i\right\}_{i=1}^G \sim \pi_{\theta_{o l d}}(O \mid q)\right] 
+\]\[\frac{1}{G}\sum\limits_{i = 1}^G {\left( {\min \left( {\frac{{{\pi _\theta }\left( {{o_i}\left| q \right.} \right)}}{{{\pi _{{\theta _{old}}}}\left( {{o_i}\left| q \right.} \right)}}{A_i},clip\left( {\frac{{{\pi _\theta }\left( {{o_i}\left| q \right.} \right)}}{{{\pi _{{\theta _{old}}}}\left( {{o_i}\left| q \right.} \right)}},1 - \varepsilon ,1 + \varepsilon } \right){A_i}} \right) - \beta {D_{KL}}\left( {{\pi _\theta }\left\| {{\pi _{ref}}} \right.} \right)} \right)},
+\]\[
+  {D_{KL}}\left( {{\pi _\theta }\left\| {{\pi _{ref}}} \right.} \right) = \frac{{{\pi _{ref}}\left( {{o_i}\left| q \right.} \right)}}{{{\pi _\theta }\left( {{o_i}\left| q \right.} \right)}} - \log \frac{{{\pi _{ref}}\left( {{o_i}\left| q \right.} \right)}}{{{\pi _\theta }\left( {{o_i}\left| q \right.} \right)}} - 1,
+\]<p>
+其中，$\varepsilon$ 和 $\beta$ 均为超参数，$A_i$是优势值，它是使用一组与每个组内的输出相对应的奖励$\left\{ {{r_1},{r_2}, \ldots ,{r_G}} \right\}$计算得出的:</p>
+\[{A_i} = \frac{{{r_i} - mean\left( {\left\{ {{r_1},{r_2}, \ldots ,{r_G}} \right\}} \right)}}{{std\left( {\left\{ {{r_1},{r_2}, \ldots ,{r_G}} \right\}} \right)}}\]<p><strong>训练策略</strong>。在初步实验中，团队发现针对推理数据（如代码和数学提示）进行的强化学习（RL）训练展现出与普通数据训练不同的独特特性。例如，模型的数学和编码能力可以在较长的训练步骤中持续改进。基于此观察，团队采用了两阶段的RL训练策略：第一阶段：推理对齐（Reasoning Alignment），对于代码和数学推理任务，团队训练了一个奖励模型$\displaystyle RM_{reasoning}$，并且优化了$\displaystyle RM_{reasoning}$前馈的策略模型：
+在第二阶段的人类偏好对齐中，团队采用了一个多奖励框架，该框架从三个不同的奖励模型获取奖励：</p>
+<ol>
+<li>$\displaystyle RM_{helpful}$​：评估输出的有用性或相关性。</li>
+<li>$\displaystyle RM_{safety}$​：评估输出的安全性，确保内容适合且不包含有害信息。</li>
+<li>$\displaystyle RM_{rule}$​：根据预定义的规则集评估输出，确保遵守特定的标准或格式。
+最后奖励结果$\displaystyle o_{i}$为：
+\[{r_i} = {c_1} \cdot R{M_{helpful}}\left( {{o_i}} \right) + {c_2} \cdot R{M_{safety}}\left( {{o_i}} \right) + {c_3} \cdot R{M_{rule}}\left( {{o_i}} \right)\]</li>
+</ol>
+<p>其中，$c_1$,$c_2$,$c_3$为对应系数</p>
+<p>为了获得在强化学习（RL）训练中起关键作用的可靠奖励模型，团队精心收集偏好数据，并细致地进行质量过滤和比例调整。团队基于编译器反馈获取代码偏好数据，基于真实标签（ground-truth labels）获取数学偏好数据。在奖励模型训练中，团队使用DeepSeek-V2 Chat（SFT）初始化奖励模型，并通过点对点（point-wise）或成对（pair-wise）损失函数对其进行训练。在实验中，团队观察到RL训练能够充分挖掘并激活模型的潜力，使其能够从可能的回答中选择出既正确又令人满意的答案。</p>
+<!-- ![](./pic/2.jpg) -->
+
+        
+      </section>
+
+      
+
+      
+    </article>
+  </div>
+
+  <div
+    x-data="tocHighlighter()"
+    @scroll.window="debouncedScroll"
+    class="hidden lg:flex lg:flex-col lg:items-end">
+    
+      <nav id="TableOfContents">
+  <ol>
+    <li><a href="#architecture">Architecture</a></li>
+    <li><a href="#alignment">Alignment</a></li>
+  </ol>
+</nav>
+    
+  </div>
+</div>
+
+
+            
+<footer class="flex justify-between items-center gap-2 max-w-[65ch] mx-auto px-4 md:px-0 py-12">
+
+  <div>
+  
+  <p>
+    © 2025 dO.ob&#39;s Blog
+  </p>
+  
+
+  
+  <p class="text-sm">
+    🌱
+    <span class="text-base-content/60">
+      Powered by <a class="hover:underline" href="https://gohugo.io/" target="_blank">Hugo</a> with theme
+      <a class="hover:underline" href="https://github.com/g1eny0ung/hugo-theme-dream" target="_blank">Dream</a>.</span
+    >
+  </p>
+  
+</div>
+
+  <div
+  x-data="{ icons: [
+    { name: 'sunny', status: 'n' },
+    { name: 'moon', status: 'y' },
+    { name: 'desktop', status: 'auto' }
+  ] }"
+  class="flex items-center gap-2 h-[32px] px-2 bg-base-100 border border-base-content/30 rounded-full"
+>
+  <template x-for="icon in icons">
+    <div
+      role="button"
+      tabindex="0"
+      :aria-label="'Select ' + icon.name + ' mode'"
+      class="group inline-flex justify-center items-center p-1 rounded-full cursor-pointer hover:bg-primary"
+      :class="$store.darkMode.icon() === icon.name && 'bg-primary'"
+      @click="$store.darkMode.toggle(icon.status)"
+    >
+      <ion-icon
+        :name="`${icon.name}-outline`"
+        class="group-hover:text-primary-content"
+        :class="$store.darkMode.icon() === icon.name && 'text-primary-content'"
+      >
+      </ion-icon>
+    </div>
+  </template>
+</div>
+
+</footer>
+
+          </div>
+        </div>
+        <div class="back">
+          <div class="container">
+            
+            <div class="max-w-[65ch] mt-8 mx-auto px-4">
+  
+  
+  
+  <div>
+    <div class="mb-4 text-lg font-medium">关于我</div>
+
+    <div class="prose dark:prose-invert">
+      <p>我是一名AI从业者，致力于人工智能和数据驱动行业。</p>
+<p>踏上取经路，比抵达灵山更重要</p>
+
+    </div>
+  </div>
+  <div class="divider divider-vertical"></div>
+  
+  
+
+  
+
+  
+</div>
+
+            
+
+            
+<footer class="flex justify-between items-center gap-2 max-w-[65ch] mx-auto px-4 md:px-0 py-12">
+
+  <div>
+  
+  <p>
+    © 2025 dO.ob&#39;s Blog
+  </p>
+  
+
+  
+  <p class="text-sm">
+    🌱
+    <span class="text-base-content/60">
+      Powered by <a class="hover:underline" href="https://gohugo.io/" target="_blank">Hugo</a> with theme
+      <a class="hover:underline" href="https://github.com/g1eny0ung/hugo-theme-dream" target="_blank">Dream</a>.</span
+    >
+  </p>
+  
+</div>
+
+  <div
+  x-data="{ icons: [
+    { name: 'sunny', status: 'n' },
+    { name: 'moon', status: 'y' },
+    { name: 'desktop', status: 'auto' }
+  ] }"
+  class="flex items-center gap-2 h-[32px] px-2 bg-base-100 border border-base-content/30 rounded-full"
+>
+  <template x-for="icon in icons">
+    <div
+      role="button"
+      tabindex="0"
+      :aria-label="'Select ' + icon.name + ' mode'"
+      class="group inline-flex justify-center items-center p-1 rounded-full cursor-pointer hover:bg-primary"
+      :class="$store.darkMode.icon() === icon.name && 'bg-primary'"
+      @click="$store.darkMode.toggle(icon.status)"
+    >
+      <ion-icon
+        :name="`${icon.name}-outline`"
+        class="group-hover:text-primary-content"
+        :class="$store.darkMode.icon() === icon.name && 'text-primary-content'"
+      >
+      </ion-icon>
+    </div>
+  </template>
+</div>
+
+</footer>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+  window.lightTheme = "emerald"
+  window.darkTheme = "forest"
+</script>
+
+
+
+
+
+<script src="/js/main.js"></script>
+
+    
+
+
+
+
+
+
+
+<script src="/js/toc.js"></script>
+
+
+
+
+
+    
+
+    
+
+    
+
+    
+
+    <script type="module" src="https://cdn.jsdelivr.net/npm/ionicons@7.4.0/dist/ionicons/ionicons.esm.js" integrity="sha256-/IFmi82bIhdYWctu0UddSlJqpnzWm7Vh2C4CM32wF/k=" crossorigin="anonymous"></script>
+    <script nomodule src="https://cdn.jsdelivr.net/npm/ionicons@7.4.0/dist/ionicons/ionicons.js" integrity="sha256-mr7eJMX3VC3F7G32mk4oWp1C6a2tlMYxUdptfT7uKI8=" crossorigin="anonymous"></script>
+  </body>
+</html>

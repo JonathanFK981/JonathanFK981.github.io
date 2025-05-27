@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="zh-Hans"
+  x-data
+  :class="$store.darkMode.class()"
+  :data-theme="$store.darkMode.theme()">
+  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPTQ | dO.ob&#39;s Blog</title>
+
+    
+
+<link rel="canonical" href="http://localhost:1313/posts/gptq/" />
+
+
+
+<meta name="author" content="Author Name" />
+<meta name="description" content="首先，模型压缩的方法需要model retraining，例如低比特位宽量化和剪枝。
+其次，使用one-shot的post-training方法较为复杂
+最后，round-to-nearest的量化方法在8-bit的权重上起了作用，但在高速情况下不能保持精度
+GPTQ的一大改进：
+1.可以将模型压缩到3-bit或者4-bit且不会显著降低精度
+" />
+
+
+<meta name="keywords" content="Tag1,Tag2">
+
+
+
+<meta name="generator" content="Hugo 0.146.2">
+
+
+<meta property="og:url" content="http://localhost:1313/posts/gptq/">
+  <meta property="og:site_name" content="dO.ob&#39;s Blog">
+  <meta property="og:title" content="GPTQ">
+  <meta property="og:description" content="首先，模型压缩的方法需要model retraining，例如低比特位宽量化和剪枝。
+其次，使用one-shot的post-training方法较为复杂
+最后，round-to-nearest的量化方法在8-bit的权重上起了作用，但在高速情况下不能保持精度
+GPTQ的一大改进：
+1.可以将模型压缩到3-bit或者4-bit且不会显著降低精度">
+  <meta property="og:locale" content="zh_Hans">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2025-04-17T19:28:19+08:00">
+    <meta property="article:modified_time" content="2025-04-17T19:28:19+08:00">
+    <meta property="article:tag" content="Tag1">
+    <meta property="article:tag" content="Tag2">
+
+
+
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="GPTQ">
+  <meta name="twitter:description" content="首先，模型压缩的方法需要model retraining，例如低比特位宽量化和剪枝。
+其次，使用one-shot的post-training方法较为复杂
+最后，round-to-nearest的量化方法在8-bit的权重上起了作用，但在高速情况下不能保持精度
+GPTQ的一大改进：
+1.可以将模型压缩到3-bit或者4-bit且不会显著降低精度">
+
+
+
+
+<link rel="stylesheet" href="/css/output.css" />
+
+
+
+
+<script>
+  MathJax = {
+    tex: {
+      inlineMath: [['\\(', '\\)']],
+      displayMath: [['$$','$$']],
+      processEscapes: true,
+      processEnvironments: true
+    },
+    options: {
+      skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+    }
+  };
+</script>
+
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+ 
+
+
+    
+<script>
+  MathJax = {
+    tex: {
+      inlineMath: [['\\(', '\\)'], ['$', '$']],
+      displayMath: [['$$', '$$'], ['\\[', '\\]']],
+      processEscapes: true,
+      processEnvironments: true
+    },
+    options: {
+      skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+    }
+  };
+</script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+ 
+
+
+    
+
+
+<style>
+  pre {
+    padding: 1em;
+    overflow: auto;
+  }
+</style>
+
+
+
+
+
+
+
+
+
+    
+
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3/dist/cdn.min.js" integrity="sha256-PtHu0lJIiSHfZeNj1nFd6wTX+Squ255SGZ/fc8seCtM=" crossorigin="anonymous"></script>
+  </head>
+
+  <body x-data="{
+    flip: false,
+  }">
+    
+    <div id="dream-global-bg"></div>
+
+    
+<nav class="mt-4 lg:mt-8 py-4">
+
+  
+  <div class="container flex justify-between max-w-[65ch] mx-auto px-4 md:px-0">
+  
+    <section class="flex items-center gap-4">
+      <div class="avatar cursor-pointer hover:avatar-online" @click="flip = !flip" title="翻转一下！">
+        <div class="h-10 rounded-full">
+          <img src="/img/logo.jpg" alt="Jonathan&#39;s Blog" />
+        </div>
+      </div>
+
+      
+      <div>
+        
+        <a href="http://localhost:1313/" class="text-lg font-semibold cursor-pointer">
+          Jonathan&#39;s Blog
+        </a>
+        
+        
+      </div>
+      
+    </section>
+
+    
+    
+
+    <div class="dropdown dropdown-end sm:hidden">
+      <div tabindex="0" role="button" class="btn btn-ghost btn-square" aria-label="Select an option">
+        <ion-icon name="menu" class="text-2xl"></ion-icon>
+      </div>
+      <ul tabindex="0" class="dropdown-content menu w-36 bg-base-100 rounded-box z-1 shadow-md">
+        
+
+
+
+
+
+
+
+<li>
+  <div role="link" tabindex="0" class="inline-flex items-center p-2 cursor-pointer" @click="flip = !flip" title="关于">
+    <ion-icon name="information-circle"></ion-icon>关于</div>
+</li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<li>
+  <a class="inline-flex items-center p-2 cursor-pointer" href="/posts" title="归档">
+    <ion-icon name="archive"></ion-icon>
+    归档
+  </a>
+</li>
+
+
+
+
+<li>
+  <a class="inline-flex items-center p-2 cursor-pointer" href="/categories" title="所有分类">
+    <ion-icon name="grid"></ion-icon>
+    所有分类
+  </a>
+</li>
+
+
+
+
+<li>
+  <a class="inline-flex items-center p-2 cursor-pointer" href="/tags" title="所有标签">
+    <ion-icon name="pricetags"></ion-icon>
+    所有标签
+  </a>
+</li>
+
+
+
+
+
+
+      </ul>
+    </div>
+    <section class="hidden sm:flex sm:items-center sm:gap-2 md:gap-4">
+      
+
+      
+      
+
+
+
+
+<div role="link" tabindex="0" class="text-sm font-semibold cursor-pointer hover:underline" @click="flip = !flip" title="关于">关于</div>
+
+
+
+
+
+      
+      
+
+
+
+
+
+      
+      
+
+
+
+
+
+      
+      
+<a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/posts" title="归档">
+  <ion-icon class="group-hover:text-primary-content" name="archive"></ion-icon>
+</a>
+
+
+      
+      
+<a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/categories" title="所有分类">
+  <ion-icon class="group-hover:text-primary-content" name="grid"></ion-icon>
+</a>
+
+
+      
+      
+<a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary" href="/tags" title="所有标签">
+  <ion-icon class="group-hover:text-primary-content" name="pricetags"></ion-icon>
+</a>
+
+
+      
+
+      
+
+      
+    </section>
+  </div>
+</nav>
+
+
+    <div class="flip-container" :class="{ 'flip-it': flip }">
+      <div class="flipper">
+        <div class="front">
+          <div class="container">
+            
+<div class="lg:grid lg:grid-cols-4 gap-4 mt-4 px-4">
+  <div class="hidden lg:block">
+    
+  </div>
+
+  <div class="lg:col-span-2">
+    <article class="mx-auto prose prose-quoteless dark:prose-invert" id="dream-single-post-main" itemscope itemtype="http://schema.org/Article">
+      
+  <meta itemprop="name" content="GPTQ">
+  <meta itemprop="description" content="首先，模型压缩的方法需要model retraining，例如低比特位宽量化和剪枝。
+其次，使用one-shot的post-training方法较为复杂
+最后，round-to-nearest的量化方法在8-bit的权重上起了作用，但在高速情况下不能保持精度
+GPTQ的一大改进：
+1.可以将模型压缩到3-bit或者4-bit且不会显著降低精度">
+  <meta itemprop="datePublished" content="2025-04-17T19:28:19+08:00">
+  <meta itemprop="dateModified" content="2025-04-17T19:28:19+08:00">
+  <meta itemprop="wordCount" content="312">
+  <meta itemprop="keywords" content="Tag1,Tag2">
+
+      <header>
+        <h1 itemprop="headline">GPTQ</h1>
+        <p class="text-sm">
+          
+            星期四, 4月 17, 2025
+          
+
+          | <span>2分钟阅读</span>
+
+          
+          | <span>更新于
+            
+              星期四, 4月 17, 2025
+            </span>
+          
+        </p>
+
+        
+        <div class="flex justify-between">
+          
+            <div class="flex items-center">
+  
+  <span>@</span>
+  
+
+  <span itemprop="author" itemscope itemtype="https://schema.org/Person">
+  
+    
+      <span itemprop="name">Author Name</span>
+    
+  
+  </span>
+</div>
+
+          
+
+          <div class="flex items-center gap-2">
+  
+  
+
+  
+  
+  
+  
+  
+    <a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary"
+      href="https://x.com/intent/post?text=GPTQ&amp;url=http://localhost:1313/posts/gptq/" target="_blank" rel="noopener noreferrer"
+      title="Share on X">
+      <ion-icon class="group-hover:text-primary-content" name="logo-x"></ion-icon>
+    </a>
+  
+    <a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary"
+      href="https://facebook.com/sharer/sharer.php?u=http://localhost:1313/posts/gptq/" target="_blank" rel="noopener noreferrer"
+      title="Share on Facebook">
+      <ion-icon class="group-hover:text-primary-content" name="logo-facebook"></ion-icon>
+    </a>
+  
+    <a class="group inline-flex items-center p-2 rounded-full cursor-pointer hover:bg-primary"
+      href="https://wa.me/?text=GPTQ%20http://localhost:1313/posts/gptq/" target="_blank" rel="noopener noreferrer"
+      title="Share on WhatsApp">
+      <ion-icon class="group-hover:text-primary-content" name="logo-whatsapp"></ion-icon>
+    </a>
+  
+
+  
+  
+</div>
+
+        </div>
+      </header>
+
+      <section id="dream-single-post-content" itemprop="articleBody">
+        
+          <img class="w-full z-30" src="/img/a.jpg" alt="GPTQ" />
+        
+
+        <p>首先，模型压缩的方法需要model retraining，例如低比特位宽量化和剪枝。</p>
+<p>其次，使用one-shot的post-training方法较为复杂</p>
+<p>最后，round-to-nearest的量化方法在8-bit的权重上起了作用，但在高速情况下不能保持精度</p>
+<p>GPTQ的一大改进：</p>
+<p>1.可以将模型压缩到3-bit或者4-bit且不会显著降低精度</p>
+<h1 id="background">BACKGROUND</h1>
+<h2 id="layer-wise-quantization">Layer-Wise Quantization</h2>
+<p>从高层次来看，团队的方法遵循了最先进的 PTQ 方法的结构，即逐层进行量化，并为每一层解决相应的重构问题。具体而言，设 $W_{\ell}$ 为与线性层 $\ell$ 对应的权重，设 $X_{\ell}$ 表示对应于经过网络的一小部分 $m$ 个数据点的层输入。然后，目标是找到一个量化权重矩阵 $\widehat{W}$ ，它能使相对于全精度层输出的均方误差最小化。正式地，这可以重新表述为</p>
+\[argmin_{\widehat W}\left\| {WX - \widehat WX} \right\|_2^2\]<p>此外，与之前的研究类似，团队假设 $W_{\ell}$ 的量化网格在该过程开始之前就已固定，并且各个权重可以像所描述的那样自由变动。</p>
+<h2 id="optimal-brain-quantization">Optimal Brain Quantization.</h2>
+<p>团队的方法基于最近提出的 OBQ 方法来解决上述定义的逐层量化问题，团队对该方法进行了一系列重大改进，使其能够应用于大型语言模型，并实现超过三个数量级的计算速度提升。为了便于理解，团队首先简要总结一下原始的 OBQ 方法。</p>
+<p>OBQ 方法基于这样一个观察结果，即公式（1）可以写成矩阵 $W$ 每一行上的均方误差之和。然后，OBQ 独立处理每一行 $w$ ，每次对一个权重进行量化，同时始终更新所有尚未量化的权重，以便补偿对单个权重进行量化所产生的误差。由于相应的目标函数是一个二次函数，其 Hessian 矩阵为 $H_F = 2X_F X_F^T$ ，其中 $F$ 表示剩余全精度权重的集合，那么接下来要量化的贪婪最优权重（团队用 $w_q$ 表示），以及 $F$ 中所有权重的相应最优更新量（用 $\delta_F$ 表示）由以下公式给出，其中 $\text{quant}(w)$ 将 $w$ 舍入到量化网格上最接近的值：</p>
+\[{w_q} = argmin_{{w_q}} = \frac{{{{\left( {quant\left( {{w_q}} \right) - {w_q}} \right)}^2}}}{{{{\left[ {H_F^{ - 1}} \right]}_{qq}}}}\]\[{\delta _F} =  - \frac{{{w_q} - quant\left( {{w_q}} \right)}}{{{{\left[ {H_F^{ - 1}} \right]}_{qq}}}} \cdot {\left( {H_F^{ - 1}} \right)_{:,q}}\]<p>OBQ 使用这两个公式迭代地对权重进行量化，直到 $w$ 的所有权重都被量化。这种量化方式效率很高，通过直接在逆矩阵中利用一步高斯消元法去除 $H$ 的第 $q$ 行和第 $q$ 列（在对 $w_q$ 进行量化后这是必要的操作），从而避免了对 $H^{-1}$ 进行代价高昂的完全重新计算。也就是说，更新后的逆矩阵由以下公式给出：</p>
+\[H_{ - q}^{ - 1} = {\left( {{H^{ - 1}} - \frac{1}{{{{\left[ {{H^{ - 1}}} \right]}_{qq}}}}H_{:,q}^{ - 1}H_{q,:}^{ - 1}} \right)_{ - p}}\]<p>这种方法有一个向量化的实现方式，可以并行处理矩阵 $W$ 的多行。最终，该算法在中等规模的模型上能够实现较为合理的运行时间：例如，在单个GPU上，它能够在大约1小时内对 ResNet-50 模型（2500万个参数）进行完全量化，这与其他能达到当前最优精度的训练后量化方法大致相当（弗兰塔尔等人，2022年）。然而，对于一个 $d_{row}·d_{col}$ 的矩阵 $W$ ，OBQ 的运行时间与输入呈三次方关系，为 $O(d_{row} · d^3_{col})$，这意味着将其应用于拥有数十亿参数的模型时，计算成本极高。</p>
+<h1 id="gptq-algorithm">GPTQ ALGORITHM</h1>
+<h2 id="step-1-arbitrary-order-insight">Step 1: Arbitrary Order Insight.</h2>
+<p>如前一节所述，$OBQ$ 按照贪婪顺序对权重进行量化，也就是说，它总是选择当前产生额外量化误差最小的权重。有趣的是，团队发现，虽然这种相当自然的策略确实似乎表现得非常好，但与以任意顺序对权重进行量化相比，它的提升通常很小，尤其是在参数众多的大型层上。最有可能的原因是，那些单个误差较大但被量化的权重数量略少，这被在量化过程接近尾声时才被量化的这些权重所抵消，因为在那个时候，几乎没有其他未被量化的权重可用于调整以进行补偿了。正如团队现在将要讨论的，任何固定的顺序都可能表现良好（尤其是在大型模型上）这一见解有着有趣的影响。</p>
+<p>原始的 <em>OBQ</em> 方法按照由相应误差所定义的特定顺序，独立地对矩阵 $W$ 的行进行量化。相比之下，团队的目标是以相同的顺序对所有行的权重进行量化，并且将证明这样做通常会得到最终均方误差与原始解决方案相似的结果。因此，对于所有行而言，未量化权重的集合 $F$ 以及类似的 $H^{-1}_F$ 始终是相同的（示意图见图 2）。更详细地说，这是因为 $H_F$ 仅取决于层输入 $X_F$ （对于所有行来说 $X_F$ 都是相同的），而不取决于任何权重。所以，团队只需按照公式(3)对 $H^{-1}_F$ 进行 $d_{col}$ 次更新（每列更新一次），而不是 $d_{row}·d_{col}$ 次（每个权重更新一次）。这将总体运行时间从 $O(d_{row} · d^3_{col})$ 降低到 $O(max\{d_{row} · d^2_{col},d^3_{col}\})$ ，也就是说，运行时间减少了$min\{d_{row}, d_{col}\}$ 倍。对于更大的模型而言，这种差异可达几个数量级。然而，在该算法真正能够实际应用于非常大的模型之前，还需要解决另外两个主要问题。
+<div class="embed-pdf-container" id="embed-pdf-container-29d60025">
+    <div class="pdf-loadingWrapper" id="pdf-loadingWrapper-29d60025">
+        <div class="pdf-loading" id="pdf-loading-29d60025"></div>
+    </div>
+    <div id="overlayText">
+      <a href="./fig1.pdf" aria-label="Download" download>
+        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18">
+            <path d="M9 13c.3 0 .5-.1.7-.3L15.4 7 14 5.6l-4 4V1H8v8.6l-4-4L2.6 7l5.7 5.7c.2.2.4.3.7.3zm-7 2h14v2H2z" />
+        </svg>
+      </a>
+    </div>
+    <canvas class="pdf-canvas" id="pdf-canvas-29d60025"></canvas>
+</div>
+
+<div class="pdf-paginator" id="pdf-paginator-29d60025">
+    <button id="pdf-prev-29d60025">Previous</button>
+    <button id="pdf-next-29d60025">Next</button> &nbsp; &nbsp;
+    <span>
+      <span class="pdf-pagenum" id="pdf-pagenum-29d60025"></span> / <span class="pdf-pagecount" id="pdf-pagecount-29d60025"></span>
+    </span>
+    <a class="pdf-source" id="pdf-source-29d60025" href="./fig1.pdf">[pdf]</a>
+</div>
+
+<noscript>
+View the PDF file <a class="pdf-source" id="pdf-source-noscript-29d60025" href="./fig1.pdf">here</a>.
+</noscript>
+
+<script type="text/javascript">
+    (function(){
+    var url = '.\/fig1.pdf';
+
+    var hidePaginator = "" === "true";
+    var hideLoader = "" === "true";
+    var selectedPageNum = parseInt("") || 1;
+
+
+    var showSource = "" === "true";
+    var pageSource = document.getElementById("pdf-source-29d60025");
+
+    
+    function showSourcef() {
+        if(showSource) {
+            pageSource.style.display = 'inline';
+        } else {
+            pageSource.style.display = 'none';
+        }
+    }
+
+    
+    showSourcef();
+
+
+    
+    var pdfjsLib = window['pdfjs-dist/build/pdf'];
+
+    
+    if (pdfjsLib.GlobalWorkerOptions.workerSrc == '')
+      pdfjsLib.GlobalWorkerOptions.workerSrc = "http:\/\/localhost:1313\/" + 'js/pdf-js/build/pdf.worker.js';
+
+    
+    var pdfDoc = null,
+        pageNum = selectedPageNum,
+        pageRendering = false,
+        pageNumPending = null,
+        scale = 3,
+        canvas = document.getElementById('pdf-canvas-29d60025'),
+        ctx = canvas.getContext('2d'),
+        paginator = document.getElementById("pdf-paginator-29d60025"),
+        loadingWrapper = document.getElementById('pdf-loadingWrapper-29d60025');
+
+
+    
+    showPaginator();
+    showLoader();
+
+    
+
+    function renderPage(num) {
+      pageRendering = true;
+      
+      pdfDoc.getPage(num).then(function(page) {
+        var viewport = page.getViewport({scale: scale});
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        
+        var renderContext = {
+          canvasContext: ctx,
+          viewport: viewport
+        };
+        var renderTask = page.render(renderContext);
+
+        
+        renderTask.promise.then(function() {
+          pageRendering = false;
+          showContent();
+
+          if (pageNumPending !== null) {
+            
+            renderPage(pageNumPending);
+            pageNumPending = null;
+          }
+        });
+      });
+
+      
+      document.getElementById('pdf-pagenum-29d60025').textContent = num;
+    }
+
+    
+
+    function showContent() {
+      loadingWrapper.style.display = 'none';
+      canvas.style.display = 'block';
+    }
+
+    
+
+    function showLoader() {
+      if(hideLoader) return
+      loadingWrapper.style.display = 'flex';
+      canvas.style.display = 'none';
+    }
+
+    
+
+    function showPaginator() {
+      if(hidePaginator) return
+      paginator.style.display = 'block';
+    }
+
+    
+
+    function queueRenderPage(num) {
+      if (pageRendering) {
+        pageNumPending = num;
+      } else {
+        renderPage(num);
+      }
+    }
+
+    
+
+    function onPrevPage() {
+      if (pageNum <= 1) {
+        return;
+      }
+      pageNum--;
+      queueRenderPage(pageNum);
+    }
+    document.getElementById('pdf-prev-29d60025').addEventListener('click', onPrevPage);
+
+    
+
+    function onNextPage() {
+      if (pageNum >= pdfDoc.numPages) {
+        return;
+      }
+      pageNum++;
+      queueRenderPage(pageNum);
+    }
+    document.getElementById('pdf-next-29d60025').addEventListener('click', onNextPage);
+
+    
+
+    pdfjsLib.getDocument(url).promise.then(function(pdfDoc_) {
+      pdfDoc = pdfDoc_;
+      var numPages = pdfDoc.numPages;
+      document.getElementById('pdf-pagecount-29d60025').textContent = numPages;
+
+      
+      if(pageNum > numPages) {
+        pageNum = numPages
+      }
+
+      
+      renderPage(pageNum);
+    });
+    })();
+</script>
+</p>
+<h2 id="step-2-lazy-batch-updates">Step 2: Lazy Batch-Updates.</h2>
+<p>首先，直接实现前面所描述的方案在实际中并不会很快，因为该算法的计算与内存访问比率相对较低。例如，公式（3）需要仅用每个元素的少量浮点运算（FLOPs）来更新一个可能非常庞大的矩阵的所有元素。这样的操作无法充分利用现代图形处理器（GPU）的强大计算能力，并且会受到低得多的内存带宽的限制，从而成为性能瓶颈。</p>
+<p>幸运的是，这个问题可以通过以下观察来解决：对于第 $i$ 列的最终取整决策仅受对该列所执行的更新操作的影响，因此在这个过程中的这一时刻，对后续列的更新是无关紧要的。这使得“延迟批量处理”更新操作成为可能，从而实现更好的GPU利用率。具体来说，团队一次将该算法应用于 $B = 128$ 列，将更新操作限制在这些列以及相应的 $H^{-1}$ 的 $B×B$ 子块上（另见图2）。只有在一个子块被完全处理后，团队才会使用下面给出的公式(2)和公式(3)的多权重版本来对整个 $H^{-1}$ 和 $W$ 矩阵执行全局更新，其中 $Q$ 表示一组索引，$H^{-1}_{-Q}$ 表示去掉了相应行和列的逆矩阵：</p>
+\[{\delta _F} =  - \left( {{W_Q} - quant\left( {WQ} \right)} \right){\left( {{{\left[ {H_F^{ - 1}} \right]}_{QQ}}} \right)^{ - 1}}{\left( {H_F^{ - 1}} \right)_{:,Q}}\]\[H_{ - Q}^{ - 1} = {\left( {{H^{ - 1}} - H_{:,Q}^{ - 1}{{\left( {{{\left[ {{H^{ - 1}}} \right]}_{QQ}}} \right)}^{ - 1}}H_{Q,:}^{ - 1}} \right)_{ - Q}}\]<p>尽管这种策略并未减少理论上的计算量，但它有效地解决了内存吞吐量瓶颈问题。在实际应用中，这为非常大的模型带来了一个数量级的速度提升，使其成为团队算法的一个关键组成部分。</p>
+<h2 id="step-3-cholesky-reformulation">Step 3: Cholesky Reformulation.</h2>
+<p>团队必须解决的最后一个技术问题是由数值不精确性导致的，在现有模型的规模下，这可能会成为一个主要问题，尤其是当与上一步中讨论的分块更新结合起来时。具体而言，可能会出现矩阵 $H^{-1}_F$ 变为不定矩阵的情况，团队注意到这可能会导致算法朝着错误的方向大幅更新剩余的权重，从而导致相应层的量化结果极其糟糕。在实际中，团队观察到这种情况发生的概率会随着模型规模的增大而增加：具体来说，对于参数超过几十亿的模型，几乎可以肯定至少有几层会出现这种情况。主要问题似乎在于公式(5)的重复应用，这会累积各种数值误差，尤其是通过额外的矩阵求逆操作。</p>
+<p>对于较小的模型，应用阻尼方法，即在矩阵 $H$ 的对角元素上加上一个小的常数 $\lambda$（团队通常选择平均对角值的$1\%$），似乎足以避免数值问题。然而，对于较大的模型，则需要一种更可靠、更通用的方法。</p>
+<p>为了解决这个问题，团队首先注意到，当对权重 $q$ 进行量化时，从 $H^{-1}_{F_{q}}$（其中 $F_{q}$ 表示未量化权重的集合）中所需的唯一信息是第 $q$ 行，或者更准确地说，是从对角元素开始的该行中的元素。其结果是，团队可以使用一种数值上更稳定的方法预先计算出所有这些行，而不会显著增加内存消耗。实际上，对于团队的对称矩阵 $H^{-1}$，通过公式(3)进行的行删除操作在本质上对应于进行乔列斯基分解，只是有一个细微的差别，即乔列斯基分解会将第 $q$ 行除以 $([H^{-1}_{F_{q}}]_{qq})^{\frac{1}{2}}$ 。因此，团队可以利用最先进的乔列斯基分解内核来预先计算出团队将从 $H^{-1}$ 中所需的所有信息。结合适度的阻尼处理，最终得到的方法足够稳健，能够在大型模型上顺利执行而不出问题。额外的好处是，使用经过良好优化的乔列斯基内核还能进一步提升速度。接下来，团队将详细说明该算法的乔列斯基版本所需的所有细微改动。</p>
+<p>最后，团队在算法 1 中给出了 GPTQ 的完整伪代码，其中包括了上述所讨论的优化内容。
+<div class="embed-pdf-container" id="embed-pdf-container-1cfcaf78">
+    <div class="pdf-loadingWrapper" id="pdf-loadingWrapper-1cfcaf78">
+        <div class="pdf-loading" id="pdf-loading-1cfcaf78"></div>
+    </div>
+    <div id="overlayText">
+      <a href="./fig2.pdf" aria-label="Download" download>
+        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18">
+            <path d="M9 13c.3 0 .5-.1.7-.3L15.4 7 14 5.6l-4 4V1H8v8.6l-4-4L2.6 7l5.7 5.7c.2.2.4.3.7.3zm-7 2h14v2H2z" />
+        </svg>
+      </a>
+    </div>
+    <canvas class="pdf-canvas" id="pdf-canvas-1cfcaf78"></canvas>
+</div>
+
+<div class="pdf-paginator" id="pdf-paginator-1cfcaf78">
+    <button id="pdf-prev-1cfcaf78">Previous</button>
+    <button id="pdf-next-1cfcaf78">Next</button> &nbsp; &nbsp;
+    <span>
+      <span class="pdf-pagenum" id="pdf-pagenum-1cfcaf78"></span> / <span class="pdf-pagecount" id="pdf-pagecount-1cfcaf78"></span>
+    </span>
+    <a class="pdf-source" id="pdf-source-1cfcaf78" href="./fig2.pdf">[pdf]</a>
+</div>
+
+<noscript>
+View the PDF file <a class="pdf-source" id="pdf-source-noscript-1cfcaf78" href="./fig2.pdf">here</a>.
+</noscript>
+
+<script type="text/javascript">
+    (function(){
+    var url = '.\/fig2.pdf';
+
+    var hidePaginator = "" === "true";
+    var hideLoader = "" === "true";
+    var selectedPageNum = parseInt("") || 1;
+
+
+    var showSource = "" === "true";
+    var pageSource = document.getElementById("pdf-source-1cfcaf78");
+
+    
+    function showSourcef() {
+        if(showSource) {
+            pageSource.style.display = 'inline';
+        } else {
+            pageSource.style.display = 'none';
+        }
+    }
+
+    
+    showSourcef();
+
+
+    
+    var pdfjsLib = window['pdfjs-dist/build/pdf'];
+
+    
+    if (pdfjsLib.GlobalWorkerOptions.workerSrc == '')
+      pdfjsLib.GlobalWorkerOptions.workerSrc = "http:\/\/localhost:1313\/" + 'js/pdf-js/build/pdf.worker.js';
+
+    
+    var pdfDoc = null,
+        pageNum = selectedPageNum,
+        pageRendering = false,
+        pageNumPending = null,
+        scale = 3,
+        canvas = document.getElementById('pdf-canvas-1cfcaf78'),
+        ctx = canvas.getContext('2d'),
+        paginator = document.getElementById("pdf-paginator-1cfcaf78"),
+        loadingWrapper = document.getElementById('pdf-loadingWrapper-1cfcaf78');
+
+
+    
+    showPaginator();
+    showLoader();
+
+    
+
+    function renderPage(num) {
+      pageRendering = true;
+      
+      pdfDoc.getPage(num).then(function(page) {
+        var viewport = page.getViewport({scale: scale});
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        
+        var renderContext = {
+          canvasContext: ctx,
+          viewport: viewport
+        };
+        var renderTask = page.render(renderContext);
+
+        
+        renderTask.promise.then(function() {
+          pageRendering = false;
+          showContent();
+
+          if (pageNumPending !== null) {
+            
+            renderPage(pageNumPending);
+            pageNumPending = null;
+          }
+        });
+      });
+
+      
+      document.getElementById('pdf-pagenum-1cfcaf78').textContent = num;
+    }
+
+    
+
+    function showContent() {
+      loadingWrapper.style.display = 'none';
+      canvas.style.display = 'block';
+    }
+
+    
+
+    function showLoader() {
+      if(hideLoader) return
+      loadingWrapper.style.display = 'flex';
+      canvas.style.display = 'none';
+    }
+
+    
+
+    function showPaginator() {
+      if(hidePaginator) return
+      paginator.style.display = 'block';
+    }
+
+    
+
+    function queueRenderPage(num) {
+      if (pageRendering) {
+        pageNumPending = num;
+      } else {
+        renderPage(num);
+      }
+    }
+
+    
+
+    function onPrevPage() {
+      if (pageNum <= 1) {
+        return;
+      }
+      pageNum--;
+      queueRenderPage(pageNum);
+    }
+    document.getElementById('pdf-prev-1cfcaf78').addEventListener('click', onPrevPage);
+
+    
+
+    function onNextPage() {
+      if (pageNum >= pdfDoc.numPages) {
+        return;
+      }
+      pageNum++;
+      queueRenderPage(pageNum);
+    }
+    document.getElementById('pdf-next-1cfcaf78').addEventListener('click', onNextPage);
+
+    
+
+    pdfjsLib.getDocument(url).promise.then(function(pdfDoc_) {
+      pdfDoc = pdfDoc_;
+      var numPages = pdfDoc.numPages;
+      document.getElementById('pdf-pagecount-1cfcaf78').textContent = numPages;
+
+      
+      if(pageNum > numPages) {
+        pageNum = numPages
+      }
+
+      
+      renderPage(pageNum);
+    });
+    })();
+</script>
+</p>
+
+        
+      </section>
+
+      
+
+      
+    </article>
+  </div>
+
+  <div
+    x-data="tocHighlighter()"
+    @scroll.window="debouncedScroll"
+    class="hidden lg:flex lg:flex-col lg:items-end">
+    
+      <nav id="TableOfContents">
+  <ol>
+    <li><a href="#layer-wise-quantization">Layer-Wise Quantization</a></li>
+    <li><a href="#optimal-brain-quantization">Optimal Brain Quantization.</a></li>
+  </ol>
+
+  <ol>
+    <li><a href="#step-1-arbitrary-order-insight">Step 1: Arbitrary Order Insight.</a></li>
+    <li><a href="#step-2-lazy-batch-updates">Step 2: Lazy Batch-Updates.</a></li>
+    <li><a href="#step-3-cholesky-reformulation">Step 3: Cholesky Reformulation.</a></li>
+  </ol>
+</nav>
+    
+  </div>
+</div>
+
+
+            
+<footer class="flex justify-between items-center gap-2 max-w-[65ch] mx-auto px-4 md:px-0 py-12">
+
+  <div>
+  
+  <p>
+    © 2025 dO.ob&#39;s Blog
+  </p>
+  
+
+  
+  <p class="text-sm">
+    🌱
+    <span class="text-base-content/60">
+      Powered by <a class="hover:underline" href="https://gohugo.io/" target="_blank">Hugo</a> with theme
+      <a class="hover:underline" href="https://github.com/g1eny0ung/hugo-theme-dream" target="_blank">Dream</a>.</span
+    >
+  </p>
+  
+</div>
+
+  <div
+  x-data="{ icons: [
+    { name: 'sunny', status: 'n' },
+    { name: 'moon', status: 'y' },
+    { name: 'desktop', status: 'auto' }
+  ] }"
+  class="flex items-center gap-2 h-[32px] px-2 bg-base-100 border border-base-content/30 rounded-full"
+>
+  <template x-for="icon in icons">
+    <div
+      role="button"
+      tabindex="0"
+      :aria-label="'Select ' + icon.name + ' mode'"
+      class="group inline-flex justify-center items-center p-1 rounded-full cursor-pointer hover:bg-primary"
+      :class="$store.darkMode.icon() === icon.name && 'bg-primary'"
+      @click="$store.darkMode.toggle(icon.status)"
+    >
+      <ion-icon
+        :name="`${icon.name}-outline`"
+        class="group-hover:text-primary-content"
+        :class="$store.darkMode.icon() === icon.name && 'text-primary-content'"
+      >
+      </ion-icon>
+    </div>
+  </template>
+</div>
+
+</footer>
+
+          </div>
+        </div>
+        <div class="back">
+          <div class="container">
+            
+            <div class="max-w-[65ch] mt-8 mx-auto px-4">
+  
+  
+  
+  <div>
+    <div class="mb-4 text-lg font-medium">关于我</div>
+
+    <div class="prose dark:prose-invert">
+      <p>我是一名AI从业者，致力于人工智能和数据驱动行业。</p>
+<p>踏上取经路，比抵达灵山更重要</p>
+
+    </div>
+  </div>
+  <div class="divider divider-vertical"></div>
+  
+  
+
+  
+
+  
+</div>
+
+            
+
+            
+<footer class="flex justify-between items-center gap-2 max-w-[65ch] mx-auto px-4 md:px-0 py-12">
+
+  <div>
+  
+  <p>
+    © 2025 dO.ob&#39;s Blog
+  </p>
+  
+
+  
+  <p class="text-sm">
+    🌱
+    <span class="text-base-content/60">
+      Powered by <a class="hover:underline" href="https://gohugo.io/" target="_blank">Hugo</a> with theme
+      <a class="hover:underline" href="https://github.com/g1eny0ung/hugo-theme-dream" target="_blank">Dream</a>.</span
+    >
+  </p>
+  
+</div>
+
+  <div
+  x-data="{ icons: [
+    { name: 'sunny', status: 'n' },
+    { name: 'moon', status: 'y' },
+    { name: 'desktop', status: 'auto' }
+  ] }"
+  class="flex items-center gap-2 h-[32px] px-2 bg-base-100 border border-base-content/30 rounded-full"
+>
+  <template x-for="icon in icons">
+    <div
+      role="button"
+      tabindex="0"
+      :aria-label="'Select ' + icon.name + ' mode'"
+      class="group inline-flex justify-center items-center p-1 rounded-full cursor-pointer hover:bg-primary"
+      :class="$store.darkMode.icon() === icon.name && 'bg-primary'"
+      @click="$store.darkMode.toggle(icon.status)"
+    >
+      <ion-icon
+        :name="`${icon.name}-outline`"
+        class="group-hover:text-primary-content"
+        :class="$store.darkMode.icon() === icon.name && 'text-primary-content'"
+      >
+      </ion-icon>
+    </div>
+  </template>
+</div>
+
+</footer>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+  window.lightTheme = "emerald"
+  window.darkTheme = "forest"
+</script>
+
+
+
+
+
+<script src="/js/main.js"></script>
+
+    
+
+
+
+
+
+
+
+<script src="/js/toc.js"></script>
+
+
+
+
+
+    
+
+    
+
+    
+
+    
+
+    <script type="module" src="https://cdn.jsdelivr.net/npm/ionicons@7.4.0/dist/ionicons/ionicons.esm.js" integrity="sha256-/IFmi82bIhdYWctu0UddSlJqpnzWm7Vh2C4CM32wF/k=" crossorigin="anonymous"></script>
+    <script nomodule src="https://cdn.jsdelivr.net/npm/ionicons@7.4.0/dist/ionicons/ionicons.js" integrity="sha256-mr7eJMX3VC3F7G32mk4oWp1C6a2tlMYxUdptfT7uKI8=" crossorigin="anonymous"></script>
+  </body>
+</html>

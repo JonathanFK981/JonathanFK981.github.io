@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Category1 on dO.ob&#39;s Blog</title>
+    <link>http://localhost:1313/categories/category1/</link>
+    <description>Recent content in Category1 on dO.ob&#39;s Blog</description>
+    <generator>Hugo</generator>
+    <language>zh-Hans</language>
+    <lastBuildDate>Mon, 26 May 2025 19:54:26 +0800</lastBuildDate>
+    <atom:link href="http://localhost:1313/categories/category1/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>DriveLM</title>
+      <link>http://localhost:1313/posts/drivelm/</link>
+      <pubDate>Mon, 26 May 2025 19:54:26 +0800</pubDate>
+      <guid>http://localhost:1313/posts/drivelm/</guid>
+      <description>&lt;p&gt;Cut out summary from your post content here.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Faster RCNN</title>
+      <link>http://localhost:1313/posts/faster-rcnn/</link>
+      <pubDate>Sat, 24 May 2025 17:37:02 +0800</pubDate>
+      <guid>http://localhost:1313/posts/faster-rcnn/</guid>
+      <description>&lt;!-- Cut out summary from your post content here. --&gt;</description>
+    </item>
+    <item>
+      <title>手撕AI之了解TensorRT（一）</title>
+      <link>http://localhost:1313/posts/%E6%89%8B%E6%92%95ai%E4%B9%8B%E4%BA%86%E8%A7%A3tensorrt%E4%B8%80/</link>
+      <pubDate>Fri, 23 May 2025 11:43:39 +0800</pubDate>
+      <guid>http://localhost:1313/posts/%E6%89%8B%E6%92%95ai%E4%B9%8B%E4%BA%86%E8%A7%A3tensorrt%E4%B8%80/</guid>
+      <description>&lt;!-- Cut out summary from your post content here. --&gt;</description>
+    </item>
+    <item>
+      <title>AI岗位问答（二）</title>
+      <link>http://localhost:1313/posts/ai%E5%B2%97%E4%BD%8D%E9%97%AE%E7%AD%94%E4%BA%8C/</link>
+      <pubDate>Thu, 22 May 2025 13:42:45 +0800</pubDate>
+      <guid>http://localhost:1313/posts/ai%E5%B2%97%E4%BD%8D%E9%97%AE%E7%AD%94%E4%BA%8C/</guid>
+      <description>&lt;!-- Cut out summary from your post content here. --&gt;</description>
+    </item>
+    <item>
+      <title>AI岗位问答（一）</title>
+      <link>http://localhost:1313/posts/ai%E5%B2%97%E4%BD%8D%E9%97%AE%E7%AD%94%E4%B8%80/</link>
+      <pubDate>Wed, 14 May 2025 06:23:43 +0800</pubDate>
+      <guid>http://localhost:1313/posts/ai%E5%B2%97%E4%BD%8D%E9%97%AE%E7%AD%94%E4%B8%80/</guid>
+      <description>&lt;!-- Cut out summary from your post content here. --&gt;</description>
+    </item>
+    <item>
+      <title>RoPE</title>
+      <link>http://localhost:1313/posts/rope/</link>
+      <pubDate>Fri, 18 Apr 2025 17:47:12 +0800</pubDate>
+      <guid>http://localhost:1313/posts/rope/</guid>
+      <description>&lt;p&gt;位置编码最近在Transformer架构中已显示出有效性。它为对序列中不同位置的元素之间的依赖关系进行建模提供了有价值的监督信息。在本文中，我们首先研究了将位置信息整合到基于Transformer的语言模型学习过程中的各种方法。然后，我们提出了一种名为旋转位置嵌入（RoPE）的新方法，以有效地利用位置信息。具体而言，所提出的RoPE使用旋转矩阵对绝对位置进行编码，同时在自注意力公式中纳入了明确的相对位置依赖关系。值得注意的是，RoPE具有一些有价值的特性，包括序列长度的灵活性、随着相对距离增加而衰减的词间依赖关系，以及为线性自注意力配备相对位置编码的能力。最后，我们在各种长文本分类基准数据集上对采用了旋转位置嵌入的增强型Transformer（也称为RoFormer）进行了评估。我们的实验表明，它始终优于其他替代方法。此外，我们提供了一个理论分析来解释一些实验结果。RoFormer已经集成到了Huggingface中：https://huggingface.co/docs/transformers/model_doc/roformer 。&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>GLM 130B</title>
+      <link>http://localhost:1313/posts/glm-130b/</link>
+      <pubDate>Fri, 18 Apr 2025 17:22:18 +0800</pubDate>
+      <guid>http://localhost:1313/posts/glm-130b/</guid>
+      <description>&lt;p&gt;Cut out summary from your post content here.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>DeepSeek-V3</title>
+      <link>http://localhost:1313/posts/deepseek-v3/</link>
+      <pubDate>Tue, 15 Apr 2025 23:57:17 +0800</pubDate>
+      <guid>http://localhost:1313/posts/deepseek-v3/</guid>
+      <description>&lt;p&gt;Cut out summary from your post content here.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>DeepSeek-V2</title>
+      <link>http://localhost:1313/posts/deepseek-v2/</link>
+      <pubDate>Mon, 14 Apr 2025 22:49:09 +0800</pubDate>
+      <guid>http://localhost:1313/posts/deepseek-v2/</guid>
+      <description>&lt;p&gt;&lt;em&gt;DeepSeek-V2&lt;/em&gt;关键技术&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>
