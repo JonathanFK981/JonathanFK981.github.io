@@ -428,7 +428,105 @@ L\left(\left\{p_i\right\},\left\{t_i\right\}\right)=\frac{1}{N_{c l s}} \sum_i L
 <h1 id="实现细节">实现细节</h1>
 <p>我们在单尺度图像上训练和测试区域建议网络与目标检测网络[7,5]。具体来说，将图像短边缩放至$s=600$像素[5]。尽管多尺度特征提取可能提升精度，但无法实现良好的速度-精度权衡[5]。需要说明的是，对于ZF和VGG网络，在缩放后的图像上，最后一个卷积层的总步长为16像素，因此在典型的PASCAL图像（约500×375像素）上对应步长约为10像素。尽管步长较大，仍能取得较好结果，不过更小的步长可能进一步提升精度。</p>
 <p>对于锚点，我们使用 3 种尺度（对应框面积为 128²、256² 和 512² 像素）和 3 种宽高比（1:1、1:2 和 2:1）。值得注意的是，当预测大尺寸建议框时，我们的算法允许使用大于底层感受野的锚点框。这种预测并非不可行 —— 即使只能看到物体的中间部分，仍可以大致推断物体的范围。通过这种设计，我们的方案无需多尺度特征或多尺度滑动窗口即可预测大尺寸区域，节省了大量运行时间。图 1（右）展示了我们的方法在广泛尺度和宽高比下的能力。下表显示了使用 ZF 网络（短边缩放至s=600时）为每个锚点学习到的平均建议框尺寸：
-<div class="embed-pdf-container" id="embed-pdf-container-1cfcaf78">
+<script type="text/javascript" src= '/js/pdf-js/build/pdf.js'></script>
+
+<style>
+  .pdf-paginator {
+    text-align:center;}
+
+  #embed-pdf-container {
+    position: relative;
+    width: 100%;
+    height: auto;
+    min-height: 20vh;
+     
+  }
+  
+  .pdf-canvas {
+    border: 1px solid black;
+    direction: ltr;
+    width: 100%;
+    height: auto;
+    display: none;
+  }
+  
+  #the-canvas {
+    border: 1px solid black;
+    direction: ltr;
+    width: 100%;
+    height: auto;
+    display: none;
+  }
+  
+  
+  .pdf-loadingWrapper {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 350px;
+  }
+  
+  .pdf-loading {
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    border: 3px solid #d2d0d0;;
+    border-radius: 50%;
+    border-top-color: #383838;
+    animation: spin 1s ease-in-out infinite;
+    -webkit-animation: spin 1s ease-in-out infinite;
+  }
+  
+  
+  
+  
+  
+  #overlayText {
+    word-wrap: break-word;
+    display: grid;
+    justify-content: end;
+  }
+  
+  #overlayText a {
+    position: relative;
+    top: 10px;
+    right: 4px;
+    color: #000;
+    margin: auto;
+    background-color: #eeeeee;
+    padding: 0.3em 1em;
+    border: solid 2px;
+    border-radius: 12px;
+    border-color: #00000030;
+    text-decoration: none;
+  }
+  
+  #overlayText svg {
+    height: clamp(1em, 2vw, 1.4em);
+    width:  clamp(1em, 2vw, 1.4em);
+  }
+  
+  
+  
+  @keyframes spin {
+    to { -webkit-transform: rotate(360deg); }
+  }
+  @-webkit-keyframes spin {
+    to { -webkit-transform: rotate(360deg); }
+  }
+
+  #overlayText {
+        display: none;
+  }
+
+
+
+
+
+
+
+  </style><div class="embed-pdf-container" id="embed-pdf-container-1cfcaf78">
     <div class="pdf-loadingWrapper" id="pdf-loadingWrapper-1cfcaf78">
         <div class="pdf-loading" id="pdf-loading-1cfcaf78"></div>
     </div>

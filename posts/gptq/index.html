@@ -410,7 +410,105 @@ GPTQ的一大改进：
 <h2 id="step-1-arbitrary-order-insight">Step 1: Arbitrary Order Insight.</h2>
 <p>如前一节所述，$OBQ$ 按照贪婪顺序对权重进行量化，也就是说，它总是选择当前产生额外量化误差最小的权重。有趣的是，团队发现，虽然这种相当自然的策略确实似乎表现得非常好，但与以任意顺序对权重进行量化相比，它的提升通常很小，尤其是在参数众多的大型层上。最有可能的原因是，那些单个误差较大但被量化的权重数量略少，这被在量化过程接近尾声时才被量化的这些权重所抵消，因为在那个时候，几乎没有其他未被量化的权重可用于调整以进行补偿了。正如团队现在将要讨论的，任何固定的顺序都可能表现良好（尤其是在大型模型上）这一见解有着有趣的影响。</p>
 <p>原始的 <em>OBQ</em> 方法按照由相应误差所定义的特定顺序，独立地对矩阵 $W$ 的行进行量化。相比之下，团队的目标是以相同的顺序对所有行的权重进行量化，并且将证明这样做通常会得到最终均方误差与原始解决方案相似的结果。因此，对于所有行而言，未量化权重的集合 $F$ 以及类似的 $H^{-1}_F$ 始终是相同的（示意图见图 2）。更详细地说，这是因为 $H_F$ 仅取决于层输入 $X_F$ （对于所有行来说 $X_F$ 都是相同的），而不取决于任何权重。所以，团队只需按照公式(3)对 $H^{-1}_F$ 进行 $d_{col}$ 次更新（每列更新一次），而不是 $d_{row}·d_{col}$ 次（每个权重更新一次）。这将总体运行时间从 $O(d_{row} · d^3_{col})$ 降低到 $O(max\{d_{row} · d^2_{col},d^3_{col}\})$ ，也就是说，运行时间减少了$min\{d_{row}, d_{col}\}$ 倍。对于更大的模型而言，这种差异可达几个数量级。然而，在该算法真正能够实际应用于非常大的模型之前，还需要解决另外两个主要问题。
-<div class="embed-pdf-container" id="embed-pdf-container-29d60025">
+<script type="text/javascript" src= '/js/pdf-js/build/pdf.js'></script>
+
+<style>
+  .pdf-paginator {
+    text-align:center;}
+
+  #embed-pdf-container {
+    position: relative;
+    width: 100%;
+    height: auto;
+    min-height: 20vh;
+     
+  }
+  
+  .pdf-canvas {
+    border: 1px solid black;
+    direction: ltr;
+    width: 100%;
+    height: auto;
+    display: none;
+  }
+  
+  #the-canvas {
+    border: 1px solid black;
+    direction: ltr;
+    width: 100%;
+    height: auto;
+    display: none;
+  }
+  
+  
+  .pdf-loadingWrapper {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 350px;
+  }
+  
+  .pdf-loading {
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    border: 3px solid #d2d0d0;;
+    border-radius: 50%;
+    border-top-color: #383838;
+    animation: spin 1s ease-in-out infinite;
+    -webkit-animation: spin 1s ease-in-out infinite;
+  }
+  
+  
+  
+  
+  
+  #overlayText {
+    word-wrap: break-word;
+    display: grid;
+    justify-content: end;
+  }
+  
+  #overlayText a {
+    position: relative;
+    top: 10px;
+    right: 4px;
+    color: #000;
+    margin: auto;
+    background-color: #eeeeee;
+    padding: 0.3em 1em;
+    border: solid 2px;
+    border-radius: 12px;
+    border-color: #00000030;
+    text-decoration: none;
+  }
+  
+  #overlayText svg {
+    height: clamp(1em, 2vw, 1.4em);
+    width:  clamp(1em, 2vw, 1.4em);
+  }
+  
+  
+  
+  @keyframes spin {
+    to { -webkit-transform: rotate(360deg); }
+  }
+  @-webkit-keyframes spin {
+    to { -webkit-transform: rotate(360deg); }
+  }
+
+  #overlayText {
+        display: none;
+  }
+
+
+
+
+
+
+
+  </style><div class="embed-pdf-container" id="embed-pdf-container-29d60025">
     <div class="pdf-loadingWrapper" id="pdf-loadingWrapper-29d60025">
         <div class="pdf-loading" id="pdf-loading-29d60025"></div>
     </div>

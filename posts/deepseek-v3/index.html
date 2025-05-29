@@ -386,7 +386,105 @@
 <p>Basic Architecture of DeepSeekMoE. For Feed-Forward Networks (FFNs), DeepSeek-V3 employs the DeepSeekMoE architecture . Compared with traditional MoE architectures like GShard , DeepSeekMoE uses finer-grained experts and isolates some experts as shared ones. Let u𝑡 denote the FFN input of the 𝑡-th token, we compute the FFN output h′ 𝑡 as follows:
 DeepSeekMoE的基本架构。对于前馈神经网络（FFNs），DeepSeek-V3采用了DeepSeekMoE架构。与像GShard这样的传统混合专家（MoE）架构相比，DeepSeekMoE使用了更细粒度的专家，并将一些专家分离出来作为共享专家。设\(u_t\)表示第\(t\)个词元的前馈神经网络输入，我们按如下方式计算前馈神经网络输出\(h'_t\)：</p>
 <!-- ![](./pic/3.pdf) -->
-<p><div class="embed-pdf-container" id="embed-pdf-container-218be169">
+<p><script type="text/javascript" src= '/js/pdf-js/build/pdf.js'></script>
+
+<style>
+  .pdf-paginator {
+    text-align:center;}
+
+  #embed-pdf-container {
+    position: relative;
+    width: 100%;
+    height: auto;
+    min-height: 20vh;
+     
+  }
+  
+  .pdf-canvas {
+    border: 1px solid black;
+    direction: ltr;
+    width: 100%;
+    height: auto;
+    display: none;
+  }
+  
+  #the-canvas {
+    border: 1px solid black;
+    direction: ltr;
+    width: 100%;
+    height: auto;
+    display: none;
+  }
+  
+  
+  .pdf-loadingWrapper {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 350px;
+  }
+  
+  .pdf-loading {
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    border: 3px solid #d2d0d0;;
+    border-radius: 50%;
+    border-top-color: #383838;
+    animation: spin 1s ease-in-out infinite;
+    -webkit-animation: spin 1s ease-in-out infinite;
+  }
+  
+  
+  
+  
+  
+  #overlayText {
+    word-wrap: break-word;
+    display: grid;
+    justify-content: end;
+  }
+  
+  #overlayText a {
+    position: relative;
+    top: 10px;
+    right: 4px;
+    color: #000;
+    margin: auto;
+    background-color: #eeeeee;
+    padding: 0.3em 1em;
+    border: solid 2px;
+    border-radius: 12px;
+    border-color: #00000030;
+    text-decoration: none;
+  }
+  
+  #overlayText svg {
+    height: clamp(1em, 2vw, 1.4em);
+    width:  clamp(1em, 2vw, 1.4em);
+  }
+  
+  
+  
+  @keyframes spin {
+    to { -webkit-transform: rotate(360deg); }
+  }
+  @-webkit-keyframes spin {
+    to { -webkit-transform: rotate(360deg); }
+  }
+
+  #overlayText {
+        display: none;
+  }
+
+
+
+
+
+
+
+  </style><div class="embed-pdf-container" id="embed-pdf-container-218be169">
     <div class="pdf-loadingWrapper" id="pdf-loadingWrapper-218be169">
         <div class="pdf-loading" id="pdf-loading-218be169"></div>
     </div>

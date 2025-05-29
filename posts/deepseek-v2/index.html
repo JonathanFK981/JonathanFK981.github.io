@@ -379,7 +379,105 @@
         <p><em>DeepSeek-V2</em>关键技术</p>
 <h2 id="architecture">Architecture</h2>
 <p>总体而言，<em>DeepSeek-V2</em> 仍然采用的是 <em>Transformer</em> 架构，其中每个 <em>Transformer</em> 模块都由一个注意力模块和一个 <em>FFN</em> 组成。然而，对于注意力模块和 <em>FFN</em>，团队均设计并采用了创新的架构。在注意力方面，团队设计了 <em>Multi-head Latent Attention（MLA）</em>，它利用 <em>Low-Rank Key-Value Joint Compression</em> 来消除推理时 <em>KV cache</em> 的瓶颈，从而实现高效的推理。对于 <em>FFN</em>，团队采用了 <em>DeepSeekMoE</em> 架构，这是一种高性能的 <em>MoE</em> 架构，能够以经济的成本训练出强大的模型。<em>DeepSeek-V2</em> 的架构示意图如下图所示，团队将在本节中介绍 <em>MLA</em> 和 <em>DeepSeekMoE</em> 的详细信息。<em>DeepSeek-V2</em> 遵循 <em>DeepSeek-67B</em> 的设置。
-<div class="embed-pdf-container" id="embed-pdf-container-29d60025">
+<script type="text/javascript" src= '/js/pdf-js/build/pdf.js'></script>
+
+<style>
+  .pdf-paginator {
+    text-align:center;}
+
+  #embed-pdf-container {
+    position: relative;
+    width: 100%;
+    height: auto;
+    min-height: 20vh;
+     
+  }
+  
+  .pdf-canvas {
+    border: 1px solid black;
+    direction: ltr;
+    width: 100%;
+    height: auto;
+    display: none;
+  }
+  
+  #the-canvas {
+    border: 1px solid black;
+    direction: ltr;
+    width: 100%;
+    height: auto;
+    display: none;
+  }
+  
+  
+  .pdf-loadingWrapper {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 350px;
+  }
+  
+  .pdf-loading {
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    border: 3px solid #d2d0d0;;
+    border-radius: 50%;
+    border-top-color: #383838;
+    animation: spin 1s ease-in-out infinite;
+    -webkit-animation: spin 1s ease-in-out infinite;
+  }
+  
+  
+  
+  
+  
+  #overlayText {
+    word-wrap: break-word;
+    display: grid;
+    justify-content: end;
+  }
+  
+  #overlayText a {
+    position: relative;
+    top: 10px;
+    right: 4px;
+    color: #000;
+    margin: auto;
+    background-color: #eeeeee;
+    padding: 0.3em 1em;
+    border: solid 2px;
+    border-radius: 12px;
+    border-color: #00000030;
+    text-decoration: none;
+  }
+  
+  #overlayText svg {
+    height: clamp(1em, 2vw, 1.4em);
+    width:  clamp(1em, 2vw, 1.4em);
+  }
+  
+  
+  
+  @keyframes spin {
+    to { -webkit-transform: rotate(360deg); }
+  }
+  @-webkit-keyframes spin {
+    to { -webkit-transform: rotate(360deg); }
+  }
+
+  #overlayText {
+        display: none;
+  }
+
+
+
+
+
+
+
+  </style><div class="embed-pdf-container" id="embed-pdf-container-29d60025">
     <div class="pdf-loadingWrapper" id="pdf-loadingWrapper-29d60025">
         <div class="pdf-loading" id="pdf-loading-29d60025"></div>
     </div>

@@ -6,14 +6,42 @@
     <description>Recent content in Tag2 on dO.ob&#39;s Blog</description>
     <generator>Hugo</generator>
     <language>zh-Hans</language>
-    <lastBuildDate>Mon, 26 May 2025 19:54:26 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 28 May 2025 12:24:28 +0800</lastBuildDate>
     <atom:link href="http://localhost:1313/tags/tag2/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>LIDARFormer</title>
+      <link>http://localhost:1313/posts/lidarformer/</link>
+      <pubDate>Wed, 28 May 2025 12:24:28 +0800</pubDate>
+      <guid>http://localhost:1313/posts/lidarformer/</guid>
+      <description>&lt;p&gt;这是一篇由图森未来和中佛罗里达大学计算成像实验室在2024年联合出品的关于3D目标检测的论文&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>常用指标</title>
+      <link>http://localhost:1313/posts/%E5%B8%B8%E7%94%A8%E6%8C%87%E6%A0%87/</link>
+      <pubDate>Tue, 27 May 2025 18:10:31 +0800</pubDate>
+      <guid>http://localhost:1313/posts/%E5%B8%B8%E7%94%A8%E6%8C%87%E6%A0%87/</guid>
+      <description>&lt;p&gt;Cut out summary from your post content here.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>CenterFormer 中文版</title>
+      <link>http://localhost:1313/posts/centerformer%E4%B8%AD%E6%96%87%E7%89%88/</link>
+      <pubDate>Tue, 27 May 2025 13:51:41 +0800</pubDate>
+      <guid>http://localhost:1313/posts/centerformer%E4%B8%AD%E6%96%87%E7%89%88/</guid>
+      <description>&lt;p&gt;这是一篇由图森未来和中佛罗里达大学计算成像实验室在2022年联合出品的关于3D目标检测的论文&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>CenterFormer</title>
+      <link>http://localhost:1313/posts/centerformer/</link>
+      <pubDate>Tue, 27 May 2025 09:51:23 +0800</pubDate>
+      <guid>http://localhost:1313/posts/centerformer/</guid>
+      <description>&lt;!-- Cut out summary from your post content here. --&gt;</description>
+    </item>
     <item>
       <title>DriveLM</title>
       <link>http://localhost:1313/posts/drivelm/</link>
       <pubDate>Mon, 26 May 2025 19:54:26 +0800</pubDate>
       <guid>http://localhost:1313/posts/drivelm/</guid>
-      <description>&lt;p&gt;Cut out summary from your post content here.&lt;/p&gt;</description>
+      <description>&lt;!-- Cut out summary from your post content here. --&gt;</description>
     </item>
     <item>
       <title>Faster RCNN</title>
